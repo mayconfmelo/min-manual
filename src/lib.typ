@@ -16,7 +16,7 @@
   line-space: 0.65em,
   par-margin: 1.2em,
   margin: 1in,
-  font: ("Arial", "Inconsolata"),
+  font: "Arial",
   font-size: 12.5pt,
   body,
 ) = {

@@ -2,7 +2,7 @@
 
 #show: manual.with(
   title: "Minimal Manuals",
-  description: "Simple and sober manuals inspired by the OG linux manpages.",
+  description: "Simple and sober manuals inspired by the OG Linux manpages.",
   authors: "Maycon F. Melo <https://github.com/mayconfmelo>",
   cmd: "min-manual",
   version: "0.1.0",
@@ -15,13 +15,13 @@
 ```typm
 #import "@preview/min-manual:0.1.0": manual
 #show: manual.with(
-  title: "Longer, Readable Name",
-  description: "Short description, generally two or less lines.",
-  authors: "You Name <https://your-url.com>",
-  cmd: "short-name",
-  version: "0.1.0",
+  title: "Package Name",
+  description: "Short description, no longer than two lines.",
+  authors: "Author <mailto:author@email.com>",
+  cmd: "pkg-name",
+  version: "0.4.2",
   license: "MIT",
-  logo: image("logo.png")
+  logo: image("assets/logo.png")
 )
 ```
 
@@ -32,9 +32,9 @@ manuals. Instead of the equally nostalgic LaTeX manuals, this package draws
 inspiration from the Linux manpages, as they look in terminal emulators until
 today, and adapts it to the contemporary formatting possibilities.
 
-This package is designed to universally document any type of program, or code
+This package is designed to universally document any type of program or code,
 including Typst packages and templates --- this very manual was written using
-this same package, so reading it you may see how it looks and reading its source
+this package, so reading it you may see how it looks and reading its source
 you may see how it is written.
 
 This manual will be updated only when new versions break or modify something;
@@ -48,7 +48,7 @@ here.
 Those are the full list of options available and its default values:
 
 ```typm
-#import "@local/min-manual:0.1.0": manual
+#import "@preview/min-manual:0.1.0": manual
 #show: manual.with(
   title: none,
   description: none,
@@ -70,16 +70,14 @@ Those are the full list of options available and its default values:
 )
 ```
 
-Seems like an awfull lot to start with, but let's just break down all this to
+Seems like an awful lot to start with, but let's just break down all this to
 understand it better, shall we?
 
 #arg(
   "title:", ("string", "content"),
   required: true
 )[
-  The manual title; generally the longer, more readable name of what is been
-  documented, or its name itself otherwise. If not set, the compilation fails
-  with an error.
+  The longer, descriptive and more readable name of what is been documented.
 ]
 
 #arg(
@@ -94,9 +92,8 @@ understand it better, shall we?
   required: true
 )[
   The author or authors of what is being documented --- not the manual.
-  When more than one author, each string can be `"AUTHOR-NAME <AUTHOR-URL>"`,
-  where `<AUTHOR-URL>` is a optional URL associated to the author, like Github
-  profile or webpage. If  ot set, the compilation fails with an error.
+  When more than one author, os an array of strings, in format
+  `("NAME <URL>", "NAME <URL>")`, where `<URL>` is optional.
 ]
 
 #arg(
@@ -108,15 +105,15 @@ understand it better, shall we?
 #arg(
   "version:", ("string", "content")
 )[
-  The version of what is being documented. Usefull when different versions have
-  diferent behaviors.
+  The version of what is being documented. Useful when different versions have
+  different behaviors.
 ]
 
 #arg(
   "license:", ("string", "content"),
   required: true
 )[
-  The license of what is being documented --- notnthe manual.
+  The license of what is being documented --- not the manual.
 ]
 
 #arg(
@@ -147,13 +144,13 @@ understand it better, shall we?
 #arg(
   "lang:", "string"
 )[
-  Defines the language of the written text.
+  Defines the language of the text.
 ]
 
 #arg(
   "justify:", "boolean"
 )[
-  Defines if thebtext will have justified aligment.
+  Defines if the text will have justified aliment.
 ]
 
 #arg(
@@ -165,7 +162,7 @@ understand it better, shall we?
 #arg(
   "par-margin:", "length"
 )[
-  Defines the margin space after each paragraph. Set it tue same as `line-space`
+  Defines the margin space after each paragraph. Set it the same as `line-space`
   to remove get paragraphs without additional space in between.
 ]
 
@@ -178,23 +175,20 @@ understand it better, shall we?
 #arg(
   "font:", ("string", "array")
 )[
-  Defines the fint families used for the text. If set multiple fonts, will try
-  to aplly the first one, and fallback to the next one if not found. If some
-  gliph in the text does not exist in the actual font, it fallbacks to the next
-  font too.
+  Defines the font families used for the text: a principal font and its fallback.
 ]
 
 #arg(
   "font-size:", "length"
 )[
-  Defines the size of the text in tue document.
+  Defines the size of the text in the document.
 ]
 
 
 = Argument Command
 
 ```typm
-#import "@local/min-manual:0.1.0": arg
+#import "@preview/min-manual:0.1.0": arg
 #arg(
   name, types,
   required: false
@@ -210,14 +204,14 @@ or options, or whatever they are called.
   "name", ("string", "raw"),
   required: true
 )[
-  The argument name; can have sintax highlight if set as a raw text, like
-  #raw("```LANG NAME```"), where `LANG` is the programing language name.
+  The argument name; can have syntax highlight if set as a raw text, like
+  #raw("```LANG NAME```"), where `LANG` is the programming language name.
 ]
 
 #arg(
   "types", ("string", "array", "none")
 )[
-  The value types the argument takes.
+  The list of types that the argument value can be.
 ]
 
 #arg(
@@ -228,32 +222,22 @@ or options, or whatever they are called.
 ]
 
 
-= Package Citation Command
-
-```typ
-#import "@local/min-manual:0.1.0": pkg
-#pkg(
-  name,
-  url
-)
-```
-As a convenient bonus, the Typst Universe, Python Pip/Pypi, Rust crates, and
-GitHub repositories can be cited in an even easier way:
-
-// #pagebreak()
+= Package Citation Commands
 
 ```typm
-#import "@local/min-manual:0.1.0": univ, pip, crate, gh
+#import "@preview/min-manual:0.1.0": univ, pip, crate, gh, pkg
 #univ(name)
 #pip(name)
 #crate(name)
 #gh(name, user)
+#pkg(name, url)
 ```
 
-Thse are small helper commands that simplifies the citation of any type of
-external package, crate, or library using its repository URL. They just insert
-a link in the package name for convenient access, and creates an additional
-footnote to it, for usability in eventual printed manuals.
+These are small helper commands that simplifies the citation of any type of
+external package, crate, or library using its repository URL. The `#univ` command
+is used to Typst Universe packages, the `#pip` to Pip/Pypi Python modules, the
+`#crate` to Rust crates, the `#gh` to GitHub repositories, and `#pkg` to any other
+repositories in general.
 
 #arg(
   "name", "string",
@@ -277,7 +261,7 @@ footnote to it, for usability in eventual printed manuals.
   required: true
 )[
   The GitHub user, as it appears in GitHub repositories, e.g.: just the
-  `packages` of `https://github.com/typst/packages`. Used by `#gh`.
+  `typst` of `https://github.com/typst/packages`. Used by `#gh`.
 ]
 
 

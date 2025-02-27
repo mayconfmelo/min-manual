@@ -92,7 +92,7 @@ understand it better, shall we?
   required: true
 )[
   The author or authors of what is being documented --- not the manual.
-  When more than one author, os an array of strings, in format
+  When more than one author, is an array of strings, in format
   `("NAME <URL>", "NAME <URL>")`, where `<URL>` is optional.
 ]
 

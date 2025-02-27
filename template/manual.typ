@@ -3,7 +3,7 @@
 #show: manual.with(
   title: "Package Name",
   description: "Short description, no longer than two lines.",
-  authors: "Author <mailto:author@email.com>",
+  authors: "Author <@author>",
   cmd: "pkg-name",
   version: "0.4.2",
   license: "MIT",
@@ -81,9 +81,9 @@ understand it better, shall we?
 
 = Dependencies
 
-The _pkg-name_ package requires the #univ("example") Typst package. To set it up
-you will need the #pip("fictional") Python module, or the #crate("nonexistent")
-crate. If this package does not work, just go back to LaTeX and use
+Requires the #univ("example") Typst package. To set it up you will need the
+#pip("fictional") Python module, or the #crate("nonexistent") crate. If this
+package does not work, just go back to LaTeX and use
 #pkg("alternative", "https://ctan.org/pkg/") instead, or delve into Regex and
 one-liners with the #pkg("OG::Solution", "https://metacpan.org/pod/") Perl module.
 
@@ -93,7 +93,7 @@ one-liners with the #pkg("OG::Solution", "https://metacpan.org/pod/") Perl modul
 = Copyright
 
 Copyright #sym.copyright #datetime.today().year() MANUAL AUTHOR. \
-This manual is licensed under LICENSE. \
+This manual is licensed under MIT. \
 The manual source code is free software:
 you are free to change and redistribute it.  There is NO WARRANTY, to the extent
 permitted by law.

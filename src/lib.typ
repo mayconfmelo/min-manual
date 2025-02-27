@@ -20,13 +20,20 @@
   font-size: 12.5pt,
   body,
 ) = {
-  let req = (title: title, authors: authors, license: license)
+  // Check required arguments
+  let req = (
+    title: title,
+    authors: authors,
+    license: license
+  )
   for arg in req.keys() {
-    if req.at(arg) == none {
-      panic("Missing required argument: " + arg)
-    }
+    assert.ne(
+      req.at(arg), none,
+      message: "Missing argument: " + arg
+    )
   }
-
+  
+  // Turn string authors into array
   if type(authors) == str {
     authors = (authors,)
   }
@@ -49,37 +56,46 @@
         // Right-side header
         text(size: font-size - 2pt)[ #align(right)[#cmd #version] ]
       },
-    footer: text(
-        size: font-size - 2pt,
-      )[
+    footer: text(size: font-size - 2pt)[
         #context if locate(here()).page() > 1 {
-          // Last page footer:
           if locate(here()).page() == counter(page).final().at(0) {
+            // Last page:
             box(width: 1.25fr)[ Manual created with _min-manual_.]
             box(width: 0.5fr)[
               #align(center)[
-                #locate(here()).page()/#numbering("1", ..counter(page).final())
+                #counter(page).display("1/1", both: true)
               ]
-            ]
-            box( width: 1.25fr)[]
-          // Footer in other pages:
+            ] 
+            box(width: 1.25fr)[]
           } else {
+            // Other pages:
             align(center)[
-              #locate(here()).page()/#numbering("1", ..counter(page).final())
+              #counter(page).display("1/1", both: true)
             ]
           }
         }
       ],
   )
   
-  set par(justify: justify, leading: line-space, spacing: par-margin)
-  set text(font: font, size: font-size, lang: lang)
-  set terms(separator: [: ], tight: true)
+  set par(
+    justify: justify,
+    leading: line-space,
+    spacing: par-margin
+  )
+  set text(
+    font: font,
+    size: font-size,
+    lang: lang
+  )
+  set terms(
+    separator: [: ],
+    tight: true
+  )
   
-  show raw: set text(font: "Inconsolata", size: font-size)
   show quote.where(block: true): it => pad(x: 1em, it)
   show raw.where(block: true): it => pad(left: 1em, it)
-  show footnote.entry: set text(size: font-size - 1pt)
+  show footnote.entry: set text(size: font-size - 2pt)
+  show raw: set text(font: "Inconsolata", size: font-size)
   
   show selector.or(
     terms, enum, table, figure, list,
@@ -120,13 +136,20 @@
       #if license != none { box(width: 1fr)[#license] }
     ]
     #v(0pt)
-
+    
+    // Symbol numbering for authors footnotes
     #set footnote(numbering: "*")
     
     // Insert authors
     #for author in authors {
-      let name = author.find(regex("^[^<]*"))
-      let url = author.find(regex("<(.*)>"))
+      let name = author.find(regex("^[^<]*")).trim()
+      let url = author.find(regex("<(.*)>")).trim(regex("[<> ]"))
+      
+      // Insert GitHub URL when <@user> is used
+      if url.at(0) == "@" {
+        url = "https://www.github.com/" + url.slice(1)
+      }
+      
       if author != none {
         name.trim()
 
@@ -138,6 +161,7 @@
       }
     }
     #v(2em)
+    // Reset footnote counter
     #counter(footnote).update(0)
   ]
   
@@ -182,8 +206,9 @@
           h(1em)
         }
       ]
+      
       #if types != none {
-        // Turn sole string tyoe into a array:
+        // Turn string types into array:
         if type(types) == str {
           types = (types,)
         }
@@ -195,7 +220,8 @@
             type
           ) + " "
         }
-        // Insert _(required)_ note
+        
+        // Insert (required) note
         if required == true {
           box(width: 1fr)[
             #align(right)[ (_required_) ]
@@ -210,16 +236,16 @@
 }
 
 
-// Cite a package/library/crate repository.
+// Cite a package/library/crate repository by URL.
 #let pkg(name, url) = [#link(url + name)[#emph(name)]#footnote(url + name)]
 
-// Shortcut to cite Typst packages
+// Shortcut to cite Typst packages from Typst Universe.
 #let univ(name) = pkg(name, "https://typst.app/universe/package/")
 
-// Shortcut to cite Python packages
+// Shortcut to cite Python packages from Pypi.
 #let pip(name) = pkg(name, "https://pypi.org/project/")
 
-// Shortcut to cite Rust packages
+// Shortcut to cite Rust packages from crates.io
 #let crate(name) = pkg(name, "https://crates.io/crates/")
 
 // Shortcut to cite GitHub repositories

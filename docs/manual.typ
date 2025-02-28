@@ -10,6 +10,7 @@
   logo: image("assets/manual-logo.png") 
 )
 
+
 = Quick Start
 
 ```typm
@@ -222,6 +223,62 @@ or options, or whatever they are called.
 ]
 
 
+= Extract Command
+
+Allows the extraction of a code structure, usually functions, to illustrate and
+enrich the documentation examples. It is important to note that, for this command
+to work, it must have access to the source code that contains the structure in
+question through `#read` if it is inside a file; otherwise its not possible to get the code.
+
+ 
+```typm
+#extract(
+  name: none,
+  rule: none,
+  model: "(?s)#?let\s+<name>\((.*)\)\s*=",
+  lang: "typm",
+  body
+)
+```
+
+#arg(
+  "name:", "string",
+  required: true
+)[
+  The name of the structure that will be extracted from the code. If more than
+  one are found, matches the last one.
+]
+
+#arg(
+  "rule:", "string",
+)[
+   Determines the rule used to present Typst functions extracted from the code.
+   If `none`, it shows the original syntax, by default `#let NAME(ARGS)`; if
+   `"show"`, shows the syntax `#show: NAME.with(ARGS)`; and if `"set"`, shows the
+   syntax `#set NAME(ARGS)`. Used only when documenting Typst functions.
+]
+
+#arg(
+  "model:", "string",
+)[
+  A string containing a regex pattern, used to capture and extract the code
+  structure; by default, captures the Typst function structure.
+]
+
+#arg(
+  "lang:", "string",
+)[
+   The programming language used for the syntax highlight.
+]
+
+#arg(
+  "body", "string",
+)[
+  The source code from which the structure will be extracted; usually obtained by
+  `#read` the source code file.
+]
+
+
 = Package Citation Commands
 
 ```typm
@@ -264,6 +321,66 @@ repositories in general.
   `typst` of `https://github.com/typst/packages`. Used by `#gh`.
 ]
 
+= Doc-Comments
+
+Doc-comments provide a way to embed documentation within the code itself: they 
+are special comments in the source code that make it possible to generate
+complete documentation without creating and maintaining another file just for this.
+
+```typc
+/// This is an inline doc-comment!
+
+/**
+ * This is a block doc-comment!
+ * Use as many lines as you want.
+ * The * at the start of each line is optional.
+**/
+```
+
+For doc-comments to work properly, it is necessary that the programming language
+of the source code recognizes them as mere comments --- as is the case with
+Typst, Rust, and JavaScript. The difderences between comments and doc-comments are
+minimal, making them discrete in the code:
+
+#table(
+  columns: 2,
+  align: center,
+  table.header(
+    [Doc-Comments], [Comments],
+  ),
+  raw("///"), raw("//"),
+  raw("/** **/"), raw("/* */"),
+)
+
+Within these doc-comments it is possible to write Typst code, and also to use the
+_min-manual_ commands and features without import them.
+
+To better fit in the code, the `#arg` command can be invoked on doc-strings using a
+special syntax:
+
+```typm
+#let function-name(
+  arg-name,
+  /** -> string | content | none <required>
+    * This argument does something. **/
+) = {}
+```
+This is a very useful shorhand to write this same doc-comment:
+
+```typm
+/**
+ * #arg(
+ *   "arg-name", ("string", "content", "none"),
+ *   required: true
+ * )[This argument does something]
+**/
+```
+
+Much smaller, isn't it? To use this syntax, just follow a few rules: block
+doc-comments `/** **/` must be used if there is an argument description; if
+there isn't any argument description, inline doc-comments `///` can be used; the
+arrow `->` must come right after the doc-comment opening, i.e., `/** ->` or
+`/// ->`; for optional arguments, just don't write `<required>`.
 
 = Copyright
 

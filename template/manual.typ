@@ -1,4 +1,4 @@
-#import "@preview/min-manual:0.1.0": manual, arg, univ, pip, crate, pkg
+#import "@preview/min-manual:0.1.0": manual, arg, univ, pip, crate, pkg, extract
 
 #show: manual.with(
   title: "Package Name",
@@ -26,11 +26,11 @@
 = Description
 
 This example mimics a Typst package manual, but _min-manual_ is made to
-universally document anything, not just Typst packages.
+universally document anything, not just Typst packages. This one is a standalone
+file, to get manuals from doc-comments check out the `doc-comments.typ` example
+manual.
 
 #lorem(100)
-
-#lorem(20)
 
 #pagebreak()
 
@@ -39,15 +39,11 @@ universally document anything, not just Typst packages.
 
 Those are the full list of options available and its default values:
 
-```typm
-#import "@preview/pkg-name:0.4.2": feature
-#show: feature.with(
-  name: none,
-  text: none,
-  when: datetime.today(),
-  notify: true,
+#extract(
+  name: "feature",
+  rule: "show",
+  read("assets/module.typ")
 )
-```
 
 Seems like an awful lot to start with, but let's just break down all this to
 understand it better, shall we?

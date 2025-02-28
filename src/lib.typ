@@ -1,5 +1,8 @@
 // Manual package
 
+#let manual-cmd-state = state("manual-cmd")
+#let manual-version-state = state("manual-version")
+
 #let manual(
   title: none,
   description: none,
@@ -9,6 +12,7 @@
   license: none,
   logo: none,
   manual-author: none,
+  from-comments: none,
   toc: false,
   paper: "a4",
   lang: "en",
@@ -32,6 +36,9 @@
       message: "Missing argument: " + arg
     )
   }
+  
+  manual-cmd-state.update(cmd)
+  manual-version-state.update(version)
   
   // Turn string authors into array
   if type(authors) == str {
@@ -91,7 +98,19 @@
     separator: [: ],
     tight: true
   )
+  set table(
+    stroke: (_, y) => (
+       top: if y <= 1 { 1pt } else { 0pt },
+       bottom: 1pt,
+      ),
+    align: (_, y) => (
+      if y == 0 { center }
+      else { left }
+    )
+  )
   
+  show table: set align(center)
+  show table.header: set text(weight: "bold")
   show quote.where(block: true): it => pad(x: 1em, it)
   show raw.where(block: true): it => pad(left: 1em, it)
   show footnote.entry: set text(size: font-size - 2pt)
@@ -111,7 +130,6 @@
     heading.where(level: 2),
     heading.where(level: 3),
   ): it => upper(it)
-
   
   // Manual main header:
   align(center)[
@@ -178,12 +196,80 @@
     ]
     v(2em)
   }
-
-  body
+  
+  if from-comments == none {
+    body
+  }
+  else {
+    // Retrieves all special "///" and "/*/.../*/" doc-comments
+    let doc = from-comments
+      .replace(regex("(.*?),?\n.*?(///|/\*\*)\s*->(.*)"), m => {
+        // Find argument NAME to set it as: NAME -> TYPES <REQUIRED> \n BODY
+        if m.captures.at(0).contains(regex("\w(?::.*)?")) {
+          m.captures.at(1) + m.captures.at(0) + " ->" + m.captures.at(2)
+        }
+      })
+      .matches(regex("///.*|(?s)/\*\*.*?\*\*/")) // Removes doc-comments marks
+      .map(
+        it => it.text
+          .trim(regex("///\s*|/\*\*|\*\*/|\n")) // Removes ///  /**  **/ and \n
+          .replace(regex("(?m)^[ \t]*\*+[ \t]*"), "") // Removes additional *
+          .replace(regex("\n\n+"), "\n\n")  // Normalize \n\n+ to \n\n
+          .replace(regex("(.*)\s*->\s*(.*)\n?(?s)(.*)?"), m => {
+            // Get arguments NAME, TYPES, REQUIRED, and BODY data
+            let name = m.captures.at(0).trim(regex("[\s,]"))
+            let types = repr(
+                m.captures.at(1)
+                  .replace(regex("\s*|\s*"), "")
+                  .split("|")
+              )
+            let body = m.captures.at(2)
+            let required = "false"
+            
+            // Checks if argument is required
+            if types.contains("<required>") {
+              types = types.replace(regex("<.*>"), "")
+              required = "true"
+            }
+            
+            // Create an #arg command with the data retrieved
+            "#arg(`" + name + "`, " + types + ", required:" + required + ")[" + body + "]"
+          })
+          .replace(regex(":(\w+?):\s*(\w+)\s*(?:`(\w+)?`)?"), m => {
+            // Retrieve :NAME: RULE `LANG`
+            // Returns #export(NAME, RULE, LANG, from-comments)
+            let name = repr(m.captures.at(0))
+            let rule = repr(m.captures.at(1))
+            let lang = repr(m.captures.at(2))
+            
+            // Default LANG value, if none are given
+            if lang == "none" {
+              lang = repr("typm")
+            }
+            
+            "#extract(
+               name: " + name + ",
+               rule:" + rule + ",
+               lang:" + lang + ",
+            "+ repr(from-comments) + ")"
+          })
+          .trim()
+      )
+      
+    // Import min-manual to eval context
+    doc.insert(0, "#import \"@preview/min-manual:0.1.0\": *\n\n")
+    
+    // Evaluate the Typst code exgtracted from the doc-comments
+    eval(
+      doc.join("\n\n"),
+      mode: "markup"
+    )
+  }
 }
 
 
 // Insert argument explanation in the text:
+// TODO: Maybe change syntax to #arg("NAME -> TYPE | TYPE <REQUIRED>")[BODY]
 #let arg(
   name,
   types,
@@ -206,7 +292,6 @@
           h(1em)
         }
       ]
-      
       #if types != none {
         // Turn string types into array:
         if type(types) == str {
@@ -229,10 +314,68 @@
         }
       }
       #linebreak()
-      // Show padded text:
-      #pad(left: 1em)[#body]
+      #if body != [] {
+        // Show padded text:
+        pad(left: 1em)[#body]
+      }
     ]
   ]
+}
+
+
+// Extract an element or structure from a file.
+#let extract(
+  name: none,
+  rule: none,
+  model: "(?s)#?let\s+<name>\((.*)\)\s*=",
+  lang: "typm",
+  body
+) = {
+  name = name.trim()
+  model = model.replace("<name>", name)
+  
+  if type(body) != str {
+    panic("Wrong \"body\" argument type: " + type(body))
+  }
+  
+  // Extract last match
+  // TODO: use text instead of captures
+  let extr = body.matches(regex(model)).last().captures.at(0)
+  
+  extr = extr
+    .replace(regex("//.*|(?s)/\*.*?\*/"), "") // Removes comments
+    .replace(",", ",\n") // Adds extra \n just in case
+    .replace(regex("\n\s+"), "\n") // Removes extra spaces after \n
+    .replace(regex("\n+$"), "") // Removes last \n
+    .replace(regex("\n"), "\n  ") // Adds exactly 2 spaces at each line start
+  
+  context {
+  let imp
+  
+  // Typst #import statement
+  if lang.contains("typ") {
+    let pkg = manual-cmd-state.final() + ":" + manual-version-state.final()
+    imp = "#import \"@preview/" + pkg + "\": "+ name + "\n"
+  }
+  
+  let code
+  if rule == none {
+    // Function definition
+    code = imp + "#let " + name + "(" + extr + "\n)"
+  }
+  else if rule == "show" {
+    // Show rule
+    code = imp + "#show: " + name + ".with(" + extr + "\n)"
+  }
+  else if rule == "set" {
+    // Set rule
+    code = imp + "#set " + name + "(" + extr + "\n)"
+  }
+  
+  // Generate raw code from extracted data.
+  raw(code, lang: lang, block: true)
+  
+  }
 }
 
 

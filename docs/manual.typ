@@ -29,16 +29,14 @@
 = Description
 
 Generate modern manuals, without loosing the simplicity and looks of old
-manuals. Instead of the equally nostalgic LaTeX manuals, this package draws
-inspiration from the Linux manpages, as they look in terminal emulators until
-today, and adapts it to the contemporary formatting possibilities. Allows to
-create documentation in dedicated files or extract it from the source code
-itself through doc-comments.
+manuals. This package draws inspiration from the Linux manpages, as they look in
+terminal emulators until today, and adapts it to the contemporary formatting
+possibilities.
 
 The package is designed to universally document any type of program or code,
-including Typst packages and templates --- this very manual was written using
-this package, so reading it you may see how it looks and reading its source
-you may see how it is written.
+including Typst packages and templates. It allows to create documentation 
+separated in dedicated files or extract it from the source code itself through
+doc-comments.
 
 This manual will be updated only when new versions break or modify something;
 otherwise, it will be valid to all newer versions starting by the one documented

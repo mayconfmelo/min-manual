@@ -21,19 +21,19 @@
 **/
 #let feature(
   name: none, 
-  /** -> string | content | none <required>
-    * Explanation of what is this argument, what it does, and how to set it. **/
+    /** -> string | content | none <required>
+      * Explanation of what is this argument, what it does, and how to set it. **/
   text: none,
-  /** -> string | content | none
-    * Explanation of what is this argument, what it does, and how to set it. **/
+    /** -> string | content | none
+      * Explanation of what is this argument, what it does, and how to set it. **/
   when: datetime.today(),
-  /** -> datetime
-    * Explanation of what is this argument, what it does, and how to set it. **/
+    /** -> datetime
+      * Explanation of what is this argument, what it does, and how to set it. **/
   notify: true,
-  /** -> boolean
-    * Explanation of what is this argument, what it does, and how to set it. **/
+    /** -> boolean
+      * Explanation of what is this argument, what it does, and how to set it. **/
   body,
-  /// -> content | string
+    /// -> content | string
 ) = {
 
   /**

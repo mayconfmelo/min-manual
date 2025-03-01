@@ -262,7 +262,8 @@
     // Evaluate the Typst code exgtracted from the doc-comments
     eval(
       doc.join("\n\n"),
-      mode: "markup"
+      mode: "markup",
+      scope: (from-comments: from-comments)
     )
   }
 }

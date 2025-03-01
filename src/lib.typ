@@ -327,7 +327,7 @@
 #let extract(
   name: none,
   rule: none,
-  model: "(?s)#?let\s+<name>\((.*)\)\s*=",
+  model: "(?s)\s*#?let\s+<name>\((.*)\)\s*=",
   lang: "typm",
   body
 ) = {
@@ -338,43 +338,70 @@
     panic("Wrong \"body\" argument type: " + type(body))
   }
   
-  // Extract last match
-  // TODO: use text instead of captures
-  let extr = body.matches(regex(model)).last().captures.at(0)
-  
-  extr = extr
-    .replace(regex("//.*|(?s)/\*.*?\*/"), "") // Removes comments
-    .replace(",", ",\n") // Adds extra \n just in case
-    .replace(regex("\n\s+"), "\n") // Removes extra spaces after \n
-    .replace(regex("\n+$"), "") // Removes last \n
-    .replace(regex("\n"), "\n  ") // Adds exactly 2 spaces at each line start
-  
-  context {
-  let imp
-  
-  // Typst #import statement
-  if lang.contains("typ") {
+  context if lang.contains("typ") {
+    // Extract last match
+    let capt = body.matches(regex(model))
+    
+    if capt != () and capt.last().captures != () {
+      capt = capt.last().captures.at(0)
+    }
+    else {
+      panic("Could not extract '" + name + "' using '" + model + "'")
+    }
+    
+    capt = capt
+      .replace(regex("//.*|(?s)/\*.*?\*/"), "") // Removes comments
+      .replace(",", ",\n") // Adds extra \n just in case
+      .replace(regex("\n\s+"), "\n") // Removes extra spaces after \n
+      .replace(regex("\n+$"), "") // Removes last \n
+      .replace(regex("\n"), "\n  ") // Adds exactly 2 spaces at each line start
+      
     let pkg = manual-cmd-state.final() + ":" + manual-version-state.final()
-    imp = "#import \"@preview/" + pkg + "\": "+ name + "\n"
+    let imp = "#import \"@preview/" + pkg + "\": "+ name + "\n"
+    let code
+    
+    if rule == none {
+      // Function definition
+      code = imp + "#let " + name + "(" + capt + "\n)"
+    }
+    else if rule == "show" {
+      // Show rule
+      code = imp + "#show: " + name + ".with(" + capt + "\n)"
+    }
+    else if rule == "set" {
+      // Set rule
+      code = imp + "#set " + name + "(" + capt + "\n)"
+    }
+    
+    // Generate raw code from extracted data.
+    raw(code, lang: lang, block: true)
   }
-  
-  let code
-  if rule == none {
-    // Function definition
-    code = imp + "#let " + name + "(" + extr + "\n)"
-  }
-  else if rule == "show" {
-    // Show rule
-    code = imp + "#show: " + name + ".with(" + extr + "\n)"
-  }
-  else if rule == "set" {
-    // Set rule
-    code = imp + "#set " + name + "(" + extr + "\n)"
-  }
-  
-  // Generate raw code from extracted data.
-  raw(code, lang: lang, block: true)
-  
+  else {
+    // Extract last match
+    let txt = body.matches(regex(model))
+    
+    if txt != () {
+      txt = txt.last().text
+    }
+    else {
+      panic("Could not extract '" + name + "' using '" + model + "'")
+    }
+    
+    let indent = txt.trim("\n").find(regex("^[ \t]*"))
+    
+    // Normalize indentation
+    if indent != none {
+      indent = str(indent.len())
+      txt = txt.replace(regex("\n[ \t]{" + indent + "}?"), "\n")
+    }
+    
+    let code = txt
+      .replace(regex("//.*|(?s)/\*.*?\*/"), "") // Removes comments
+      .replace(regex(",\s*\n+"), "\n") // Removes blank lines left by comments
+      .trim("\n")
+      
+    // Generate raw code from extracted data.
+    raw(code, lang: lang, block: true)
   }
 }
 

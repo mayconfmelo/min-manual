@@ -7,8 +7,11 @@
   cmd: "min-manual",
   version: "0.1.0",
   license: "MIT",
+  toc: true,
   logo: image("assets/manual-logo.png") 
 )
+
+#pagebreak()
 
 
 = Quick Start
@@ -26,6 +29,7 @@
 )
 ```
 
+
 = Description
 
 Generate modern manuals, without loosing the simplicity and looks of old
@@ -42,7 +46,6 @@ This manual will be updated only when new versions break or modify something;
 otherwise, it will be valid to all newer versions starting by the one documented
 here.
 
-#pagebreak()
 
 = Options
 
@@ -191,11 +194,11 @@ understand it better, shall we?
 ```typm
 #import "@preview/min-manual:0.1.0": arg
 #arg(
-  name, types,
-  required: false
-)[
+  name,
+  types,
+  required: false,
   body
-]
+)
 ```
 
 This command offers a convenient way to document the arguments --- or parameters,
@@ -216,8 +219,13 @@ or options, or whatever they are called.
 ]
 
 #arg(
-  "body", ("content"),
-  required: true
+  "required:", "boolean"
+)[
+  Defines if the argument is mandatory.
+]
+
+#arg(
+  "body", ("content")
 )[
   A brief description of what the argument does.
 ]
@@ -225,10 +233,11 @@ or options, or whatever they are called.
 
 = Extract Command
 
-Allows the extraction of a code structure, usually functions, to illustrate and
-enrich the documentation examples. It is important to note that, for this command
-to work, it must have access to the source code that contains the structure in
-question through `#read` if it is inside a file; otherwise its not possible to get the code.
+Allows the extraction of code structures, usually functions, directly from the
+source code to illustrate and enrich the documentation examples. It is important
+to note that, for this command to work, it must have access to the source code
+that contains the structure in question as a string, this can be done by `#read`
+the source code file.
 
  
 ```typm
@@ -275,6 +284,7 @@ question through `#read` if it is inside a file; otherwise its not possible to g
 
 #arg(
   "body", "string",
+  required: true
 )[
   The source code from which the structure will be extracted; usually obtained by
   `#read` the source code file.
@@ -376,8 +386,6 @@ source code itself is available in `#from-comments` variable inside doc-comments
 To better fit in the code, the `#arg` command can be invoked on doc-comments by
 using a special syntax:
 
-#linebreak()
-
 ```typm
 #let function-name(
   arg-name,
@@ -386,6 +394,8 @@ using a special syntax:
 ) = {...}
 ```
 This is a very useful shorhand to write this same doc-comment:
+
+#pagebreak()
 
 ```typm
 /**

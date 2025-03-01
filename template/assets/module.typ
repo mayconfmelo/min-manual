@@ -12,7 +12,12 @@
  *
  * = Description
  * 
- * #lorem(150)
+ * To create this manual, the `doc-comments.typ` file reads the `assets/module.typ`
+ * source code, which will be documented, and gather documentation from special
+ * comments there; then _min-manual_ handles everything and Typst generates
+ * this document.
+ * 
+ * #lorem(100)
  * 
  * = Options
  * These are all the options avalilable and its respetive default values, if any:

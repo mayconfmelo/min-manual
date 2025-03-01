@@ -3,7 +3,7 @@
 #show: manual.with(
   title: "Minimal Manuals",
   description: "Simple and sober manuals inspired by the OG Linux manpages.",
-  authors: "Maycon F. Melo <https://github.com/mayconfmelo>",
+  authors: "Maycon F. Melo <@mayconfmelo>",
   cmd: "min-manual",
   version: "0.1.0",
   license: "MIT",

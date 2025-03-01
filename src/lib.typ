@@ -187,8 +187,17 @@
   if toc == true {
     show outline.entry.where(level: 1): it => {
       v(font-size, weak: true)
-      strong(upper(it))
+      strong(it)
     }
+  
+    show selector.or(
+      outline.entry.where(level: 1),
+      outline.entry.where(level: 2),
+      outline.entry.where(level: 3),
+    ): it => {
+      upper(it)
+    }
+    
     align(center)[
       #block(width: 80%)[
         #outline(indent: 1.5em)

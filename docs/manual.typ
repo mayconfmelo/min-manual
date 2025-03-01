@@ -262,7 +262,9 @@ question through `#read` if it is inside a file; otherwise its not possible to g
   "model:", "string",
 )[
   A string containing a regex pattern, used to capture and extract the code
-  structure; by default, captures the Typst function structure.
+  structure; by default, captures the Typst function structure. The string can
+  have a special `<name>` pattern that will be replaced by the `#extract(name)`
+  argument to get the structure name.
 ]
 
 #arg(
@@ -277,6 +279,18 @@ question through `#read` if it is inside a file; otherwise its not possible to g
   The source code from which the structure will be extracted; usually obtained by
   `#read` the source code file.
 ]
+
+As an example of documentation for files in other languages, to extract a Rust
+function called `main` from a file called `src/lib.rs` just use:
+
+```typ
+#extract(
+  name: "main",
+  model: "\s*fn\s*<name>\(.*\)",
+  lang: "rust",
+  read("src/lib.rs")
+)
+```
 
 
 = Package Citation Commands
@@ -358,12 +372,14 @@ _min-manual_ commands and features without import them.
 To better fit in the code, the `#arg` command can be invoked on doc-strings using a
 special syntax:
 
+#linebreak()
+
 ```typm
 #let function-name(
   arg-name,
   /** -> string | content | none <required>
     * This argument does something. **/
-) = {}
+) = {...}
 ```
 This is a very useful shorhand to write this same doc-comment:
 

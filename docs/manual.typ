@@ -35,7 +35,6 @@ today, and adapts it to the contemporary formatting possibilities. Allows to
 create documentation in dedicated files or extract it from the source code
 itself through doc-comments.
 
-
 The package is designed to universally document any type of program or code,
 including Typst packages and templates --- this very manual was written using
 this package, so reading it you may see how it looks and reading its source
@@ -370,10 +369,14 @@ minimal, making them discrete in the code:
 )
 
 Within these doc-comments it is possible to write Typst code, and also to use the
-_min-manual_ commands and features without import them.
+_min-manual_ commands and features without import them. If you need to perform
+advanced tasks and queries from within doc-comments, all the content of the
+source code itself is available in `#from-comments` variable inside doc-comments.
 
-To better fit in the code, the `#arg` command can be invoked on doc-strings using a
-special syntax:
+== Argument Commands in Doc-Comments
+
+To better fit in the code, the `#arg` command can be invoked on doc-comments by
+using a special syntax:
 
 #linebreak()
 
@@ -400,6 +403,32 @@ doc-comments `/** **/` must be used if there is an argument description; if
 there isn't any argument description, inline doc-comments `///` can be used; the
 arrow `->` must come right after the doc-comment opening, i.e., `/** ->` or
 `/// ->`; for optional arguments, just don't write `<required>`.
+
+
+== Extract Commands in Doc-Comments
+
+The `#extract` command can also be invoked in doc-comments using a special syntax:
+
+```typm
+/// :function-name: show `typm`
+#let function-name(
+  arg-name,
+) = {...}
+```
+
+This short syntax is equivalent to this much more cumbersome doc-comment:
+
+```typc
+/**
+ * #extract(
+ *   name: "function-name",
+ *   rule: "show",
+ *   lang: "typm",
+ *   from-comments
+ * )
+**/
+```
+
 
 = Copyright
 

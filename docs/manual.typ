@@ -62,6 +62,7 @@ Those are the full list of options available and its default values:
   license: none,
   logo: none,
   manual-author: none,
+  from-comments: none,
   toc: false,
   paper: "a4",
   lang: "en",
@@ -76,115 +77,86 @@ Those are the full list of options available and its default values:
 
 Seems like an awful lot to start with, but let's just break down all this to
 understand it better, shall we?
+65em
 
-#arg(
-  "title:", ("string", "content"),
-  required: true
-)[
+
+#arg("title: <- string | content <required>")[
   The longer, descriptive and more readable name of what is been documented.
 ]
 
-#arg(
-  "description:", ("string", "content")
-)[
+#arg("description: <- string | content")[
   A short description of what is being documented; generally two lines long or
   less.
 ]
 
-#arg(
-  "authors:", ("string", "array"),
-  required: true
-)[
+#arg("authors: <- string | array")[
   The author or authors of what is being documented --- not the manual.
-  When more than one author, is an array of strings, in format
+  When more than one author, is an array of strings, in format \
   `("NAME <URL>", "NAME <URL>")`, where `<URL>` is optional.
 ]
 
-#arg(
-  "cmd:", ("string", "content")
-)[
+#arg("cmd: <- string | content")[
   The command or code name used to invoke what is being documented.
 ]
 
-#arg(
-  "version:", ("string", "content")
-)[
+#arg("version: <- string | content")[
   The version of what is being documented. Useful when different versions have
   different behaviors.
 ]
 
-#arg(
-  "license:", ("string", "content"),
-  required: true
-)[
+#arg("license: <- string | content")[
   The license of what is being documented --- not the manual.
 ]
 
-#arg(
-  "logo:", "image"
-)[
+#arg("logo: <- image")[
   The logo image of what is being documented.
 ]
 
-#arg(
-  "manual-author:", "string"
-)[
+#arg("manual-author: <- string")[
   The author of the manual --- not what is being documented. If not set,
   fallback to the first (or only) one of `authors`.
 ]
 
-#arg(
-  "toc:", "boolean"
-)[
+#arg("from-comments: <- string")[
+  The source code from which the doc-comments will be extracted; when set,
+  activates the doc-comments gathering and ignores the content of the current
+  file. To obtain a external source code as string, just `#read` it.
+]
+
+#arg("toc: <- boolean")[
   Defines whether the manual will have a table of contents or not.
 ]
 
-#arg(
-  "paper:", "string"
-)[
+#arg("paper: <- string")[
   Defines the page paper type --- and its size therefore.
 ]
 
-#arg(
-  "lang:", "string"
-)[
+#arg("lang: <- string")[
   Defines the language of the text.
 ]
 
-#arg(
-  "justify:", "boolean"
-)[
+#arg("justify: <- boolean")[
   Defines if the text will have justified aliment.
 ]
 
-#arg(
-  "line-space:", "length"
-)[
+#arg("line-space: <- length")[
   Defines the space between lines in the document.
 ]
 
-#arg(
-  "par-margin:", "length"
-)[
+#arg("par-margin: <- length")[
   Defines the margin space after each paragraph. Set it the same as `line-space`
   to remove get paragraphs without additional space in between.
 ]
 
-#arg(
-  "margin:", "length"
-)[
+#arg("margin: <- length")[
   Defines the document margins.
 ]
 
-#arg(
-  "font:", ("string", "array")
-)[
+#arg("font: <- string | array")[
   Defines the font families used for the text: a principal font and its fallback.
 ]
 
-#arg(
-  "font-size:", "length"
-)[
+#arg("font-size: <- length")[
   Defines the size of the text in the document.
 ]
 
@@ -195,38 +167,32 @@ understand it better, shall we?
 #import "@preview/min-manual:0.1.0": arg
 #arg(
   name,
-  types,
-  required: false,
   body
 )
 ```
 
 This command offers a convenient way to document the arguments --- or parameters,
-or options, or whatever they are called.
+or options, or whatever they are called; and even structures can be easily
+explained.
 
-#arg(
-  "name", ("string", "raw"),
-  required: true
-)[
-  The argument name; can have syntax highlight if set as a raw text, like
-  #raw("```LANG NAME```"), where `LANG` is the programming language name.
+#arg("title <- string <required>")[
+  Defines the argument `NAME`, `TYPE`s, and if it is `REQUIRED` using the
+  following syntaxes:
+  
+  #align(center)[
+    `"NAME <- TYPE | TYPE | TYPE <REQUIRED>"`
+    #line(length: 60%, stroke: luma(220))
+    `"NAME -> TYPE | TYPE | TYPE"`
+  ]
+  
+  The name can be #raw("```LANG NAME```") to get syntax highlight. The `<-` arrow
+  indicates that `NAME` receives any of the value `TYPE`s, and `->` indicates
+  that `NAME` returns one of the value `TYPE`s. A special `nothing` type is used
+  when nothing is received and/or returned. For optional arguments, just don't
+  write the `<REQUIRED>`.
 ]
 
-#arg(
-  "types", ("string", "array", "none")
-)[
-  The list of types that the argument value can be.
-]
-
-#arg(
-  "required:", "boolean"
-)[
-  Defines if the argument is mandatory.
-]
-
-#arg(
-  "body", ("content")
-)[
+#arg("body <- content")[
   A brief description of what the argument does.
 ]
 
@@ -234,10 +200,12 @@ or options, or whatever they are called.
 = Extract Command
 
 Allows the extraction of code structures, usually functions, directly from the
-source code to illustrate and enrich the documentation examples. It is important
-to note that, for this command to work, it must have access to the source code
-that contains the structure in question as a string, this can be done by `#read`
-the source code file.
+source code to illustrate and enrich the documentation examples. It works like
+this: it reads a source code file and seeks a specific structure within code;
+and when finding it, prints it in the document. It is important to note that,
+for this command to work, it must have access to the source code that contains
+the structure in question as a string, this can be done by `#read` the source
+code file.
 
  
 ```typm
@@ -250,42 +218,30 @@ the source code file.
 )
 ```
 
-#arg(
-  "name:", "string",
-  required: true
-)[
+#arg("name: <- string <required>")[
   The name of the structure that will be extracted from the code. If more than
   one are found, matches the last one.
 ]
 
-#arg(
-  "rule:", "string",
-)[
-   Determines the rule used to present Typst functions extracted from the code.
-   If `none`, it shows the original syntax, by default `#let NAME(ARGS)`; if
-   `"show"`, shows the syntax `#show: NAME.with(ARGS)`; and if `"set"`, shows the
-   syntax `#set NAME(ARGS)`. Used only when documenting Typst functions.
+#arg("rule: <- string")[
+   Used only when extracting Typst functions: Determines the rule used to
+   present the Typst functions extracted. If `none`, it shows the syntax
+   `#let NAME(ARGS)`; if `"show"`, shows the syntax `#show: NAME.with(ARGS)`;
+   and if `"set"`, shows the syntax `#set NAME(ARGS)`.
 ]
 
-#arg(
-  "model:", "string",
-)[
+#arg("model: <- string")[
   A string containing a regex pattern, used to capture and extract the code
   structure; by default, captures the Typst function structure. The string can
   have a special `<name>` pattern that will be replaced by the `#extract(name)`
-  argument to get the structure name.
+  argument to get the structure with this name.
 ]
 
-#arg(
-  "lang:", "string",
-)[
+#arg("lang: <- string")[
    The programming language used for the syntax highlight.
 ]
 
-#arg(
-  "body", "string",
-  required: true
-)[
+#arg("body <- string <required>")[
   The source code from which the structure will be extracted; usually obtained by
   `#read` the source code file.
 ]
@@ -320,30 +276,23 @@ is used to Typst Universe packages, the `#pip` to Pip/Pypi Python modules, the
 `#crate` to Rust crates, the `#gh` to GitHub repositories, and `#pkg` to any other
 repositories in general.
 
-#arg(
-  "name", "string",
-  required: true
-)[
+#arg("name <- string <required>")[
   The name of the package, or library, or crate, or anything else, as it appears
   in the package repository, e.g.: just the `babel` of
   `https://ctan.org/pkg/babel`.
 ]
 
-#arg(
-  "url", "string",
-  required: true
-)[
-  The package repository URL without package name path, e.g.: just the
-  `https://ctan.org/pkg/` of `https://ctan.org/pkg/babel`. Used by `#pkg`.
+#arg("url <- string <required>")[
+  Used only by `#pkg`: The package repository URL without package name path,
+  e.g.: just the `https://ctan.org/pkg/` of `https://ctan.org/pkg/babel`.
 ]
 
-#arg(
-  "user", "string",
-  required: true
+#arg("user <- string <required>"
 )[
-  The GitHub user, as it appears in GitHub repositories, e.g.: just the
-  `typst` of `https://github.com/typst/packages`. Used by `#gh`.
+  Used ony by `#gh`: The GitHub user, as it appears in GitHub repositories,
+  e.g.: just the `typst` of `https://github.com/typst/packages`.
 ]
+
 
 = Doc-Comments
 
@@ -362,8 +311,8 @@ complete documentation without creating and maintaining another file just for th
 ```
 
 For doc-comments to work properly, it is necessary that the programming language
-of the source code recognizes them as mere comments --- as is the case with
-Typst, Rust, and JavaScript. The difderences between comments and doc-comments are
+of the source code recognize them as mere comments --- as is the case with
+Typst, Rust, and JavaScript, for example. The differences between comments and doc-comments are
 minimal, making them discrete in the code:
 
 #table(
@@ -381,36 +330,42 @@ _min-manual_ commands and features without import them. If you need to perform
 advanced tasks and queries from within doc-comments, all the content of the
 source code itself is available in `#from-comments` variable inside doc-comments.
 
+
 == Argument Commands in Doc-Comments
 
 To better fit in the code, the `#arg` command can be invoked on doc-comments by
 using a special syntax:
 
+#pagebreak()
+
 ```typm
 #let function-name(
   arg-name,
-  /** -> string | content | none <required>
+  /** <- string | content | none <required>
     * This argument does something. **/
 ) = {...}
 ```
 This is a very useful shorhand to write this same doc-comment:
 
-#pagebreak()
-
 ```typm
 /**
- * #arg(
- *   "arg-name", ("string", "content", "none"),
- *   required: true
- * )[This argument does something]
+ * #arg("arg-name <- string | content | none <required>")[
+ *   This argument does something
+ * ]
 **/
 ```
 
-Much smaller, isn't it? To use this syntax, just follow a few rules: block
-doc-comments `/** **/` must be used if there is an argument description; if
-there isn't any argument description, inline doc-comments `///` can be used; the
-arrow `->` must come right after the doc-comment opening, i.e., `/** ->` or
-`/// ->`; for optional arguments, just don't write `<required>`.
+Much cleaner, isn't it? To use this syntax, just follow a few rules: the
+doc-comment syntax must be
+
+#align(center, `/** <- TYPES \n BODY **\`)
+
+or else
+
+#align(center, `/// <- TYPES`)
+
+And the arrow `<-` must always come right after the doc-comment opening, i.e., \
+`/** <-` or else `/// <-`.
 
 
 == Extract Commands in Doc-Comments
@@ -418,7 +373,7 @@ arrow `->` must come right after the doc-comment opening, i.e., `/** ->` or
 The `#extract` command can also be invoked in doc-comments using a special syntax:
 
 ```typm
-/// :function-name: show `typm`
+/// :function-name: show `typm` "model-regex"
 #let function-name(
   arg-name,
 ) = {...}
@@ -432,10 +387,14 @@ This short syntax is equivalent to this much more cumbersome doc-comment:
  *   name: "function-name",
  *   rule: "show",
  *   lang: "typm",
+ *   model: "model-regex",
  *   from-comments
  * )
 **/
 ```
+
+In this syntax, only `:NAME:` is mandatory, while `RULE`, #raw("`LANG`"), and
+`"MODEL"` will fallback to the defaults when omitted.
 
 
 = Copyright

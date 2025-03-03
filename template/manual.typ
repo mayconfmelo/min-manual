@@ -46,8 +46,7 @@ Those are the full list of options available and its default values:
   read("assets/module.typ")
 )
 
-Seems like an awful lot to start with, but let's just break down all this to
-understand it better, shall we?
+Let's just break down all this code to understand it better, shall we?
 
 #arg("```typm #show: feature.with()``` -> content")[
   Explanation of what is this structure, what it does, and how to properly set it.

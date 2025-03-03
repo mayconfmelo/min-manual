@@ -77,8 +77,6 @@ Those are the full list of options available and its default values:
 
 Seems like an awful lot to start with, but let's just break down all this to
 understand it better, shall we?
-65em
-
 
 #arg("title: <- string | content <required>")[
   The longer, descriptive and more readable name of what is been documented.

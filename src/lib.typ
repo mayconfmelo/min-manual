@@ -92,7 +92,8 @@
   set text(
     font: font,
     size: font-size,
-    lang: lang
+    lang: lang,
+    hyphenate: true,
   )
   set terms(
     separator: [: ],
@@ -109,6 +110,7 @@
     )
   )
   
+  show heading: set block(sticky: true)
   show table: set align(center)
   show table.header: set text(weight: "bold")
   show quote.where(block: true): it => pad(x: 1em, it)
@@ -210,12 +212,20 @@
     body
   }
   else {
+    // Generate manual through doc-comments gethered in from-comments
+    // TODO: Custom doc-comment syntaxes with #manual(doc-comments)
+  
     // Retrieves all special "///" and "/*/.../*/" doc-comments
     let doc = from-comments
-      .replace(regex("(.*?),?\n.*?(///|/\*\*)\s*->(.*)"), m => {
-        // Find argument NAME to set it as: NAME -> TYPES <REQUIRED> \n BODY
+      .replace(regex("(.*?),?\n.*?(///|/\*\*)\s*<-(.*)"), m => {
+        let name = m.captures.at(0).trim(regex("[\s,;]"))
+        let doc-comment-mark = m.captures.at(1)
+        let types = m.captures.at(2)
+        
+        // Receives NAME \n /// <- TYPES <REQUIRED>
+        // Turns into /// NAME <- TYPES <REQUIRED>
         if m.captures.at(0).contains(regex("\w(?::.*)?")) {
-          m.captures.at(1) + m.captures.at(0) + " ->" + m.captures.at(2)
+          doc-comment-mark + name + "<-" + types
         }
       })
       .matches(regex("///.*|(?s)/\*\*.*?\*\*/")) // Removes doc-comments marks
@@ -224,43 +234,59 @@
           .trim(regex("///\s*|/\*\*|\*\*/|\n")) // Removes ///  /**  **/ and \n
           .replace(regex("(?m)^[ \t]*\*+[ \t]*"), "") // Removes additional *
           .replace(regex("\n\n+"), "\n\n")  // Normalize \n\n+ to \n\n
-          .replace(regex("(.*)\s*->\s*(.*)\n?(?s)(.*)?"), m => {
+          .replace(regex("(.*\s*(?:<-|->)\s*.*)\n?(?s)([^\n\n]*)?"), m => {
             // Get arguments NAME, TYPES, REQUIRED, and BODY data
-            let name = m.captures.at(0).trim(regex("[\s,]"))
-            let types = repr(
-                m.captures.at(1)
-                  .replace(regex("\s*|\s*"), "")
-                  .split("|")
-              )
-            let body = m.captures.at(2)
-            let required = "false"
+            // let name = m.captures.at(0).trim(regex("[\s,]"))
+            // let types = repr(
+            //     m.captures.at(1)
+            //       .replace(regex("\s*|\s*"), "")
+            //       .split("|")
+            //   )
+            // let body = m.captures.at(2)
+            // let required = "false"
             
-            // Checks if argument is required
-            if types.contains("<required>") {
-              types = types.replace(regex("<.*>"), "")
-              required = "true"
+            // // Checks if argument is required
+            // if types.contains("<required>") {
+            //   types = types.replace(regex("<.*>"), "")
+            //   required = "true"
+            // }
+            
+            let title = m.captures.at(0)
+            let body = m.captures.at(1)
+            
+            if not title.starts-with(regex("```.*```")) {
+              // Receives NAME
+              // Turns into ``` NAME```
+              title = title.replace(regex("\s*(.*?)\s*((<-|->))"), m => {
+                "``` " + m.captures.at(0) + "```" + m.captures.at(1)
+              })
             }
+            //title.replace("","\\")
             
             // Create an #arg command with the data retrieved
-            "#arg(`" + name + "`, " + types + ", required:" + required + ")[" + body + "]"
+            "#arg(" + repr(title) + ")[" + body + "]"
           })
-          .replace(regex(":(\w+?):\s*(\w+)\s*(?:`(\w+)?`)?"), m => {
+          .replace(regex(":(\w+?):\s*(\w+)?\s*(?:`(\w+)?`)?\s*(?:\"(.*)\")?"), m => {
             // Retrieve :NAME: RULE `LANG`
             // Returns #export(NAME, RULE, LANG, from-comments)
             let name = repr(m.captures.at(0))
             let rule = repr(m.captures.at(1))
             let lang = repr(m.captures.at(2))
+            let model = repr(m.captures.at(3))
             
             // Default LANG value, if none are given
             if lang == "none" {
               lang = repr("typm")
             }
             
-            "#extract(
-               name: " + name + ",
-               rule:" + rule + ",
-               lang:" + lang + ",
-            "+ repr(from-comments) + ")"
+            // Construct #extract aeguments
+            name = "name:" + name + ","
+            rule = if rule != "none" {"rule:" + rule + ","} else {""}
+            lang = if lang != "none" {"lang:" + lang + ","} else {""}
+            model = if model != "none" {"model:" + model + ","} else {""}
+            
+            // Returns the #extract command code with arguments
+            "#extract(" + name + rule + lang + model + repr(from-comments) + ")"
           })
           .trim()
       )
@@ -278,14 +304,56 @@
 }
 
 
-// Insert argument explanation in the text:
-// TODO: Maybe change syntax to #arg("NAME -> TYPE | TYPE <REQUIRED>")[BODY]
+// Insert argument/parameter/option explanation:
 #let arg(
-  name,
-  types,
-  body,
-  required: false
+  title,
+  body
 ) = {
+  let name
+  let output = false
+  let types = none
+  let required = title.contains("<required>")
+  
+  // Remove any <required> in title:
+  if required != none {
+    title = title.replace("<required>", "")
+  }
+  
+  let arrow = title.match(regex("<-|->")).text
+  
+  if arrow == "->" {
+    output = true
+  }
+  
+  // split NAME <- TYPES or NAME -> TYPES
+  let parts = title.split(arrow)
+  
+  name = parts.at(0).trim()
+  
+  if name == "" {
+    panic("Argument name required: " + title)
+  }
+  
+  // Set types, if any
+  if parts.len() > 1 {
+    types = parts.at(1)
+      .replace(regex("\s*\|\s*"), "|")
+      .trim()
+      
+    // If TYPES is "nothing", maintain types = none
+    if types == "nothing" {
+      types = none
+    }
+    else {
+      types = types.split("|")
+    }
+  }
+  
+  // Eval ```LANG name``` to become raw
+   if name.contains(regex("```.*```")) {
+     name = eval(name, mode: "markup")
+  }
+
   v(0.5em)
   block(breakable: false)[
     #par(
@@ -303,6 +371,12 @@
         }
       ]
       #if types != none {
+        // Show arrow when documenting output
+        if output == true {
+          sym.arrow.r
+          h(0.5em)
+        }
+      
         // Turn string types into array:
         if type(types) == str {
           types = (types,)
@@ -312,16 +386,16 @@
             fill: luma(235),
             inset: (x: 3pt, y: 0pt),
             outset: (y: 3pt),
-            type
+            type.trim()
           ) + " "
         }
         
-        // Insert (required) note
-        if required == true {
-          box(width: 1fr)[
-            #align(right)[ (_required_) ]
-          ]
-        }
+      }
+      // Insert required note
+      #if required == true {
+        box(width: 1fr)[
+          #align(right)[ (_required_) ]
+        ]
       }
       #linebreak()
       #if body != [] {

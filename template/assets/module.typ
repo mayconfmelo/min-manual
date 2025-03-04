@@ -17,6 +17,8 @@
  * comments there; then _min-manual_ handles everything and generates this
  * document from those comments.
  * 
+ * 
+ * 
  * #lorem(100)
  * 
  * = Options

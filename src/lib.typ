@@ -1,4 +1,6 @@
-// Manual package
+// NAME: Minimal Manuals
+
+// TODOC: Change to min-manual doc-comments
 
 #let manual-cmd-state = state("manual-cmd")
 #let manual-version-state = state("manual-version")

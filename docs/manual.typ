@@ -256,6 +256,10 @@ function called `main` from a file called `src/lib.rs` just use:
 )
 ```
 
+The `#extract` command is in early development and is currently an experimental
+feature, therefore it may or may not present errors, usability problems, and
+unexpected behaviors.
+
 
 = Package Citation Commands
 
@@ -328,13 +332,14 @@ _min-manual_ commands and features without import them. If you need to perform
 advanced tasks and queries from within doc-comments, all the content of the
 source code itself is available in `#from-comments` variable inside doc-comments.
 
+The doc-commments are in early development and are currently an experimental
+feature, therefore it may or may not present errors, usability problems, and
+unexpected behaviors.
 
 == Argument Commands in Doc-Comments
 
 To better fit in the code, the `#arg` command can be invoked on doc-comments by
 using a special syntax:
-
-#pagebreak()
 
 ```typm
 #let function-name(

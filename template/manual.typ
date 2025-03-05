@@ -4,8 +4,7 @@
   title: "Package Name",
   description: "Short description, no longer than two lines.",
   authors: "Author <@author>",
-  cmd: "pkg-name",
-  version: "0.4.2",
+  package: "pkg-name:0.4.2",
   license: "MIT",
   logo: image("assets/logo.png")
 )
@@ -79,8 +78,6 @@ Let's just break down all this code to understand it better, shall we?
 #arg("body <- content | string")[
   Explanation of what is this argument, what it does, and how to properly set it.
 ]
-
-#pagebreak()
 
 
 = Dependencies

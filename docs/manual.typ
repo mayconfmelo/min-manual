@@ -57,6 +57,7 @@ Those are the full list of options available and its default values:
   title: none,
   description: none,
   authors: none,
+  package: none,
   cmd: none,
   version: none,
   license: none,
@@ -93,13 +94,20 @@ understand it better, shall we?
   `("NAME <URL>", "NAME <URL>")`, where `<URL>` is optional.
 ]
 
-#arg("cmd: <- string | content")[
-  The command or code name used to invoke what is being documented.
+#arg("package: <- string")[
+  Set `cmd` and `version` using Typst package notation: `CMD:VERSION`. Takes
+  precedence over the `cmd` and `version` arguments, and shadows them if they
+  are set too.
 ]
 
-#arg("version: <- string | content")[
+#arg("cmd: <- string")[
+  The command or code name used to invoke what is being documented. Set only if
+  `package` argument is not used.
+]
+
+#arg("version: <- string")[
   The version of what is being documented. Useful when different versions have
-  different behaviors.
+  different behaviors. Set only if `package` is not used.
 ]
 
 #arg("license: <- string | content")[

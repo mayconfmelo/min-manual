@@ -64,6 +64,17 @@
   // Standard comments, like this one, are not treated as doc-comments.
 }
 
+/**
+ * = Dependencies
+ *
+ * Requires the #univ("example") Typst package. To setup the project you will
+ * need the #pip("fictional") Python module, or the #crate("nonexistent") crate.
+ * If this package does not work, just go back to LaTeX and use
+ * #pkg("alternative", "https://ctan.org/pkg/") instead, or delve into Regex and
+ * one-liners with the #pkg("OG::Solution", "https://metacpan.org/pod/") Perl
+ * module.
+**/
+
 This example file mimics a Typst module with embedded doc-comments, used by
 _min-manual_ to generate documentation. If you are compiling this file, you can
 see there's no doc-comments appearing here in the final document; that's because

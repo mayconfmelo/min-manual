@@ -1,6 +1,5 @@
 // NAME: Minimal Manuals
-
-// TODOC: Change to min-manual doc-comments
+// NOTDONE: Not documented with doc-comments due to comments using /// and conflicting
 
 #let manual-cmd-state = state("manual-cmd")
 #let manual-version-state = state("manual-version")
@@ -9,6 +8,7 @@
   title: none,
   description: none,
   authors: none,
+  package: none,
   cmd: none,
   version: none,
   license: none,
@@ -26,6 +26,10 @@
   font-size: 12.5pt,
   body,
 ) = {
+  if package != none and package.contains(regex("^[\w-]+:\d\.\d\.\d$")) {
+    (cmd, version) = package.split(":")
+  }
+
   // Check required arguments
   let req = (
     title: title,
@@ -234,24 +238,9 @@
       .map(
         it => it.text
           .trim(regex("///\s*|/\*\*|\*\*/|\n")) // Removes ///  /**  **/ and \n
-          .replace(regex("(?m)^[ \t]*\*+[ \t]*"), "") // Removes additional *
-          .replace(regex("\n\n+"), "\n\n")  // Normalize \n\n+ to \n\n
-          .replace(regex("(.*\s*(?:<-|->)\s*.*)\n?(?s)([^\n\n]*)?"), m => {
-            // Get arguments NAME, TYPES, REQUIRED, and BODY data
-            // let name = m.captures.at(0).trim(regex("[\s,]"))
-            // let types = repr(
-            //     m.captures.at(1)
-            //       .replace(regex("\s*|\s*"), "")
-            //       .split("|")
-            //   )
-            // let body = m.captures.at(2)
-            // let required = "false"
-            
-            // // Checks if argument is required
-            // if types.contains("<required>") {
-            //   types = types.replace(regex("<.*>"), "")
-            //   required = "true"
-            // }
+          .replace(regex("(?m)^(?:[ \t]*\*+)?[ \t]?"), "") // Removes additional *
+          .replace(regex("\n\n+"), "\n\n")  // Normalize \n\n+ to \n
+          .replace(regex("\s*(.*\s*(?:<-|->)\s*.*)\n?(?s)(.*?)(?:\n\n|$)"), m => {
             
             let title = m.captures.at(0)
             let body = m.captures.at(1)
@@ -263,12 +252,11 @@
                 "``` " + m.captures.at(0) + "```" + m.captures.at(1)
               })
             }
-            //title.replace("","\\")
             
             // Create an #arg command with the data retrieved
             "#arg(" + repr(title) + ")[" + body + "]"
           })
-          .replace(regex(":(\w+?):\s*(\w+)?\s*(?:`(\w+)?`)?\s*(?:\"(.*)\")?"), m => {
+          .replace(regex("(?m)^ *:(.+?): *(\w+)? *(?:`(\w+)?`)? *(?:\"(.*)\")?"), m => {
             // Retrieve :NAME: RULE `LANG`
             // Returns #export(NAME, RULE, LANG, from-comments)
             let name = repr(m.captures.at(0))
@@ -286,6 +274,7 @@
             rule = if rule != "none" {"rule:" + rule + ","} else {""}
             lang = if lang != "none" {"lang:" + lang + ","} else {""}
             model = if model != "none" {"model:" + model + ","} else {""}
+            
             
             // Returns the #extract command code with arguments
             "#extract(" + name + rule + lang + model + repr(from-comments) + ")"
@@ -410,10 +399,11 @@
 
 
 // Extract an element or structure from a file.
+// TODO: Global #extract(model, lang) using states
 #let extract(
   name: none,
   rule: none,
-  model: "(?s)\s*#?let\s+<name>\((.*)\)\s*=",
+  model: "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
   lang: "typm",
   body
 ) = {
@@ -435,12 +425,25 @@
       panic("Could not extract '" + name + "' using '" + model + "'")
     }
     
+    // Search for indentation
+    let txt = body.matches(regex(model)).last().text
+    let indent = txt.trim("\n").find(regex("^[ \t]*"))
+    
+    // Normalize indentation
+    if indent != none {
+      indent = str(indent.len())
+      capt = capt.replace(regex("\n[ \t]{" + indent + "}?"), "\n")
+    }
+    
     capt = capt
       .replace(regex("//.*|(?s)/\*.*?\*/"), "") // Removes comments
-      .replace(",", ",\n") // Adds extra \n just in case
-      .replace(regex("\n\s+"), "\n") // Removes extra spaces after \n
-      .replace(regex("\n+$"), "") // Removes last \n
-      .replace(regex("\n"), "\n  ") // Adds exactly 2 spaces at each line start
+      .replace(regex(",\s*\n+"), ",\n") // Removes blank lines left by comments
+      .replace(regex("^\s*\n+"), "\n") // Normalize to start with just one \n
+      .replace(regex("\s*\n+$"), "\n") // Normalize to end with just one \n
+      //.replace(",", ",\n") // Adds extra \n just in case
+      //.replace(regex("\n\s+"), "\n") // Removes extra spaces after \n
+      //.replace(regex("\n+$"), "") // Removes last \n
+      //.replace(regex("\n"), "\n  ") // Adds exactly 2 spaces at each line start
       
     let pkg = manual-cmd-state.final() + ":" + manual-version-state.final()
     let imp = "#import \"@preview/" + pkg + "\": "+ name + "\n"
@@ -448,15 +451,18 @@
     
     if rule == none {
       // Function definition
-      code = imp + "#let " + name + "(" + capt + "\n)"
+      code = imp + "#" + name + "(" + capt + ")"
     }
     else if rule == "show" {
       // Show rule
-      code = imp + "#show: " + name + ".with(" + capt + "\n)"
+      code = imp + "#show: " + name + ".with(" + capt + ")"
     }
     else if rule == "set" {
       // Set rule
-      code = imp + "#set " + name + "(" + capt + "\n)"
+      code = imp + "#set " + name + "(" + capt + ")"
+    }
+    else {
+      panic("Invalid rule value: " + rule)
     }
     
     // Generate raw code from extracted data.

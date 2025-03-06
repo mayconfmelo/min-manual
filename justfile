@@ -8,7 +8,8 @@ default:
 watch file="template/manual.typ":
   bash scripts/package.sh check "local" "{{root}}"
   mkdir "dev" 2>/dev/null || true
-  typst watch "{{file}}" "dev/output.pdf"
+  typst watch "{{file}}" "dev/output-{0p}.png"
+  #typst watch "{{file}}" "dev/output.pdf"
   
 # Alias for watch
 w file="template/manual.typ":

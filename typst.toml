@@ -6,7 +6,7 @@ authors = ["Maycon F. Melo <https://mayconfmelo.netlify.app>"]
 license = "MIT-0"
 description = "Simple and sober manuals inspired by the OG Linux manpages"
 categories = [ "layout", "utility" ]
-keywords = [ "manual", "doc", "documentation" ]
+keywords = [ "manual", "doc", "documentation", "doc-comments" ]
 repository = "https://github.com/mayconfmelo/min-manual"
 exclude = [
   "dev/",

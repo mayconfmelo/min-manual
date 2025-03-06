@@ -1,7 +1,3 @@
-<!-- 
-TODO: Use min-manual doc-comments
--->
-
 # 0.1.0
 
 - Universal documentation

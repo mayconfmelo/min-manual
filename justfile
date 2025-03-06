@@ -42,7 +42,7 @@ dev-link:
 version v:
   bash scripts/version.sh "{{v}}" "{{root}}"
 
-# Init Typst template project.
+# Init Typst template project in dev/
 init target="preview":
   bash scripts/init.sh "{{target}}" "{{root}}"
   

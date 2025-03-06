@@ -43,3 +43,12 @@ doc-comments.
 - [Example PDF result using doc-comments](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.0.2/docs/pdf/example-doc-comments.pdf)
 - [Example Typst code using doc-comments](https://github.com/mayconfmelo/min-manual/blob/0.0.2/template/assets/module.typ)
 - [Changelog](https://github.com/mayconfmelo/min-manual/blob/main/CHANGELOG.md)
+<!--
+ TODO: Add a link to min-writing/src/lib.typ, when published, to showcase doc-comments.
+-->
+
+## Experimental 
+
+The doc-comments feature and the `#extract` command are in early development and
+currently are experimental. Therefore they may or may not present errors,
+usability problems, and unexpected behaviors.

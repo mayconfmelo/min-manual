@@ -4,7 +4,7 @@
   - Typst packages
   - Libraries and modules in any language
 - Easy way to document arguments/options/parameters with `#arg`
-- Extract code structures directly from source codes to use in documentarion
+- Extract code structures directly from source codes to use in documentation
   with `#extract`
 - Typst Universe package citation with `#univ`
 - Python Pip/Pypi module citation with `#pip`

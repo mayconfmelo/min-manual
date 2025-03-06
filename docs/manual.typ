@@ -299,7 +299,7 @@ repositories in general.
 
 #arg("user <- string <required>"
 )[
-  Used ony by `#gh`: The GitHub user, as it appears in GitHub repositories,
+  Used only by `#gh`: The GitHub user, as it appears in GitHub repositories,
   e.g.: just the `typst` of `https://github.com/typst/packages`.
 ]
 
@@ -340,7 +340,7 @@ _min-manual_ commands and features without import them. If you need to perform
 advanced tasks and queries from within doc-comments, all the content of the
 source code itself is available in `#from-comments` variable inside doc-comments.
 
-The doc-commments are in early development and are currently an experimental
+The doc-comments are in early development and are currently an experimental
 feature, therefore it may or may not present errors, usability problems, and
 unexpected behaviors.
 
@@ -356,7 +356,7 @@ using a special syntax:
     * This argument does something. **/
 ) = {...}
 ```
-This is a very useful shorhand to write this same doc-comment:
+This is a very useful shorthand to write this same doc-comment:
 
 ```typm
 /**

@@ -1,4 +1,4 @@
-#import "@preview/min-manual:0.1.0": manual
+#import "@preview/min-manual:0.0.1": manual
 
 // This is another min-manual usage: doc-comments.
 // It gathers documentation from special comments in assets/module.typ

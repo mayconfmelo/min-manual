@@ -39,7 +39,7 @@ doc-comments.
 
 - [Official manual](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.0/docs/pdf/manual.pdf)
 - [Example PDF result](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.0/docs/pdf/example.pdf)
-- [Example Typst code](https://github.com/mayconfmelo/min-manual/blob/0.1.0/template/main.typ)
+- [Example Typst code](https://github.com/mayconfmelo/min-manual/blob/0.1.0/template/manual.typ)
 - [Example PDF result using doc-comments](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.0/docs/pdf/example-doc-comments.pdf)
-- [Example Typst code using doc-comments](https://github.com/mayconfmelo/min-manual/blob/0.1.0/template/doc-comments.typ)
+- [Example Typst code using doc-comments](https://github.com/mayconfmelo/min-manual/blob/0.1.0/template/assets/module.typ)
 - [Changelog](https://github.com/mayconfmelo/min-manual/blob/main/CHANGELOG.md)

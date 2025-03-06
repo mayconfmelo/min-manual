@@ -283,7 +283,7 @@
       )
       
     // Import min-manual to eval context
-    doc.insert(0, "#import \"@preview/min-manual:0.0.2\": *\n\n")
+    doc.insert(0, "#import \"@preview/min-manual:0.1.0\": *\n\n")
     
     // Evaluate the Typst code exgtracted from the doc-comments
     eval(

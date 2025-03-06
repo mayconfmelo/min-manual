@@ -1,4 +1,4 @@
-#import "@preview/min-manual:0.0.2": manual, arg
+#import "@preview/min-manual:0.1.0": manual, arg
 
 #show: manual.with(
   title: "Minimal Manuals",
@@ -17,7 +17,7 @@
 = Quick Start
 
 ```typm
-#import "@preview/min-manual:0.0.2": manual
+#import "@preview/min-manual:0.1.0": manual
 #show: manual.with(
   title: "Package Name",
   description: "Short description, no longer than two lines.",
@@ -52,7 +52,7 @@ here.
 Those are the full list of options available and its default values:
 
 ```typm
-#import "@preview/min-manual:0.0.2": manual
+#import "@preview/min-manual:0.1.0": manual
 #show: manual.with(
   title: none,
   description: none,
@@ -170,7 +170,7 @@ understand it better, shall we?
 = Argument Command
 
 ```typm
-#import "@preview/min-manual:0.0.2": arg
+#import "@preview/min-manual:0.1.0": arg
 #arg(
   name,
   body
@@ -272,7 +272,7 @@ unexpected behaviors.
 = Package Citation Commands
 
 ```typm
-#import "@preview/min-manual:0.0.2": univ, pip, crate, gh, pkg
+#import "@preview/min-manual:0.1.0": univ, pip, crate, gh, pkg
 #univ(name)
 #pip(name)
 #crate(name)

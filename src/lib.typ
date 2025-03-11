@@ -291,6 +291,8 @@
       mode: "markup",
       scope: (from-comments: from-comments)
     )
+    
+    body
   }
 }
 

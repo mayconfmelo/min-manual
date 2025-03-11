@@ -82,16 +82,3 @@ Tyspt considers them to be regular comments.
 
 Please, compile `doc-comments.typ` instead to see how the doc-comments contained in the
 source code looks in a manual.
-
-
-/**
- * = Copyright
- * 
- * Copyright #sym.copyright #datetime.today().year() MANUAL AUTHOR. \
- * This manual is licensed under MIT. \
- * The manual source code is free software:
- * you are free to change and redistribute it.  There is NO WARRANTY, to the extent
- * permitted by law.
-**/
-
-/// The logo was obtained from #link("https://flaticon.com")[Flaticon] website.

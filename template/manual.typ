@@ -1,4 +1,4 @@
-#import "@preview/min-manual:0.1.0": manual, arg, univ, pip, crate, pkg, extract
+#import "@preview/min-manual:0.1.1": manual, arg, univ, pip, crate, pkg, extract
 
 #show: manual.with(
   title: "Package Name",

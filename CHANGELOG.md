@@ -1,4 +1,4 @@
-# 0.1.0
+## 0.1.0
 
 - Universal documentation
   - Typst packages
@@ -14,3 +14,7 @@
 - Doc-comments with `/** **/` and `///`
   - Special arg syntax in doc-comments
   - Special extract syntax in doc-comments
+
+### 0.1.1
+
+- Manual file content shown in manual after the doc-comments found in source code

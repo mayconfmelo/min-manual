@@ -5,7 +5,7 @@
   description: "Simple and sober manuals inspired by the OG Linux manpages.",
   authors: "Maycon F. Melo <@mayconfmelo>",
   cmd: "min-manual",
-  version: "0.1.0",
+  version: "0.1.1",
   license: "MIT",
   toc: true,
   logo: image("assets/manual-logo.png") 

@@ -43,9 +43,9 @@ doc-comments.
 - [Example PDF result using doc-comments](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/pdf/example-doc-comments.pdf)
 - [Example Typst code using doc-comments](https://github.com/mayconfmelo/min-manual/blob/0.1.1/template/assets/module.typ)
 - [Changelog](https://github.com/mayconfmelo/min-manual/blob/main/CHANGELOG.md)
-<!--
- TODO: Add a link to min-writing/src/lib.typ, when published, to showcase doc-comments.
--->
+
+The _[min-writing](https://github.com/mayconfmelo/min-writing/blob/main/src)_ project uses
+doc-comments to generate its documentation.
 
 ## Experimental 
 

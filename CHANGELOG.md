@@ -18,3 +18,4 @@
 ### 0.1.1
 
 - Manual file content shown in manual after the doc-comments found in source code
+- Support for `#extract(name: "namespace.name")` syntax in Typst-related `lang`

@@ -259,10 +259,22 @@
           .replace(regex("(?m)^ *:(.+?): *(\w+)? *(?:`(\w+)?`)? *(?:\"(.*)\")?"), m => {
             // Retrieve :NAME: RULE `LANG`
             // Returns #export(NAME, RULE, LANG, from-comments)
-            let name = repr(m.captures.at(0))
+            let name = m.captures.at(0)
             let rule = repr(m.captures.at(1))
             let lang = repr(m.captures.at(2))
             let model = repr(m.captures.at(3))
+            let namespace = ""
+            let args
+            
+            if name.contains(".") {
+              let exp = regex(".+\.")
+              
+              namespace = "namespace:" + repr(name.find(exp)) + ","
+              name = repr(name.replace(exp, ""))
+            }
+            else {
+              name = repr(name)
+            }
             
             // Default LANG value, if none are given
             if lang == "none" {
@@ -274,10 +286,11 @@
             rule = if rule != "none" {"rule:" + rule + ","} else {""}
             lang = if lang != "none" {"lang:" + lang + ","} else {""}
             model = if model != "none" {"model:" + model + ","} else {""}
+            args = name + namespace + rule + lang + model + repr(from-comments)
             
             
             // Returns the #extract command code with arguments
-            "#extract(" + name + rule + lang + model + repr(from-comments) + ")"
+            "#extract(" + args + ")"
           })
           .trim()
       )
@@ -410,6 +423,7 @@
 // TODO: Global #extract(model, lang) using states
 #let extract(
   name: none,
+  namespace: none,
   rule: none,
   model: "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
   lang: "typm",
@@ -417,6 +431,8 @@
 ) = {
   name = name.trim()
   model = model.replace("<name>", name)
+  
+  let full-name = if namespace != none {namespace + name} else {name}
   
   if type(body) != str {
     panic("Wrong \"body\" argument type: " + type(body))
@@ -454,7 +470,7 @@
       //.replace(regex("\n"), "\n  ") // Adds exactly 2 spaces at each line start
       
     let pkg = manual-cmd-state.final() + ":" + manual-version-state.final()
-    let imp = "#import \"@preview/" + pkg + "\": "+ name + "\n"
+    let imp = "#import \"@preview/" + pkg + "\": "+ full-name + "\n"
     let code
     
     if rule == none {

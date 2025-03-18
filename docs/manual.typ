@@ -213,10 +213,10 @@ for this command to work, it must have access to the source code that contains
 the structure in question as a string, this can be done by `#read` the source
 code file.
 
- 
 ```typm
 #extract(
   name: none,
+  namespace: none,
   rule: none,
   model: "(?s)#?let\s+<name>\((.*)\)\s*=",
   lang: "typm",
@@ -227,6 +227,11 @@ code file.
 #arg("name: <- string <required>")[
   The name of the structure that will be extracted from the code. If more than
   one are found, matches the last one.
+]
+
+#arg("namespace: <- string")[
+  The module namespace used before the structure name itself, like in
+  `namespace.name`.
 ]
 
 #arg("rule: <- string")[
@@ -344,6 +349,7 @@ The doc-comments are in early development and are currently an experimental
 feature, therefore it may or may not present errors, usability problems, and
 unexpected behaviors.
 
+
 == Argument Commands in Doc-Comments
 
 To better fit in the code, the `#arg` command can be invoked on doc-comments by
@@ -369,7 +375,7 @@ This is a very useful shorthand to write this same doc-comment:
 Much cleaner, isn't it? To use this syntax, just follow a few rules: the
 doc-comment syntax must be
 
-#align(center, `/** <- TYPES \n BODY **\`)
+#align(center, `/** <- TYPES \n BODY **/`)
 
 or else
 
@@ -405,7 +411,8 @@ This short syntax is equivalent to this much more cumbersome doc-comment:
 ```
 
 In this syntax, only `:NAME:` is mandatory, while `RULE`, #raw("`LANG`"), and
-`"MODEL"` will fallback to the defaults when omitted.
+`"MODEL"` will fallback to the defaults when omitted.  Can be a `:NAMESPACE.NAME:`
+syntax when `lang` is Typst-related.
 
 
 = Copyright

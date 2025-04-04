@@ -1,5 +1,6 @@
 // NAME: Minimal Manuals
 // NOTDONE: Not documented with doc-comments due to comments using /// and conflicting
+// TODO: #manual(from-markdown: string)
 
 #let manual-cmd-state = state("manual-cmd")
 #let manual-version-state = state("manual-version")

@@ -1,6 +1,7 @@
 // NAME: Minimal Manuals
 // NOTDONE: Not documented with doc-comments due to comments using /// and conflicting
 // TODO: #manual(from-markdown: string)
+// TODO: Implement web manual (HTML) when stable
 
 #let manual-cmd-state = state("manual-cmd")
 #let manual-version-state = state("manual-version")
@@ -523,8 +524,28 @@
 }
 
 
+// Create a link and footnote to an url
+#let url(..data) = {
+  h(0pt)
+  if data.pos().len() > 2 {
+    panic("Expects 2 arguments (received " + str(data.pos().len()) + ")")
+  }
+
+  let url = data.pos().at(0)
+  let text = if data.pos().len() == 2 {data.pos().at(1)} else {url}
+  
+  
+  // Fallback text to url
+  if text == auto {text = url}
+  
+  link(url, emph(text))
+  footnote(
+    link(url)
+  )
+}
+
 // Cite a package/library/crate repository by URL.
-#let pkg(name, url) = [#link(url + name)[#emph(name)]#footnote(url + name)]
+#let pkg(name, base-url) = url(base-url + name, name)
 
 // Shortcut to cite Typst packages from Typst Universe.
 #let univ(name) = pkg(name, "https://typst.app/universe/package/")

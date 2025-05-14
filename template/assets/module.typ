@@ -73,6 +73,14 @@
  * #pkg("alternative", "https://ctan.org/pkg/") instead, or delve into Regex and
  * one-liners with the #pkg("OG::Solution", "https://metacpan.org/pod/") Perl
  * module.
+ * 
+ * 
+ * = URL Links
+ *
+ * This text #url("https://www.example.com")[URL links] are written in a different
+ * way: they are clickable links in-place and footnotes with the URL text as well;
+ * this way, the link can be clicked in screens and are still visible in paper as
+ * footnotes. This works in #url("mailto:example@email.com")[special URLs] too!
 **/
 
 This example file mimics a Typst module with embedded doc-comments, used by

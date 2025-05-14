@@ -12,10 +12,11 @@
 - GitHub repo citation with `#gh`
 - General library/package citation with `#pkg`
 - Doc-comments with `/** **/` and `///`
+### 0.1.1
   - Special arg syntax in doc-comments
   - Special extract syntax in doc-comments
 
-### 0.1.1
 
 - Manual file content shown in manual after the doc-comments found in source code
 - Support for `#extract(name: "namespace.name")` syntax in Typst-related `lang`
+- URL link and footnote with `#url`

@@ -1,4 +1,4 @@
-#import "@preview/min-manual:0.1.1": manual, arg, univ, pip, crate, pkg, extract
+#import "@preview/min-manual:0.1.1": manual, arg, univ, pip, crate, pkg, extract, url
 
 #show: manual.with(
   title: "Package Name",
@@ -112,6 +112,12 @@ package does not work, just go back to LaTeX and use
 one-liners with the #pkg("OG::Solution", "https://metacpan.org/pod/") Perl module.
 
 
+= URL Links
+
+This text #url("https://www.example.com")[URL links] are written in a different
+way: they are clickable links in-place and footnotes with the URL text as well;
+this way, the link can be clicked in screens and are still visible in paper as
+footnotes. This works in #url("mailto:example@email.com")[special URLs] too!
 
 = Copyright
 

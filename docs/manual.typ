@@ -274,6 +274,28 @@ feature, therefore it may or may not present errors, usability problems, and
 unexpected behaviors.
 
 
+= URL Links with Footnotes
+
+```typm
+#import "@preview/min-manual:0.1.1": url
+#url(url,text)
+```
+
+This command allows to create links that works in both screns and paper. This is
+achieved by creating in-place links coupled up with footnotes containing the URL
+as text; this way, the link can be clicked on screens and are still visible on
+paper as footnotes.
+
+#arg("url <- string <required>")[
+  The URL; can receive any URL supported by `#link`.
+]
+
+#arg("text <- string | content")[
+  A placeholder text shown as the clickable link and coupled to the footnote
+  reference; if `auto`, fallback to `#url(url)` content.
+]
+
+
 = Package Citation Commands
 
 ```typm
@@ -282,7 +304,7 @@ unexpected behaviors.
 #pip(name)
 #crate(name)
 #gh(name, user)
-#pkg(name, url)
+#pkg(name, base-url)
 ```
 
 These are small helper commands that simplifies the citation of any type of
@@ -297,7 +319,7 @@ repositories in general.
   `https://ctan.org/pkg/babel`.
 ]
 
-#arg("url <- string <required>")[
+#arg("base-url <- string <required>")[
   Used only by `#pkg`: The package repository URL without package name path,
   e.g.: just the `https://ctan.org/pkg/` of `https://ctan.org/pkg/babel`.
 ]

@@ -122,10 +122,13 @@
   show table: set align(center)
   show table.header: set text(weight: "bold")
   show quote.where(block: true): it => pad(x: 1em, it)
+  show raw: set text(font: "Inconsolata", size: font-size)
   show raw.where(block: true): it => pad(left: 1em, it)
   show footnote.entry: set text(size: font-size - 2pt)
-  show raw: set text(font: "Inconsolata", size: font-size)
-  
+  show ref: it => {
+    if it.element.numbering == none {link(it.target, upper(it.element.body))}
+    else {it}
+  }
   show selector.or(
     terms, enum, table, figure, list,
     quote.where(block: true), raw.where(block: true),
@@ -229,6 +232,8 @@
         let name = m.captures.at(0).trim(regex("[\s,;]"))
         let doc-comment-mark = m.captures.at(1)
         let types = m.captures.at(2)
+        
+        name = name.replace(regex(":.*"), ":")
         
         // Receives NAME \n /// <- TYPES <REQUIRED>
         // Turns into /// NAME <- TYPES <REQUIRED>
@@ -486,6 +491,14 @@
     else if rule == "set" {
       // Set rule
       code = imp + "#set " + name + "(" + capt + ")"
+    }
+    else if rule == "arg" {
+      // Argument value
+      code = name + ": (" + capt + ")"
+    }
+    else if rule == "code" {
+      // Extract just the captured code
+      code = capt
     }
     else {
       panic("Invalid rule value: " + rule)

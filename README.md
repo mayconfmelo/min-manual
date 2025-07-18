@@ -37,15 +37,12 @@ doc-comments.
 
 ## More Information
 
-- [Official manual](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/pdf/manual.pdf)
-- [Example PDF result](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/pdf/example.pdf)
+- [Official manual](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/manual.pdf)
+- [Example PDF result](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/example.pdf)
 - [Example Typst code](https://github.com/mayconfmelo/min-manual/blob/0.1.1/template/manual.typ)
-- [Example PDF result using doc-comments](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/pdf/example-doc-comments.pdf)
-- [Example Typst code using doc-comments](https://github.com/mayconfmelo/min-manual/blob/0.1.1/template/assets/module.typ)
-- [Changelog](https://github.com/mayconfmelo/min-manual/blob/main/CHANGELOG.md)
+- [Changelog](https://github.com/mayconfmelo/min-manual/blob/main/docs/changelog.md)
+- [Development setup](https://github.com/mayconfmelo/min-manual/blob/main/docs/setup.md)
 
-The _[min-writing](https://github.com/mayconfmelo/min-writing/blob/main/src)_ project uses
-doc-comments to generate its documentation.
 
 ## Experimental 
 

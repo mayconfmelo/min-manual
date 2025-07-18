@@ -1,54 +1,92 @@
 root := justfile_directory()
+name := `grep '^name' typst.toml | cut -d'"' -f2`
+version := `grep '^version' typst.toml | cut -d'"' -f2`
 
 [private]
 default:
 	@just --list --unsorted
 
-# Install package.
+# install package.
 install target="preview":
   bash scripts/package.sh install "{{target}}" "{{root}}"
   
-# Remove package.
+# remove package.
 remove target="preview":
   bash scripts/package.sh remove "{{target}}" "{{root}}"
   
-# Install package in both "local" and "preview" namespaces.
-install-all:
-  bash scripts/package.sh install "local" "{{root}}"
-  bash scripts/package.sh install "preview" "{{root}}"
+# run package tests.
+test which="":
+  tt run {{which}}
+  
+# compile the example file.
+example:
+  rm -r dev/example/ 2>/dev/null || true
+  mkdir -p dev/example/
+  typst compile template/manual.typ dev/example/doc.pdf
+  typst compile template/manual.typ dev/example/page-{0p}.png
 
-# Generate documentation PDFs in dev/
-pdf:
-  mkdir "dev" 2>/dev/null || true
-  bash scripts/package.sh check "" "{{root}}"
-  typst c "docs/manual.typ" "dev/manual.pdf"
-  typst c "template/manual.typ" "dev/example.pdf"
-  typst c "template/doc-comments.typ" "dev/example-doc-comments.pdf"
+# compile the manual.
+doc:
+  rm -r dev/manual/ 2>/dev/null || true
+  mkdir -p dev/manual/
+  typst compile docs/manual.typ dev/manual/doc.pdf
+  typst compile docs/manual.typ dev/manual/page-{0p}.png
 
-# Generate documentation as PNGs in dev/png/
-png:
-  rm -r "dev/png" 2>/dev/null || true
-  mkdir -p "dev/png" 2>/dev/null || true
-  bash scripts/package.sh check "" "{{root}}"
-  typst c "docs/manual.typ" "dev/png/manual-{0p}.png"
-  typst c "template/manual.typ" "dev/png/example-{0p}.png"
-  typst c "template/doc-comments.typ" "dev/png/example-dc-{0p}.png"
+# remove all dev files.
+clean:
+  rm -r dev/manual/ 2>/dev/null || true
+  rm -r dev/example/ 2>/dev/null || true
+  rm -r dev/pkg/ 2>/dev/null || true
+  rm -r dev/{{name}}/ 2>/dev/null || true
+  find tests -iname diff -exec rm -r {} +
+  find tests -iname out -exec rm -r {} +
 
-# Toggle symlink this project to "local" namespace under 0.0.0 version.
-dev-link:
+# enables @local/0.0.0.
+symlink:
   bash scripts/dev-link.sh "{{root}}"
 
-# Release a new package version.
-version v:
-  bash scripts/version.sh "{{v}}" "{{root}}"
+# run spell checking.
+spell:
+  codespell --skip "*.pdf,dev/*,.git/*"  -L te,meu,ser,blessure
 
-# Init Typst template project in dev/
-init target="preview":
-  bash scripts/init.sh "{{target}}" "{{root}}"
-  
+# frequent dev commands.
 [private]
-all:
-  @just install-all
-  @just init
-  @just install "pkg"
-  @just pdf
+dev:
+  @just install preview
+  @just example
+  @just doc
+  @just test
+  
+# release a new package version.
+[private]
+new version:
+  @just example
+  @just doc
+  cp dev/example/doc.pdf docs/example.pdf
+  cp dev/manual/doc.pdf docs/manual.pdf
+  git tag
+  bash scripts/version.sh "{{version}}" "{{root}}"
+  @just packages
+  
+# install and build it (used in CI).
+[private]
+build:
+  @just install preview
+  @just example
+  
+# deploy to the Typst Universe repo in ../packages.
+[private]
+deploy:
+  #!/usr/bin/env bash
+  cd ../packages
+  git checkout -b main
+  just update
+  git checkout -b {{name}}
+  just delete {{name}} {{version}}
+  just bring {{name}}
+  git add . --sparse
+  git status --short
+  git commit -m "{{name}}:{{version}}"
+  git push origin {{name}}
+  git checkout main
+  git branch -D {{name}}

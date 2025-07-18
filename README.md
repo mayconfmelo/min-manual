@@ -24,7 +24,7 @@
 
 ## Description
 
-Generate modern manuals, without loosing the simplicity and looks of old
+Generate modern manuals, without losing the simplicity and looks of old
 manuals. This package draws inspiration from the Linux manpages, as they look in
 terminal emulators until today, and adapts it to the contemporary formatting
 possibilities.

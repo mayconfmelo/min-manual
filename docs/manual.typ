@@ -32,7 +32,7 @@
 
 = Description
 
-Generate modern manuals, without loosing the simplicity and looks of old
+Generate modern manuals, without losing the simplicity and looks of old
 manuals. This package draws inspiration from the Linux manpages, as they look in
 terminal emulators until today, and adapts it to the contemporary formatting
 possibilities.
@@ -281,7 +281,7 @@ unexpected behaviors.
 #url(url,text)
 ```
 
-This command allows to create links that works in both screns and paper. This is
+This command allows to create links that works in both screens and paper. This is
 achieved by creating in-place links coupled up with footnotes containing the URL
 as text; this way, the link can be clicked on screens and are still visible on
 paper as footnotes.

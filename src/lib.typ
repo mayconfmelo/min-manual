@@ -1,316 +1,185 @@
 // NAME: Minimal Manuals
-// NOTDONE: Not documented with doc-comments due to comments using /// and conflicting
 // TODO: #manual(from-markdown: string)
 // TODO: Implement web manual (HTML) when stable
+// TODO: test use-defaults
 
-#let manual-cmd-state = state("manual-cmd")
-#let manual-version-state = state("manual-version")
+#import "comments.typ": parse as from-comments
+#import "markdown.typ": parse as from-markdown
 
 #let manual(
   title: none,
   description: none,
-  authors: none,
+  by: none,
   package: none,
-  cmd: none,
-  version: none,
+  authors: none,
   license: none,
+  url: none,
   logo: none,
-  manual-author: none,
+  toc: true,
+  use-defaults: false,
   from-comments: none,
-  toc: false,
-  paper: "a4",
-  lang: "en",
-  justify: true,
-  line-space: 0.65em,
-  par-margin: 1.2em,
-  margin: 1in,
-  font: "Arial",
-  font-size: 12.5pt,
+  from-markdown: none,
+  comment-delim: ("///", "/**", "**/"),
   body,
-) = {
-  if package != none and package.contains(regex("^[\w-]+:\d\.\d\.\d$")) {
-    (cmd, version) = package.split(":")
-  }
-
+) = context {
   // Check required arguments
-  let req = (
-    title: title,
-    authors: authors,
-    license: license
-  )
-  for arg in req.keys() {
-    assert.ne(
-      req.at(arg), none,
-      message: "Missing argument: " + arg
+  assert.ne(package, none)
+  assert.ne(title, none)
+  assert.ne(authors, none)
+  assert.ne(license, none)
+  
+  import "utils.typ"
+  import "comments.typ"
+  import "markdown.typ"
+  
+  utils.storage(add: "use-defaults", use-defaults)
+  utils.storage(add: "comment-delim", comment-delim)
+  
+  set text(..utils.def(text.size == 11pt, "size", use-defaults))
+  
+  context {
+    let (kind, cmd, version) = utils.purl(package)
+    let authors = authors
+    let by = by
+    
+    if type(authors) == str {authors = (authors,)}
+    if by == none {by = authors.at(0).replace(regex("\s*<.*>\s*"), "")}
+    
+    set document(
+      title: (title, description).join(" - "),
+      author: by,
     )
-  }
-  
-  manual-cmd-state.update(cmd)
-  manual-version-state.update(version)
-  
-  // Turn string authors into array
-  if type(authors) == str {
-    authors = (authors,)
-  }
-  
-  // First author is treated as manual author, if not set.
-  if manual-author == none {
-    manual-author = authors.at(0)
-  }
-
-  set document(
-    title: title + " - " + description,
-    author: manual-author,
-    date: datetime.today(),
-  )
-  
-  set page(
-    paper: paper,
-    margin: margin,
-    header: context if locate(here()).page() > 1 {
-        // Right-side header
-        text(size: font-size - 2pt)[ #align(right)[#cmd #version] ]
+    set text(
+      ..utils.def(text.font == "libertinus serif", "font"),
+      ..utils.def(text.size == 11pt, "size"),
+      hyphenate: true,
+    )
+    set page(
+      ..utils.def(page.margin == auto, "margin"),
+      
+      header: context if locate(here()).page() > 1 {
+        text(size: text.size - 2pt, align(right)[#cmd #version])
       },
-    footer: text(size: font-size - 2pt)[
-        #context if locate(here()).page() > 1 {
-          if locate(here()).page() == counter(page).final().at(0) {
-            // Last page:
-            box(width: 1.25fr)[ Manual created with _min-manual_.]
-            box(width: 0.5fr)[
-              #align(center)[
-                #counter(page).display("1/1", both: true)
-              ]
-            ] 
-            box(width: 1.25fr)[]
-          } else {
-            // Other pages:
-            align(center)[
-              #counter(page).display("1/1", both: true)
-            ]
-          }
-        }
-      ],
-  )
-  
-  set par(
-    justify: justify,
-    leading: line-space,
-    spacing: par-margin
-  )
-  set text(
-    font: font,
-    size: font-size,
-    lang: lang,
-    hyphenate: true,
-  )
-  set terms(
-    separator: [: ],
-    tight: true
-  )
-  set table(
-    stroke: (_, y) => (
-       top: if y <= 1 { 1pt } else { 0pt },
-       bottom: 1pt,
+      
+      footer: context if locate(here()).page() > 1 {
+        set text(size: text.size - 2pt)
+        
+        let final = counter(page).final().at(0)
+        let left = if locate(here()).page() != final []
+          else [Created with _min-manual_.]
+        let middle = counter(page).display("1/1", both: true)
+        let right = []
+        
+        grid(
+          columns: (1fr, 1fr, 1fr),
+          align: center,
+          left, middle, right,
+        )
+      }
+    )
+    set par(..utils.def(par.justify == false, "justify"))
+    set terms(
+      separator: [: ],
+      tight: true
+    )
+    set table(
+      stroke: (_,y) => (
+         top: if y <= 1 { 1pt } else { 0pt },
+         bottom: 1pt,
       ),
-    align: (_, y) => (
-      if y == 0 { center }
-      else { left }
-    )
-  )
-  
-  show heading: set block(sticky: true)
-  show table: set align(center)
-  show table.header: set text(weight: "bold")
-  show quote.where(block: true): it => pad(x: 1em, it)
-  show raw: set text(font: "Inconsolata", size: font-size)
-  show raw.where(block: true): it => pad(left: 1em, it)
-  show footnote.entry: set text(size: font-size - 2pt)
-  show ref: it => {
-    if it.element.numbering == none {link(it.target, upper(it.element.body))}
-    else {it}
-  }
-  show selector.or(
-    terms, enum, table, figure, list,
-    quote.where(block: true), raw.where(block: true),
-  ): it => {
-    v(0.5em)
-    it
-    v(0.5em)
-  }
-  
-  show selector.or(
-    heading.where(level: 1),
-    heading.where(level: 2),
-    heading.where(level: 3),
-  ): it => upper(it)
-  
-  // Manual main header:
-  align(center)[
-    #if logo != none {
-      block(height: 4em)[
-        #logo
-      ]
-    }
-    #text(size: font-size * 2, weight: "bold")[#title]
-    #linebreak()
-    #text(size: font-size * 1.5)[Manual]
-    #linebreak()
-    #v(0pt)
-    #if description != none {
-      text(size: font-size + 2pt)[#description]
-    }
-    #line(length: 90%)
-    #v(0pt)
-    #text(size: font-size + 2pt)[
-      #if     cmd != none { box(width: 1fr)[#cmd]     }
-      #if version != none { box(width: 1fr)[#version] }
-      #if license != none { box(width: 1fr)[#license] }
-    ]
-    #v(0pt)
-    
-    // Symbol numbering for authors footnotes
-    #set footnote(numbering: "*")
-    
-    // Insert authors
-    #for author in authors {
-      let name = author.find(regex("^[^<]*")).trim()
-      let url = author.find(regex("<(.*)>")).trim(regex("[<> ]"))
-      
-      // Insert GitHub URL when <@user> is used
-      if url.at(0) == "@" {
-        url = "https://www.github.com/" + url.slice(1)
-      }
-      
-      if author != none {
-        name.trim()
-
-        if url != none {
-          url = url.trim(regex("[<>]"))
-          footnote(link(url))
-        }
-        linebreak()
-      }
-    }
-    #v(2em)
-    // Reset footnote counter
-    #counter(footnote).update(0)
-  ]
-  
-  // TOC generation
-  if toc == true {
-    show outline.entry.where(level: 1): it => {
-      v(font-size, weak: true)
-      strong(it)
-    }
-  
-    show selector.or(
-      outline.entry.where(level: 1),
-      outline.entry.where(level: 2),
-      outline.entry.where(level: 3),
-    ): it => {
-      upper(it)
-    }
-    
-    align(center)[
-      #block(width: 80%)[
-        #outline(indent: 1.5em)
-      ]
-    ]
-    v(2em)
-  }
-  
-  if from-comments == none {
-    body
-  }
-  else {
-    // Generate manual through doc-comments gethered in from-comments
-    // TODO: Custom doc-comment syntaxes with #manual(doc-comments)
-  
-    // Retrieves all special "///" and "/*/.../*/" doc-comments
-    let doc = from-comments
-      .replace(regex("(.*?),?\n.*?(///|/\*\*)\s*<-(.*)"), m => {
-        let name = m.captures.at(0).trim(regex("[\s,;]"))
-        let doc-comment-mark = m.captures.at(1)
-        let types = m.captures.at(2)
-        
-        name = name.replace(regex(":.*"), ":")
-        
-        // Receives NAME \n /// <- TYPES <REQUIRED>
-        // Turns into /// NAME <- TYPES <REQUIRED>
-        if m.captures.at(0).contains(regex("\w(?::.*)?")) {
-          doc-comment-mark + name + "<-" + types
-        }
-      })
-      .matches(regex("///.*|(?s)/\*\*.*?\*\*/")) // Removes doc-comments marks
-      .map(
-        it => it.text
-          .trim(regex("///\s*|/\*\*|\*\*/|\n")) // Removes ///  /**  **/ and \n
-          .replace(regex("(?m)^(?:[ \t]*\*+)?[ \t]?"), "") // Removes additional *
-          .replace(regex("\n\n+"), "\n\n")  // Normalize \n\n+ to \n
-          .replace(regex("\s*(.*\s*(?:<-|->)\s*.*)\n?(?s)(.*?)(?:\n\n|$)"), m => {
-            
-            let title = m.captures.at(0)
-            let body = m.captures.at(1)
-            
-            if not title.starts-with(regex("```.*```")) {
-              // Receives NAME
-              // Turns into ``` NAME```
-              title = title.replace(regex("\s*(.*?)\s*((<-|->))"), m => {
-                "``` " + m.captures.at(0) + "```" + m.captures.at(1)
-              })
-            }
-            
-            // Create an #arg command with the data retrieved
-            "#arg(" + repr(title) + ")[" + body + "]"
-          })
-          .replace(regex("(?m)^ *:(.+?): *(\w+)? *(?:`(\w+)?`)? *(?:\"(.*)\")?"), m => {
-            // Retrieve :NAME: RULE `LANG`
-            // Returns #export(NAME, RULE, LANG, from-comments)
-            let name = m.captures.at(0)
-            let rule = repr(m.captures.at(1))
-            let lang = repr(m.captures.at(2))
-            let model = repr(m.captures.at(3))
-            let namespace = ""
-            let args
-            
-            if name.contains(".") {
-              let exp = regex(".+\.")
-              
-              namespace = "namespace:" + repr(name.find(exp)) + ","
-              name = repr(name.replace(exp, ""))
-            }
-            else {
-              name = repr(name)
-            }
-            
-            // Default LANG value, if none are given
-            if lang == "none" {
-              lang = repr("typm")
-            }
-            
-            // Construct #extract aeguments
-            name = "name:" + name + ","
-            rule = if rule != "none" {"rule:" + rule + ","} else {""}
-            lang = if lang != "none" {"lang:" + lang + ","} else {""}
-            model = if model != "none" {"model:" + model + ","} else {""}
-            args = name + namespace + rule + lang + model + repr(from-comments)
-            
-            
-            // Returns the #extract command code with arguments
-            "#extract(" + args + ")"
-          })
-          .trim()
+      align: (_,y) => (
+        if y == 0 { center }
+        else { left }
       )
-      
-    // Import min-manual to eval context
-    doc.insert(0, "#import \"@preview/min-manual:0.1.1\": *\n\n")
-    
-    // Evaluate the Typst code exgtracted from the doc-comments
-    eval(
-      doc.join("\n\n"),
-      mode: "markup",
-      scope: (from-comments: from-comments)
     )
+    
+    show heading: it => {
+      let test = ("libertinus serif", utils.defs.font).contains(text.font)
+      set text(..utils.def(test, "font_title"), hyphenate: false)
+      set block(above: 1.5em, below: par.leading)
+      it
+    }
+    show heading.where(level: 1): set text(size: text.size * 2)
+    show heading.where(level: 2): set text(size: text.size * 1.6)
+    show heading.where(level: 3): set text(size: text.size * 1.4)
+    show heading.where(level: 4): set text(size: text.size * 1.3)
+    show heading.where(level: 5): set text(size: text.size * 1.2)
+    show heading.where(level: 6): set text(size: text.size * 1.1)
+    show table: set align(center)
+    show table.header: set text(weight: "bold")
+    show quote.where(block: true): it => pad(x: 1em, it)
+    show raw: it => {
+      set text(
+        ..utils.def(text.lang == "dejavu sans mono", "font_raw"),
+        size: text.size + 1pt
+      )
+      it
+    }
+    show raw.where(block: true): it => pad(left: 1em, it)
+    show footnote.entry: set text(size: text.size - 2pt)
+    show selector.or(
+      terms, enum, table, figure, list,
+      quote.where(block: true), raw.where(block: true),
+    ): it => [#v(par.spacing, weak: true)#it#v(par.spacing, weak: true)]
+    show ref: it => {
+      if it.citation.supplement == none {link(locate(here()), it.element.body)}
+      else {it}
+    }
+    
+    // Main header:
+    align(center, {
+      if logo != none {block(logo, height: 4em)}
+      
+      v(-2.5em)
+      heading(title, level: 1, outlined: false)
+      
+      text(size: text.size * 1.5)[Manual]
+      linebreak()
+      
+      set text(size: text.size + 2pt)
+      
+      v(0pt)
+      if description != none {description}
+      line(length: 90%)
+      v(0pt)
+      
+      set footnote(numbering: "*")
+      
+      if url != none {cmd = link(url)[#cmd#footnote(url)]}
+      
+      grid(
+        columns: (1fr, 1fr, 1fr, 1fr),
+        align: center,
+        kind, cmd, version, license,
+      )
+      v(1em)
+      
+      for author in authors {
+        let name = author.find(regex("^[^<]*")).trim()
+        let url = author.find(regex("<(.*)>")).trim(regex("[<> ]"))
+        
+        // Insert GitHub URL when <@user> is used
+        if url.starts-with("@") {
+          url = "https://github.com/" + url.slice(1)
+        }
+        
+        if author != none {
+          name.trim()
+  
+          if url != none {
+            url = url.trim(regex("[<>]"))
+            footnote(link(url))
+          }
+          linebreak()
+        }
+      }
+      v(3em, weak: true)
+    })
+    
+    counter(footnote).update(0)
+    
+    comments.parse(from-comments, comment-delim)
+    markdown.parse(from-markdown)
     
     body
   }
@@ -321,219 +190,156 @@
 #let arg(
   title,
   body
-) = {
-  let name
-  let output = false
-  let types = none
+) = context {
   let required = title.contains("<required>")
+  let output = false
+  let display = ""
+  let types = ()
+  let title = title
+  let body = body
+  let parts
+  let name
+  let width
   
-  // Remove any <required> in title:
-  if required != none {
-    title = title.replace("<required>", "")
+  // Remove any <required> from title, if any
+  title = title.replace("<required>", "")
+  
+  if title.contains("<-") {display = "i"}
+  if title.contains("->") {display = display + "o"}
+  
+  parts = title.split(regex("<-|->"))
+  name = parts.at(0).trim() + " "
+  width = if display == "o" {" " + sym.arrow.r + " "} else {""}
+  width = measure(name + width).width + 2pt
+  
+  if name == "" {panic("Argument name required: " + title)}
+  
+  //Set types, if any
+  for part in parts.slice(1) {
+    part = part.replace(regex("\s*\|\s*"), "|").trim()
+    part = if part == "nothing" {(none,)} else {part.split("|")}
+    
+    types.push(part)
   }
-  
-  let arrow = title.match(regex("<-|->"))
-  
-  if arrow == none {
-    arrow = "<-"
-  }
-  else {
-    arrow = arrow.text
-  }
-  
-  if arrow == "->" {
-    output = true
-  }
-  
-  // split NAME <- TYPES or NAME -> TYPES
-  let parts = title.split(arrow)
-  
-  name = parts.at(0).trim()
-  
-  if name == "" {
-    panic("Argument name required: " + title)
-  }
-  
-  // Set types, if any
-  if parts.len() > 1 {
-    types = parts.at(1)
-      .replace(regex("\s*\|\s*"), "|")
-      .trim()
-      
-    // If TYPES is "nothing", maintain types = none
-    if types == "nothing" {
-      types = none
-    }
-    else {
-      types = types.split("|")
-    }
-  }
-  
-  // Eval ```LANG name``` to become raw
-   if name.contains(regex("```.*```")) {
-     name = eval(name, mode: "markup")
-  }
+  if types.len() > 2 {panic("There should be only one of each '<-' and '->' in " + title)}
 
-  v(0.5em)
-  block(breakable: false)[
-    #par(
-      spacing: 0.9em,
-      leading: 0.65em,
-    )[
-      #strong[
-        // If the name is string, show as raw.
-        // If the name is raw, show it as it is.
-        #if type(name) == str {
-          raw(name)
-        } else {
-          name
-          h(1em)
-        }
-      ]
-      #if types != none {
-        // Show arrow when documenting output
-        if output == true {
-          sym.arrow.r
-          h(0.5em)
-        }
-      
-        // Turn string types into array:
-        if type(types) == str {
-          types = (types,)
-        }
-        for type in types {
-          box(
-            fill: luma(235),
-            inset: (x: 3pt, y: 0pt),
-            outset: (y: 3pt),
-            type.trim()
-          ) + " "
-        }
-        
-      }
-      // Insert required note
-      #if required == true {
-        box(width: 1fr)[
-          #align(right)[ (_required_) ]
-        ]
-      }
-    ]
-    #if body != [] {
-      // Show padded text:
-      pad(left: 1em)[#body]
+  // Show name as raw
+  if name.contains(regex("`.*`")) {name = eval(name, mode: "markup")}
+  else if type(name) == str {name = raw(name)}
+  
+  title = (strong(name) + " ",)
+  if display.contains("i") {
+    for type in types.at(0) {
+      title.push(
+        box(
+          fill: luma(225),
+          inset: (x: 3pt, y: 0pt),
+          outset: (y: 3pt),
+          type
+        ) + " "
+      )
     }
-  ]
+  }
+  if display.contains("o") {
+    title.push(sym.arrow.r + " ")
+    
+    let n = if display.contains("i") {1} else {0}
+    for type in types.at(n) {
+      title.push(
+        box(
+          fill: luma(230),
+          inset: (x: 3pt, y: 0pt),
+          outset: (y: 3pt),
+          type
+        ) + " "
+      )
+    }
+  }
+  if required { title.push( box(width: 1fr, align(right)[(_required_)]) ) }
+  
+  if body != [] {body = pad(left: 1em, body)}
+  //panic(title)
+  block(
+    breakable: false,
+    fill: luma(245),
+    width: 100%,
+    outset: 5pt,
+    [
+      #par(hanging-indent: width, title.join())
+      #context v(-par.leading * 0.5)
+      #body
+    ]
+  )
 }
 
 
 // Extract an element or structure from a file.
 // TODO: Global #extract(model, lang) using states
 #let extract(
-  name: none,
-  namespace: none,
+  from: none,
   rule: none,
-  model: "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-  lang: "typm",
-  body
-) = {
-  name = name.trim()
-  model = model.replace("<name>", name)
+  lang: "typ",
+  model: auto,
+  display: none,
+  name,
+) = context {
+  // Required named arguments
+  assert.ne(from, none, message: "#extract(from) required")
   
-  let full-name = if namespace != none {namespace + name} else {name}
+  import "utils.typ"
   
-  if type(body) != str {
-    panic("Wrong \"body\" argument type: " + type(body))
+  let std-models = (
+    "show": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
+    "show.with": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
+    "call": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
+    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\(.*?\n\)|.*?)(?:\n|$)",
+    "set": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
+    "arg": "(?s)\s*<name>\s*:\s*(\(.*?\n\)|.*?)(?:\n|$)",
+    //"str": "(?s)\s*<name>\s*.*?\s(.*?)\s* ",
+  )
+  let rule = if rule == none {"call"} else {rule}
+  let model = if model == auto {std-models.at(rule)} else {model}
+  let comments = utils.storage(get: "comment-delim")
+  let model = model.replace("<name>", name)
+  let from = from.matches(regex(model))
+  let indent
+  let code
+  let capt
+  
+  if not lang.contains("typ") {rule = str}
+  
+  if from != () and from.last().captures != () {capt = from.last().captures.at(0)}
+  else {panic("Could not extract '" + name + "' using '" + model + "'")}
+  
+  if comments != none {
+    import "comments.typ": esc
+    
+    comments = comments.map(item => {esc(item)})
+    let re = comments.at(0) + ".*|(?s)" + comments.slice(1, 3).join(".*?")
+    
+    capt = capt.replace(regex(re), "")
+      .replace(regex(",\s*\n+"), ",\n") // removes blank lines
+      .replace(regex("^\s*\n+"), "\n") // start with just one \n
+      .replace(regex("\s*\n+$"), "\n") // end with just one \n
   }
   
-  context if lang.contains("typ") {
-    // Extract last match
-    let capt = body.matches(regex(model))
-    
-    if capt != () and capt.last().captures != () {
-      capt = capt.last().captures.at(0)
-    }
-    else {
-      panic("Could not extract '" + name + "' using '" + model + "'")
-    }
-    
-    // Search for indentation
-    let txt = body.matches(regex(model)).last().text
-    let indent = txt.trim("\n").find(regex("^[ \t]*"))
-    
-    // Normalize indentation
-    if indent != none {
-      indent = str(indent.len())
-      capt = capt.replace(regex("\n[ \t]{" + indent + "}?"), "\n")
-    }
-    
-    capt = capt
-      .replace(regex("//.*|(?s)/\*.*?\*/"), "") // Removes comments
-      .replace(regex(",\s*\n+"), ",\n") // Removes blank lines left by comments
-      .replace(regex("^\s*\n+"), "\n") // Normalize to start with just one \n
-      .replace(regex("\s*\n+$"), "\n") // Normalize to end with just one \n
-      //.replace(",", ",\n") // Adds extra \n just in case
-      //.replace(regex("\n\s+"), "\n") // Removes extra spaces after \n
-      //.replace(regex("\n+$"), "") // Removes last \n
-      //.replace(regex("\n"), "\n  ") // Adds exactly 2 spaces at each line start
-      
-    let pkg = manual-cmd-state.final() + ":" + manual-version-state.final()
-    let imp = "#import \"@preview/" + pkg + "\": "+ full-name + "\n"
-    let code
-    
-    if rule == none {
-      // Function definition
-      code = imp + "#" + name + "(" + capt + ")"
-    }
-    else if rule == "show" {
-      // Show rule
-      code = imp + "#show: " + name + ".with(" + capt + ")"
-    }
-    else if rule == "set" {
-      // Set rule
-      code = imp + "#set " + name + "(" + capt + ")"
-    }
-    else if rule == "arg" {
-      // Argument value
-      code = name + ": (" + capt + ")"
-    }
-    else if rule == "code" {
-      // Extract just the captured code
-      code = capt
-    }
-    else {
-      panic("Invalid rule value: " + rule)
-    }
-    
-    // Generate raw code from extracted data.
-    raw(code, lang: lang, block: true)
+  // Remove additional indentation
+  indent = from.last().text.trim("\n").match(regex("^[ \t]*")).text.len()
+  if indent > 0 {
+    capt = capt.replace(regex("(?m)^[ \t]{" + str(indent) + "}"), "")
   }
-  else {
-    // Extract last match
-    let txt = body.matches(regex(model))
-    
-    if txt != () {
-      txt = txt.last().text
-    }
-    else {
-      panic("Could not extract '" + name + "' using '" + model + "'")
-    }
-    
-    let indent = txt.trim("\n").find(regex("^[ \t]*"))
-    
-    // Normalize indentation
-    if indent != none {
-      indent = str(indent.len())
-      txt = txt.replace(regex("\n[ \t]{" + indent + "}?"), "\n")
-    }
-    
-    let code = txt
-      .replace(regex("//.*|(?s)/\*.*?\*/"), "") // Removes comments
-      .replace(regex(",\s*\n+"), "\n") // Removes blank lines left by comments
-      .trim("\n")
-      
-    // Generate raw code from extracted data.
-    raw(code, lang: lang, block: true)
-  }
+  
+  if display != none {code = display.replace("<name>", name).replace("<capt>", capt)}
+  else if rule == "show.with" {code = "#show: " + name + ".with(" + capt + ")"}
+  else if rule == "show" {code = "#show: doc => " + name + "(" + capt + "  doc\n)"}
+  else if rule == "call" {code = "#" + name + "(" + capt + ")"}
+  else if rule == "set" {code = "#set " + name + "(" + capt + ")"}
+  else if rule == "let" {code = "#let " + name.trim() + " = " + capt}
+  else if rule == "arg" {code = name + ": " + capt.trim(",")}
+  //else if rule == "str" {code = capt}
+  else {code = capt}
+  
+  raw(code, lang: lang, block: true)
 }
 
 
@@ -570,4 +376,4 @@
 #let crate(name) = pkg(name, "https://crates.io/crates/")
 
 // Shortcut to cite GitHub repositories
-#let gh(name, user) = pkg(name, "https://github.com/" + user + "/")
+#let gh(user, name) = pkg(name, "https://github.com/" + user + "/")

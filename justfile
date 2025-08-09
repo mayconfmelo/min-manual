@@ -29,25 +29,29 @@ example:
 doc:
   rm -r dev/manual/ 2>/dev/null || true
   mkdir -p dev/manual/
-  typst compile docs/manual.typ dev/manual/doc.pdf
-  typst compile docs/manual.typ dev/manual/page-{0p}.png
+  typst compile manual.typ dev/manual/doc.pdf
+  typst compile manual.typ dev/manual/page-{0p}.png
 
 # remove all dev files.
 clean:
   rm -r dev/manual/ 2>/dev/null || true
   rm -r dev/example/ 2>/dev/null || true
   rm -r dev/pkg/ 2>/dev/null || true
-  rm -r dev/{{name}}/ 2>/dev/null || true
-  find tests -iname diff -exec rm -r {} +
-  find tests -iname out -exec rm -r {} +
-
+  rm -r dev/{{name}} 2>/dev/null || true
+  tt util clean
+  
 # enables @local/0.0.0.
 symlink:
   bash scripts/dev-link.sh "{{root}}"
 
-# run spell checking.
+# run spell check.
 spell:
-  codespell --skip "*.pdf,dev/*,.git/*"  -L te,meu,ser,blessure
+  codespell --skip "*.pdf,dev/*,.git/*" #-L nd
+
+# init template in dev/
+init:
+  mkdir -p dev/
+  typst init '@preview/{{name}}:{{version}}' dev/{{name}}
 
 # frequent dev commands.
 [private]
@@ -56,6 +60,7 @@ dev:
   @just example
   @just doc
   @just test
+  
   
 # release a new package version.
 [private]
@@ -66,7 +71,6 @@ new version:
   cp dev/manual/doc.pdf docs/manual.pdf
   git tag
   bash scripts/version.sh "{{version}}" "{{root}}"
-  @just packages
   
 # install and build it (used in CI).
 [private]
@@ -90,3 +94,13 @@ deploy:
   git push origin {{name}}
   git checkout main
   git branch -D {{name}}
+  
+# Update log files fir just recipes in dev/
+[private]
+log recipe:
+  #!/usr/bin/env bash
+  mkdir -p dev/
+  date +"time: %Y-%m-%d (%H:%M)" >> dev/{{recipe}}.log
+  just {{recipe}} 2> >(tee -a dev/{{recipe}}.log)
+  echo "" >> dev/{{recipe}}.log
+  echo "" >> dev/{{recipe}}.log

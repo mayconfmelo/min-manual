@@ -315,9 +315,10 @@ Defines and explain possible arguments/parameters (see `/tests/commands/arg/`).
     }
   }
   if display.contains("o") {
-    title.push(sym.arrow.r + " ")
-    
     let n = if display.contains("i") {1} else {0}
+    
+    if types.at(n).at(0) != none {title.push(sym.arrow.r + " ")}
+    
     for type in types.at(n) {
       if type != none {
         title.push(

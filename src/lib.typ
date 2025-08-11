@@ -52,12 +52,13 @@ here.
     /// Short package description, generally two lines long or less. |
   by: none, /// <- string | content
     /// Manual author (fallback to `authors.at(0)` if not set). |
-  package: none, /// <- "pkg:type/namespace/name@version" <required>
-    /** Package identification,#footnote[Inspired by
-        _#link("https://github.com/package-url/purl-spec/blob/main/README.rst#purl",
-        "github.com/package-url/purl-spec/")_] where `pkg:type/namespace/` is
-        optional (fallback to `pkg:typst/`) and `name@version` can also be
-        written `name:version`. |**/
+  package: none, /// <- string <required>
+    /** `"pkg:type/namespace/name@version"` \ 
+    Package identification,#footnote[Inspired by
+    _#link("https://github.com/package-url/purl-spec/blob/main/README.rst#purl",
+    "https://github.com/package-url/purl-spec/")_] where `pkg:type/namespace/` is
+    optional (fallback to `pkg:typst/`) and `name@version` can also be written
+    `name:version`. |**/
   authors: none, /// <- string | array of strings <required>
     /// Package author or authors. |
   license: none, /// <- string | content
@@ -78,7 +79,7 @@ here.
 ) = context {
   // Check required arguments
   assert.ne(package, none)
-  assert.ne(package, "", message: "#manual(package) cannot be empty")
+  assert.ne(package, "")
   assert.ne(title, none)
   assert.ne(authors, none)
   assert.ne(license, none)
@@ -140,20 +141,20 @@ here.
       tight: true
     )
     set table(
-      stroke: (_,y) => (
-         top: if y <= 1 { 1pt } else { 0pt },
-         bottom: 1pt,
-      ),
+      stroke: gray.lighten(60%),
+      inset: 10pt,
       align: (_,y) => (
         if y == 0 { center }
         else { left }
-      )
+      ),
     )
     
     show heading: it => {
       let test = ("libertinus serif", utils.defs.font).contains(text.font)
+      
       set text(..utils.def(test, "font_title"), hyphenate: false)
       set block(above: 1.5em, below: par.leading)
+      
       it
     }
     show heading.where(level: 1): set text(size: text.size * 2)
@@ -163,7 +164,6 @@ here.
     show heading.where(level: 5): set text(size: text.size * 1.2)
     show heading.where(level: 6): set text(size: text.size * 1.1)
     show table: set align(center)
-    show table.header: set text(weight: "bold")
     show quote.where(block: true): it => pad(x: 1em, it)
     show raw: it => {
       set text(
@@ -177,7 +177,7 @@ here.
     show selector.or(
       terms, enum, table, figure, list,
       quote.where(block: true), raw.where(block: true),
-    ): set block(above: par.spacing, below: par.spacing)
+    ): set block(above: par.spacing + 0.3em, below: par.spacing + 0.3em)
     show ref: it => {
       if it.citation.supplement == none {link(locate(here()), it.element.body)}
       else {it}
@@ -255,9 +255,10 @@ Defines and explain possible arguments/parameters (see `/tests/commands/arg/`).
 **/
 #let arg(
   title, /// <- string <required>
-    /** Title data: A mandatory identifier, followed by ASCII arrows indicating
-        input/output types, which are separated by | markers; a final `<required>`
-        marker can define required arguments. |**/
+    /** `"name <- type | type -> type <required>"` \
+    Title data: A mandatory name identifier, followed by optional ASCII arrows
+    indicating input/output types, and a final `<required>` to define required
+    arguments. |**/
   body
 ) = context {
   assert.ne(body, [], message: "#arg(body) should not be empty")
@@ -356,7 +357,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
 #let extract(
   name, /// <- string
     /// Name of the code structure to retrieve. |
-  from: auto, /// <- string | file <required>
+  from: auto, /// <- string | read <required>
     /// File from where the code will be retrieved (required in the first use). |
   rule: none, /// <- string | none
     /// Render Typst code in different ways. |

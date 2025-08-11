@@ -1,5 +1,53 @@
-// NAME: Comment Handling submodule (internal)
+/**
+= Comment Documentation
 
+```typ
+/// = Feature
+/// The `#feature` command does something.
+#let feature() = { }
+```
+
+The documentation can be embedded into the source code itself through special
+comments, sometimes called _doc-comments_. These comments contains Typst code
+retrieved by _min-mannual_ to generate a complete manual, while at the same time
+they are usefull as in-code documentation.
+
+By default, documentation comments are a extension of Typst comments, both
+one-line and block comments:
+
+#table(
+  columns: 2,
+  align: center,
+  table.header[*Normal*][*Documentation*],
+  `//`, `///`,
+  raw("/.* *./".replace(".", "")),
+  raw("/.** **./".replace(".", "")),
+)
+
+Custom comment delimiters can be set in manual initialization with an array of
+strings containing the one-line and opening/closing block comments used:
+
+#raw(lang: "typ", block: true, ```
+#manual(
+   comment-delim: ("///", "/.**", "**./")
+)
+```.text.replace(".", ""))
+
+In addition to Typst code, documentation comments also support all _min-book_
+features both as commands and through special syntax:
+
+#raw(lang: "typ", block: true, ```
+// #extract (from documentation files itself)
+.:rule name: lang "model" => display
+
+// #arg (optional arrows)
+name <.- type | type -.> type <required>
+   body |
+```.text.replace(".", ""))
+
+The _min-manual_ itself is documented through comments in source code, check it
+out to see how it looks like in practice.
+**/
 
 // FEAT: comment.esc() escapes all non alphanumerical characters and apply regex
 #let esc(text) = {
@@ -39,13 +87,13 @@
       .trim(regex(open))
       .replace(regex("(?m)^(?: *\*+)? ?"), "")  // removes *
       .replace(regex("\|$"), "\n")
-      .replace(regex("\n\n+|\\\\ "), "\n\n")
+      .replace(regex("\n\n+"), "\n\n")
   )
 }
 
 
 // FEAT: comment.extract() retrieves code from this or any other document
-#let extract(doc, doc-orig) = {
+#let get-extract(doc, doc-orig) = {
   // USAGE: :title: lang "model" => display
   // TODO: Separate re in parts
   let re = "(?s):([^\n]+?):(?:<s>(\w+)<s>)?(?:<s>\"(.*?)\")?(?:<s>=>\s*(.*?))?"
@@ -78,7 +126,7 @@
 
 
 // FEAT: comment.args() parses argument notation syntax
-#let args(doc) = {
+#let get-arg(doc) = {
   doc.replace(regex("\s*(.*\s*(?:<-|->)\s*.*)\n?(?s)(.*?)(?:\n\n|$)"), m => {
     let title = m.captures.at(0)
     let body = m.captures.at(1)
@@ -114,8 +162,8 @@
   })\n")
   
   doc = doc.join("\n")
-  doc = args(doc)
-  doc = extract(doc, doc-orig)
+  doc = get-arg(doc)
+  doc = get-extract(doc, doc-orig)
   
   eval( doc, mode: "markup", scope: (doc: doc-orig) )
 }

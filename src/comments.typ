@@ -33,8 +33,7 @@
 #let clean(doc, delims) = {
   let all = delims.at(0) + ".*|(?s)" + delims.slice(1, 3).join(".*?")
   let open = delims.at(0) + "|" + delims.slice(1).join("|")
-  //panic(doc)
-  //panic(
+  
   doc.matches(regex(all)).map(
     m => m.text
       .trim(regex(open))
@@ -42,7 +41,6 @@
       .replace(regex("\|$"), "\n")
       .replace(regex("\n\n+|\\\\ "), "\n\n")
   )
-  //)
 }
 
 
@@ -107,7 +105,6 @@
   let doc-orig = doc
   
   doc = handle-args(doc, delims)
-  //panic(doc)
   doc = clean(doc, delims)
   
   doc.insert(0, "#import \"@preview/min-manual:0.1.2\": *\n\n")

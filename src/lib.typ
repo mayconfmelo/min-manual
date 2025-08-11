@@ -333,7 +333,7 @@ Defines and explain possible arguments/parameters (see `/tests/commands/arg/`).
   if required { title.push( box(width: 1fr, align(right)[(_required_)]) ) }
   
   if body != [] {body = pad(left: 1em, body)}
-  //panic(title)
+  
   block(
     breakable: false,
     fill: luma(245),

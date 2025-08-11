@@ -3,16 +3,14 @@
 
 // UTIL: utils.purl() get elements of package urls
 #let purl(url) = {
-  // REPR: scheme:type/namespace/name@version
-  // INFO: scheme, type, and namespace can be omitted
-  // INFO: The "@" can also be a ":" used by Typst
+  // REPR: pkg:type/namespace/name@version
 
   // Remove optional pkg: scheme
   if url.starts-with("pkg:") {url = url.slice(4)}
   // Fallback type/ to typst
   if not url.contains("/") {url = "typst/" + url}
 
-  url.match(regex("^(.*?)/(.*?)[@):](.*)$")).captures
+  url.match(regex("^(.*)/(.*?)(?:[@:](.*))?$")).captures
 }
 
 
@@ -116,6 +114,7 @@
   else {return this}
 }
 
+
 // DEBUG: utils.storage-repr() shows an utils.storage() representation in YAML
 #let storage-repr(mode: "get", path: none, ..body) = {
   if body.pos() == () or type(body.pos().last()) != content []
@@ -147,8 +146,10 @@
   font: ("tex gyre heros", "arial"),
   font_title: ("tex gyre adventor", "century gothic"),
   font_raw: ("fira mono", "inconsolata"),
-  size: 12pt
+  comment-delim: ("///", "/**", "**/"),
+  size: 13pt,
 )
+
 
 // UTIL: Manages min-manual/Typst defaults
 #let def(test, key, ..others) = {

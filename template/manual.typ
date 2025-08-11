@@ -12,7 +12,8 @@
 
 #v(1fr)
 #outline()
-
+#v(1.2fr)
+#pagebreak()
 
 = Quick Start
 
@@ -25,11 +26,8 @@
 )
 ```
 
-#v(1.2fr)
-#pagebreak()
 
-
-= Code Snippet Extraction and Option Listing
+= Code Extraction and Arguments
 
 /* Example simulating a snippet in another file or location.
 #let feature(
@@ -83,14 +81,26 @@
 #grid(
   columns: (auto, auto),
   gutter: 1em,
-  [*Typst Universe:      *], univ("pkg"),
-  [*Python PyPi:         *], pip("pkg"),
-  [*Rust crate:          *], crate("pkg"),
-  [*Package (LaTeX CTAN):*], pkg("pkg", "https://ctan.org/pkg/"),
-  [*Package (Perl CPAN): *], pkg("PKG::Package", "https://metacpan.org/pod/"),
-  [*GitHub repo:         *], gh("user", "pkg"),
+  [*Typst Universe:      *], univ("pkg-typ"),
+  [*Python PyPi:         *], pip("pkg-py"),
+  [*Rust crate:          *], crate("pkg-rs"),
+  [*Package (LaTeX CTAN):*], pkg("https://ctan.org/pkg/pkg-tex"),
+  [*Package (Perl CPAN): *], pkg("https://metacpan.org/pod/PKG::PackagePL"),
+  [*GitHub repo:         *], gh("user/pkg"),
 )
 
+
+= Level 1
+== Level 2
+=== Level 3
+==== Level 4
+===== Level 5
+====== Level 6
+
+
+= Heading References <ref>
+
+You can reference headings even if they are unnumbered, like this @ref section.
 
 #pagebreak()
 
@@ -110,17 +120,3 @@
 #lorem(70)
 
 #lorem(24)
-
-#pagebreak()
-
-= Level 1
-== Level 2
-=== Level 3
-==== Level 4
-===== Level 5
-====== Level 6
-
-
-= Heading References <ref>
-
-You can reference headings even if they are unnumbered, like this @ref section.

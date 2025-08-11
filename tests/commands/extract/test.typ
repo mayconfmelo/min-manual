@@ -5,61 +5,69 @@
 #let showcase = ()
 
 #showcase.push(
+  align(center)[call] +
   extract(
     "feature",
-    from: read("assets/file.typ"),
+    from: read("assets/file.typ"), // from an example Typst file
   )
 )
 #showcase.push(
+  align(center)[call] +
   extract(
     "feature",
     rule: "call",
-    from: read("assets/file.typ"),
   )
 )
 #showcase.push(
+  align(center)[show] +
   extract(
     "feature",
     rule: "show",
-    from: read("assets/file.typ"),
   )
 )
 #showcase.push(
+  align(center)[show.with] +
   extract(
     "feature",
     rule: "show.with",
-    from: read("assets/file.typ"),
   )
 )
 #showcase.push(
+  align(center)[set] +
   extract(
     "feature",
     rule: "set",
-    from: read("assets/file.typ"),
   )
 )
 #showcase.push(
+  align(center)[str] +
+  extract(
+    "feature",
+    rule: "str",
+  )
+)
+#showcase.push(
+  align(center)[let] +
   extract(
     "var",
     rule: "let",
-    from: read("assets/file.typ"),
   )
 )
 #showcase.push(
+  align(center)[arg] +
   extract(
     "title",
     rule: "arg",
-    from: read("assets/file.typ"),
   )
 )
-// Extract code from a example JavaScript file
 #showcase.push(
+  align(center)[JavaScript] +
   extract(
     "feature",
-    from: read("assets/file.js"),
+    from: read("assets/file.js"), // from an example JavaScript file
     lang: "js",
     model: "(?s)\s*<name>\((.*?)\) \{",
-    display: "Class.<name> (<capt>)",
+    display: "let feat = Class.<name>(<capt>)",
   )
 )
 
@@ -68,14 +76,3 @@
   gutter: 5pt,
   ..showcase
 )
-
-
-/// :feature: js "<name>(\(.*?\)) {" => Class.<name> (<capt>)
-// #extract(
-//   from: read("assets/file.typ"),
-//   rule: none,
-//   lang: "typ",
-//   model: auto,
-//   display: none,
-//   name,
-// )

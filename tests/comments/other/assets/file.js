@@ -1,6 +1,6 @@
 /// = Class
 class Class {
-  /// :feature: js "(?s)( *<name>\(.*\))\n*" => Class.<capt>
+  /// :feature: js "(?s)( *<name>\((?:\(.*\)|.)*?\)) \{" => Class.<capt>
   feature(
     title, /// <- String
       /// Set title. |

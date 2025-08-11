@@ -1,11 +1,12 @@
 #import "/src/lib.typ": manual
+#set page(height: auto)
 
-#show: manual.with(
+#manual(
   title: "Package Name",
   description: "Short description, no longer than two lines.",
   authors: "Author <@author>",
-  package: "pkg:typst/pkg-name:0.4.2",
+  package: "pkg-name",
   license: "MIT",
-  from-comments: read("assets/lib.typ"),
-  use-defaults: true,
+  []
+  //logo: image("assets/logo.png")
 )

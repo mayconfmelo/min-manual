@@ -33,13 +33,16 @@
 #let clean(doc, delims) = {
   let all = delims.at(0) + ".*|(?s)" + delims.slice(1, 3).join(".*?")
   let open = delims.at(0) + "|" + delims.slice(1).join("|")
-
+  //panic(doc)
+  //panic(
   doc.matches(regex(all)).map(
     m => m.text
       .trim(regex(open))
-      .replace(regex("(?m)^(?:\s*\*+)?\s?"), "")  // removes *
-      .replace(regex("\n\n+|\|$"), "\n\n")
+      .replace(regex("(?m)^(?: *\*+)? ?"), "")  // removes *
+      .replace(regex("\|$"), "\n")
+      .replace(regex("\n\n+|\\\\ "), "\n\n")
   )
+  //)
 }
 
 
@@ -63,9 +66,8 @@
     if name == "" {panic("Invalid name in " + m.text.trim())}
     if rule != none {rule = rule.trim()}
     
-    //panic(display)
     args.push(repr(name) + ", ")
-    args.push("from: " + repr(doc-orig) + ", ")
+    //args.push("from: " + repr(doc-orig) + ", ")
     
     if rule != none {args.push("rule: " + repr(rule) + ", ")}
     if lang != none {args.push("lang: " + repr(lang) + ", ")}
@@ -101,14 +103,18 @@
   if doc == none {return}
   
   delims = delims.map(item => {esc(item)})
-  //for i in range(delims.len()) {delims.at(i) = esc(delims.at(i))}
-  
+
   let doc-orig = doc
   
   doc = handle-args(doc, delims)
+  //panic(doc)
   doc = clean(doc, delims)
   
   doc.insert(0, "#import \"@preview/min-manual:0.1.2\": *\n\n")
+  doc.insert(1, "#state(\"min-manual-configuration-storage\").update(curr => {
+    curr.insert(\"extract-from\", doc)
+    curr
+  })\n")
   
   doc = doc.join("\n")
   doc = args(doc)

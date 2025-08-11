@@ -1,29 +1,84 @@
 // NAME: Minimal Manuals
 // TODO: #manual(from-markdown: string)
 // TODO: Implement web manual (HTML) when stable
-// TODO: test use-defaults
 
 #import "comments.typ": parse as from-comments
 #import "markdown.typ": parse as from-markdown
 
+
+/**
+#v(1fr)
+#outline()
+#v(1.2fr)
+#pagebreak()
+
+= Quick Start
+
+```typm
+#import "@preview/min-manual:0.1.1": manual
+  title: "Package Name",
+  description: "Short description, no longer than two lines.",
+  authors: "Author <mailto:author@email.com>",
+  cmd: "pkg-name",
+  version: "0.4.2",
+  license: "MIT",
+  logo: image("assets/logo.png")
+)
+```
+
+= Description
+
+Generate modern manuals, without loosing the simplicity and looks of old
+manuals. This package draws inspiration from the Linux manpages, as they look in
+terminal emulators until today, and adapts it to the contemporary formatting
+possibilities.
+
+The package is designed to universally document any type of program or code,
+including Typst packages and templates. It allows to create documentation 
+separated in dedicated files or extract it from the source code itself through
+doc-comments.
+
+This manual will be updated only when new versions break or modify something;
+otherwise, it will be valid to all newer versions starting by the one documented
+here.
+
+= Options
+:show.with manual:
+**/
 #let manual(
-  title: none,
-  description: none,
-  by: none,
-  package: none,
-  authors: none,
-  license: none,
-  url: none,
-  logo: none,
-  toc: true,
-  use-defaults: false,
-  from-comments: none,
-  from-markdown: none,
-  comment-delim: ("///", "/**", "**/"),
+  title: none, /// <- string | content <required>
+    /// Descriptive name of the package (what is being documented). |
+  description: none, /// <- string | content
+    /// Short package description, generally two lines long or less. |
+  by: none, /// <- string | content
+    /// Manual author (fallback to `authors.at(0)` if not set). |
+  package: none, /// <- "pkg:type/namespace/name@version" <required>
+    /** Package identification,#footnote[Inspired by
+        _#link("https://github.com/package-url/purl-spec/blob/main/README.rst#purl",
+        "github.com/package-url/purl-spec/")_] where `pkg:type/namespace/` is
+        optional (fallback to `pkg:typst/`) and `name@version` can also be
+        written `name:version`. |**/
+  authors: none, /// <- string | array of strings <required>
+    /// Package author or authors. |
+  license: none, /// <- string | content
+    /// Package license. |
+  url: none, /// <- string | content
+    /// Package URL. |
+  logo: none, /// <- image | content
+    /// Manual logo. |
+  use-defaults: false, /// <- boolean
+    /// Use Typst defaults instead of min-manual defaults. |
+  from-comments: none, /// <- string | read
+    /// Retrieve documentation from comments in file. |
+  from-markdown: none, /// <- string | read
+    /// Retrieve documentation from markdown file (not implemented yet). |
+  comment-delim: auto, /// <- array of strings
+    /// Set comment delimiters. |
   body,
 ) = context {
   // Check required arguments
   assert.ne(package, none)
+  assert.ne(package, "", message: "#manual(package) cannot be empty")
   assert.ne(title, none)
   assert.ne(authors, none)
   assert.ne(license, none)
@@ -32,13 +87,15 @@
   import "comments.typ"
   import "markdown.typ"
   
+  let comment-delim = utils.defs.at("comment-delim")
+  
   utils.storage(add: "use-defaults", use-defaults)
   utils.storage(add: "comment-delim", comment-delim)
   
   set text(..utils.def(text.size == 11pt, "size", use-defaults))
   
   context {
-    let (kind, cmd, version) = utils.purl(package)
+    let data = utils.purl(package)
     let authors = authors
     let by = by
     
@@ -58,7 +115,7 @@
       ..utils.def(page.margin == auto, "margin"),
       
       header: context if locate(here()).page() > 1 {
-        text(size: text.size - 2pt, align(right)[#cmd #version])
+        text(size: text.size - 2pt, align(right, data.slice(1,2).join(":")))
       },
       
       footer: context if locate(here()).page() > 1 {
@@ -120,11 +177,12 @@
     show selector.or(
       terms, enum, table, figure, list,
       quote.where(block: true), raw.where(block: true),
-    ): it => [#v(par.spacing, weak: true)#it#v(par.spacing, weak: true)]
+    ): set block(above: par.spacing, below: par.spacing)
     show ref: it => {
       if it.citation.supplement == none {link(locate(here()), it.element.body)}
       else {it}
     }
+    show outline: it => align(center, block(width: 80%, align(left, it)))
     
     // Main header:
     align(center, {
@@ -145,13 +203,17 @@
       
       set footnote(numbering: "*")
       
-      if url != none {cmd = link(url)[#cmd#footnote(url)]}
+      if url != none {data.at(1) = link(url)[#data.at(1)#footnote(url)]}
       
-      grid(
-        columns: (1fr, 1fr, 1fr, 1fr),
-        align: center,
-        kind, cmd, version, license,
-      )
+      data.push(license)
+      
+      block(width: 90%, data.map(item => {
+        if item != none {
+          h(1fr)
+          item
+          h(1fr)
+        }
+      }).join())
       v(1em)
       
       for author in authors {
@@ -186,11 +248,20 @@
 }
 
 
-// Insert argument/parameter/option explanation:
+/**
+= Command Arguments
+:arg:
+Defines and explain possible arguments/parameters (see `/tests/commands/arg/`).
+**/
 #let arg(
-  title,
+  title, /// <- string <required>
+    /** Title data: A mandatory identifier, followed by ASCII arrows indicating
+        input/output types, which are separated by | markers; a final `<required>`
+        marker can define required arguments. |**/
   body
 ) = context {
+  assert.ne(body, [], message: "#arg(body) should not be empty")
+  
   let required = title.contains("<required>")
   let output = false
   let display = ""
@@ -230,14 +301,16 @@
   title = (strong(name) + " ",)
   if display.contains("i") {
     for type in types.at(0) {
-      title.push(
-        box(
-          fill: luma(225),
-          inset: (x: 3pt, y: 0pt),
-          outset: (y: 3pt),
-          type
-        ) + " "
-      )
+      if type != none {
+        title.push(
+          box(
+            fill: luma(225),
+            inset: (x: 3pt, y: 0pt),
+            outset: (y: 3pt),
+            type
+          ) + " "
+        )
+      }
     }
   }
   if display.contains("o") {
@@ -245,14 +318,16 @@
     
     let n = if display.contains("i") {1} else {0}
     for type in types.at(n) {
-      title.push(
-        box(
-          fill: luma(230),
-          inset: (x: 3pt, y: 0pt),
-          outset: (y: 3pt),
-          type
-        ) + " "
-      )
+      if type != none {
+        title.push(
+          box(
+            fill: luma(230),
+            inset: (x: 3pt, y: 0pt),
+            outset: (y: 3pt),
+            type
+          ) + " "
+        )
+      }
     }
   }
   if required { title.push( box(width: 1fr, align(right)[(_required_)]) ) }
@@ -273,29 +348,47 @@
 }
 
 
-// Extract an element or structure from a file.
-// TODO: Global #extract(model, lang) using states
+/**
+= Command Extract
+:extract:
+Extract code from another file or location (see `/tests/commands/extract/`).
+**/
 #let extract(
-  from: none,
-  rule: none,
-  lang: "typ",
-  model: auto,
-  display: none,
-  name,
+  name, /// <- string
+    /// Name of the code structure to retrieve. |
+  from: auto, /// <- string | file <required>
+    /// File from where the code will be retrieved (required in the first use). |
+  rule: none, /// <- string | none
+    /// Render Typst code in different ways. |
+  lang: "typ", /// <- string
+    /// Programming language of the code. |
+  model: auto, /// <- string
+    /// Custom regex pattern to retrieve code. |
+  display: none, /// <- string
+    /** Custom way to render retrieved code. Replaces `<name>` and `<capt>`
+        markers by the name and retrieved code, respectivelly. |**/
 ) = context {
+  import "utils.typ"
+  
+  let from = from
+  
+  
+  if from == auto {from = utils.storage(get: "extract-from", none)}
+  else {utils.storage(add: "extract-from", from)}
+  
   // Required named arguments
   assert.ne(from, none, message: "#extract(from) required")
   
   import "utils.typ"
   
   let std-models = (
-    "show": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
     "show.with": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
+    "show": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
     "call": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\(.*?\n\)|.*?)(?:\n|$)",
     "set": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
+    "str": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
     "arg": "(?s)\s*<name>\s*:\s*(\(.*?\n\)|.*?)(?:\n|$)",
-    //"str": "(?s)\s*<name>\s*.*?\s(.*?)\s* ",
+    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\(.*?\n\)|.*?)(?:\n|$)",
   )
   let rule = if rule == none {"call"} else {rule}
   let model = if model == auto {std-models.at(rule)} else {model}
@@ -315,12 +408,12 @@
     import "comments.typ": esc
     
     comments = comments.map(item => {esc(item)})
-    let re = comments.at(0) + ".*|(?s)" + comments.slice(1, 3).join(".*?")
-    
-    capt = capt.replace(regex(re), "")
-      .replace(regex(",\s*\n+"), ",\n") // removes blank lines
-      .replace(regex("^\s*\n+"), "\n") // start with just one \n
-      .replace(regex("\s*\n+$"), "\n") // end with just one \n
+    comments = comments.at(0) + ".*|(?s)" + comments.slice(1, 3).join(".*?")
+    capt = capt
+      .replace(regex(comments), "")  // remove documentation comments
+      .replace(regex("^\s*\n+"), "\n") // trim and start with just one \n
+      .replace(regex("\n\s*\n"), "\n") // remove blank lines
+      .replace(regex("\n+\s*$"), "\n") // trim and end with one \n
   }
   
   // Remove additional indentation
@@ -329,51 +422,129 @@
     capt = capt.replace(regex("(?m)^[ \t]{" + str(indent) + "}"), "")
   }
   
+  let end
+  if rule == "show" {
+    let indent = capt.trim("\n").match(regex("^[ \t]*")).text
+    let nl = if capt.contains("\n") {"\n"} else {""}
+
+    end = indent + "doc" + nl
+  }
+  
   if display != none {code = display.replace("<name>", name).replace("<capt>", capt)}
   else if rule == "show.with" {code = "#show: " + name + ".with(" + capt + ")"}
-  else if rule == "show" {code = "#show: doc => " + name + "(" + capt + "  doc\n)"}
+  else if rule == "show" {code = "#show: doc => " + name + "(" + capt + end + ")"}
   else if rule == "call" {code = "#" + name + "(" + capt + ")"}
   else if rule == "set" {code = "#set " + name + "(" + capt + ")"}
   else if rule == "let" {code = "#let " + name.trim() + " = " + capt}
   else if rule == "arg" {code = name + ": " + capt.trim(",")}
-  //else if rule == "str" {code = capt}
+  else if rule == "str" {code = capt}
   else {code = capt}
   
   raw(code, lang: lang, block: true)
 }
+/**
+The `#extract` command was created with Typst code in mind, but without
+excluding the support for other languages. That's why it has a handy `rule`
+option that gets the work done for Typst code, but in other languages requires
+to manually use `model` and maybe `display` options to retrieve and show code.
+**/
 
 
-// Create a link and footnote to an url
-#let url(..data) = {
+/**
+= Command URL
+```typ
+#url(url, id, text)
+```
+
+Creates a paper-friendly link, attached to a footnote containing the URL itself
+for readability when printed.
+
+url <- string | label <required>
+  URL set to link and shown in footnote.
+
+id <- label
+  Label set to the footnote for future reference.
+
+text <- string | content
+  Text to be shown in-place as the link itself.
+**/
+#let url(url, ..data) = {
   h(0pt)
-  if data.pos().len() > 2 {
-    panic("Expects 2 arguments (received " + str(data.pos().len()) + ")")
-  }
-
-  let url = data.pos().at(0)
-  let text = if data.pos().len() == 2 {data.pos().at(1)} else {url}
   
-  
-  // Fallback text to url
-  if text == auto {text = url}
-  
-  link(url, emph(text))
-  footnote(
-    link(url)
+  assert(
+    data.pos().len() <= 2,
+    message: "Received " + str(data.pos().len() + 1) + " arguments (expected 3)"
   )
+  
+  let note = if type(url) == str {link(url)} else {url}
+  let text = data.pos().at(-1, default: url)
+  let id = data.pos().at(-2, default: [])
+
+  link(url, emph(text))
+  [#footnote(note)#id]
 }
 
-// Cite a package/library/crate repository by URL.
-#let pkg(name, base-url) = url(base-url + name, name)
 
-// Shortcut to cite Typst packages from Typst Universe.
-#let univ(name) = pkg(name, "https://typst.app/universe/package/")
+/**
+== Commands for Package URLs
+```typ
+#pkg(url)
+#univ(name)
+#pip(name)
+#crate(name)
+#gh(slug)
+```
+Generates paper-friendly links to packages from different sources/platforms using
+only essencial data like its name (see `/tests/commands/links/`).
 
-// Shortcut to cite Python packages from Pypi.
-#let pip(name) = pkg(name, "https://pypi.org/project/")
+url <- string
+  Package URL (used by `#pkg`). The package name is extracted if enclosed in `{}`
+  or fallback to the last `/slug` of the URL.
 
-// Shortcut to cite Rust packages from crates.io
-#let crate(name) = pkg(name, "https://crates.io/crates/")
+name <- string
+  Package name as it is in the source repository/platform (used by `#pip`, 
+  `#univ`, and `#crate`).
 
-// Shortcut to cite GitHub repositories
-#let gh(user, name) = pkg(name, "https://github.com/" + user + "/")
+slug <- string
+  A `user/name` path, as it appears in GitHub repository paths (used by `#gh`).
+**/
+// TODO: Enable labels in #univ, #pip, #crate, #gh
+#let pkg(..data) = context {
+  let data = data.pos()
+  let out = ()
+  let target = data.remove(0)
+  let text = target
+  
+  // #pkg
+  if data == () {
+    if type(target) == label {panic("#pkg(text, label) required")}
+    
+    text = target.match(regex("\{.*?\}|/[^/]*?$")).text.trim(regex("[/{}]"))
+    target = target.replace( regex("\{(.*?)\}"), m => {m.captures.at(0)} )
+  }
+  else {
+    text = data.last().trim(regex(".*?/"))
+    
+    for m in target.matches(regex("\{.*?\}")) {
+      target = target.replace(m.text, data.remove(0))
+    }
+  }
+  
+  out.push(target)
+  out.push(text)
+  
+  //[#out]
+  url(..out)
+}
+
+// Typst packages (Typst Universe)
+#let univ(name) = pkg("https://typst.app/universe/package/{pkg}", name)
+
+// Python packages (PyPi/Pip)
+#let pip(name) = pkg("https://pypi.org/project/{pkg}", name)
+
+// Rust packages (crates.io
+#let crate(name) = pkg("https://crates.io/crates/{pkg}", name)
+
+// GitHub repositories
+#let gh(slug) = pkg("https://github.com/{path}/", slug)

@@ -18,6 +18,7 @@ one-line and block comments:
 #table(
   columns: 2,
   align: center,
+  fill: (_,y) => if y == 0 {gray.lighten(85%)} else {none},
   table.header[*Normal*][*Documentation*],
   `//`, `///`,
   raw("/.* *./".replace(".", "")),
@@ -29,7 +30,7 @@ strings containing the one-line and opening/closing block comments used:
 
 #raw(lang: "typ", block: true, ```
 #manual(
-   comment-delim: ("///", "/.**", "**./")
+  comment-delim: ("///", "/.**", "**./")
 )
 ```.text.replace(".", ""))
 
@@ -42,7 +43,7 @@ features both as commands and through special syntax:
 
 // #arg (optional arrows)
 name <.- type | type -.> type <required>
-   body |
+  body |
 ```.text.replace(".", ""))
 
 The _min-manual_ itself is documented through comments in source code, check it
@@ -80,12 +81,12 @@ out to see how it looks like in practice.
 // FEAT: comment.get() retrieves documentation from the text content
 #let clean(doc, delims) = {
   let all = delims.at(0) + ".*|(?s)" + delims.slice(1, 3).join(".*?")
-  let open = delims.at(0) + "|" + delims.slice(1).join("|")
+  let opening = delims.at(0) + "|" + delims.slice(1).join("|")
   
   doc.matches(regex(all)).map(
     m => m.text
-      .trim(regex(open))
-      .replace(regex("(?m)^(?: *\*+)? ?"), "")  // removes *
+      .trim(regex(opening))
+      .replace(regex("(?m)^(?: *\*+ ?)?"), "")  // removes *
       .replace(regex("\|$"), "\n")
       .replace(regex("\n\n+"), "\n\n")
   )

@@ -19,11 +19,11 @@ structure as `#arg` commands:
 
 ```md
 <dl id="arg">
-     <dt>
-          <code class="typ">name</code>
-          &larr; types &rarr; types [required]
-     </dt>
-     <dd>body<dd>
+    <dt>
+        <code class="typ">name</code>
+        &larr; types &rarr; types [required]
+    </dt>
+    <dd>body<dd>
 </dl>
 ```
 

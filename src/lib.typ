@@ -16,11 +16,11 @@
 
 ```typm
 #import "@preview/min-manual:0.1.1": manual
+#show: manual.with(
   title: "Package Name",
   description: "Short description, no longer than two lines.",
+  package: "pkg-name:0.4.2",
   authors: "Author <mailto:author@email.com>",
-  cmd: "pkg-name",
-  version: "0.4.2",
   license: "MIT",
   logo: image("assets/logo.png")
 )
@@ -29,18 +29,16 @@
 = Description
 
 Generate modern manuals, without loosing the simplicity and looks of old
-manuals. This package draws inspiration from the Linux manpages, as they look in
-terminal emulators until today, and adapts it to the contemporary formatting
-possibilities.
+manuals. This package draws inspiration from the simplicity of the Linux manpages
+as they look in terminal emulators today, adapting to the contemporary formatting
+possibilities. The idea is to get a modern but sober manual, without many
+distracting colors or decoration: just a simple informative header, technical
+text in confortable fonts and well-formatted code examples.
 
-The package is designed to universally document any type of program or code,
-including Typst packages and templates. It allows to create documentation 
-separated in dedicated files or extract it from the source code itself through
-doc-comments.
-
-This manual will be updated only when new versions break or modify something;
-otherwise, it will be valid to all newer versions starting by the one documented
-here.
+The package was created with Typst in mind, but also targetting the potential
+to universally document code from other languages: all _min-book_ features
+support documentation of any type of program or code, whether in a dedicated
+manual file or embedded in the source code itself through comments.
 
 = Options
 :show.with manual:

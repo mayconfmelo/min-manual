@@ -28,17 +28,15 @@
 
 = Description
 
-Generate modern manuals, without loosing the simplicity and looks of old
-manuals. This package draws inspiration from the simplicity of the Linux manpages
-as they look in terminal emulators today, adapting to the contemporary formatting
-possibilities. The idea is to get a modern but sober manual, without many
-distracting colors or decoration: just a simple informative header, technical
-text in confortable fonts and well-formatted code examples.
+Generate modern manuals without loosing the simplicity of old manpages. This
+package draws inspiration from old manuals while adopting the facilities of
+modern tools, like Markdown and documentation embedded in comments. The design
+aims to be sober: a minimal informative header, technical text in confortable
+fonts and well-formatted code examples.
 
 The package was created with Typst in mind, but also targetting the potential
-to universally document code from other languages: all _min-book_ features
-support documentation of any type of program or code, whether in a dedicated
-manual file or embedded in the source code itself through comments.
+to universally document code from other languages: all _min-book_ features are
+supported when documenting any type of program or code.
 
 = Options
 :show.with manual:
@@ -246,10 +244,10 @@ manual file or embedded in the source code itself through comments.
 }
 
 
-/**
+/** #pagebreak()
 = Command Arguments
 :arg:
-Defines and explain possible arguments/parameters (see `/tests/commands/arg/`).
+Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
 **/
 #let arg(
   title, /// <- string <required>

@@ -2,13 +2,14 @@
 
 #show: manual.with(
   title: "Minimal Manuals",
-  description: "Simple and sober manuals inspired by the OG Linux manpages.",
+  description: "Modern but sober manuals inspired by the manpages of old.",
   authors: "Maycon F. Melo <@mayconfmelo>",
   package: "min-manual:0.1.2",
   url: "typst.app/universe/package/min-manual/",
   license: "MIT",
   logo: image("docs/assets/manual-logo.png"),
-  from-comments: read("src/lib.typ") +
+  from-comments:
+    read("src/lib.typ") +
     read("src/comments.typ") +
     read("src/markdown.typ")
 )

@@ -1,7 +1,6 @@
 /**
- * = Class
- * 
- * :show feature:
+= Class
+:show feature:
 **/
 #let feature(
   title, /// <- nothing
@@ -15,5 +14,5 @@
 ) = { }
 
 /**
- * #lorem(40)
+#lorem(40)
 **/

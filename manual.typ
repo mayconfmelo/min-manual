@@ -8,7 +8,9 @@
   url: "typst.app/universe/package/min-manual/",
   license: "MIT",
   logo: image("docs/assets/manual-logo.png"),
-  from-comments: read("src/lib.typ") + read("src/comments.typ")
+  from-comments: read("src/lib.typ") +
+    read("src/comments.typ") +
+    read("src/markdown.typ")
 )
 
 

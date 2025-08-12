@@ -4,7 +4,7 @@
 ```typ
 /// = Feature
 /// The `#feature` command does something.
-#let feature() = { }
+#feature(title)
 ```
 
 The documentation can be embedded into the source code itself through special
@@ -95,7 +95,6 @@ out to see how it looks like in practice.
 // FEAT: comment.extract() retrieves code from this or any other document
 #let get-extract(doc, doc-orig) = {
   // USAGE: :title: lang "model" => display
-  // TODO: Separate re in parts
   let re = "(?s):([^\n]+?):(?:<s>(\w+)<s>)?(?:<s>\"(.*?)\")?(?:<s>=>\s*(.*?))?"
   let s = " *\n? *"
   let pattern = re.replace("<s>", s)

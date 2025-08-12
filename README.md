@@ -61,7 +61,12 @@ manual file or embedded in the source code itself through comments.
   - `#crate` for Rust crates
   - `#gh` for GitHub repos
   - `#pkg` for packages of any source
-- Documentation in standalone files
+- Documentation in standalone Typst files
+- Documentation in standalone Markdown files (experimental)
+  - CommonMark Markdown
+  - Typst code support
+  - All _min-manual_ features (Typst-only)
+  - Special HTML syntax for `#arg`
 - Documentation embedded in source code (comments)
   - Typst code support
   - All _min-manual_ features

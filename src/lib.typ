@@ -144,6 +144,11 @@ supported when documenting any type of program or code.
         else { left }
       ),
     )
+    set rect(
+      inset: 0pt,
+      outset: 5pt,
+      stroke: 1pt + gray.lighten(60%),
+    )
     
     show heading: it => {
       let test = ("libertinus serif", utils.defs.font).contains(text.font)

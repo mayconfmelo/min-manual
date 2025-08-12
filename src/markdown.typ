@@ -45,8 +45,11 @@ This code appears only in Markdown
 <!--typst-end-exclude--.>
 ```.text.replace(".", ""))
 
-As it 8s a recent implementation, the Markdown Documentation is still experimental
-and may or may not present errors, bugs, or unexpected behaviors.
+#align(bottom, rect[
+  As it is a recent implementation, the Markdown documentation is still experimental
+  and may or may not present errors, bugs, or unexpected behaviors. Used it with
+  caution for now.
+])
 **/
 
 // FEAT: markdown.get-arg() parses HTMl <dl> into #arg, or fallback to #terms list

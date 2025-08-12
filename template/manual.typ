@@ -1,4 +1,4 @@
-#import "@preview/min-manual:0.1.2": *
+#import "@preview/min-manual:0.2.0": *
 
 #show: manual.with(
   title: "Package Name",

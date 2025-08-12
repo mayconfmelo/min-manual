@@ -134,7 +134,8 @@ supported when documenting any type of program or code.
     set par(..utils.def(par.justify == false, "justify"))
     set terms(
       separator: [: ],
-      tight: true
+      tight: true,
+      hanging-indent: 1em,
     )
     set table(
       stroke: gray.lighten(60%),
@@ -153,7 +154,7 @@ supported when documenting any type of program or code.
     show heading: it => {
       let test = ("libertinus serif", utils.defs.font).contains(text.font)
       
-      set text(..utils.def(test, "font_title"), hyphenate: false)
+      set text(..utils.def(test, "font.title"), hyphenate: false)
       set block(above: 1.5em, below: par.leading)
       
       it
@@ -168,7 +169,7 @@ supported when documenting any type of program or code.
     show quote.where(block: true): it => pad(x: 1em, it)
     show raw: it => {
       set text(
-        ..utils.def(text.lang == "dejavu sans mono", "font_raw"),
+        ..utils.def(text.lang == "dejavu sans mono", "font.raw"),
         size: text.size + 1pt
       )
       it
@@ -218,23 +219,28 @@ supported when documenting any type of program or code.
       v(1em)
       
       for author in authors {
-        let name = author.find(regex("^[^<]*")).trim()
-        let url = author.find(regex("<(.*)>")).trim(regex("[<> ]"))
+        let name = author.find(regex("^[^<]*"))
+        let url = author.find(regex("<(.*)>"))
+        let content = ()
         
-        // Insert GitHub URL when <@user> is used
-        if url.starts-with("@") {
-          url = "https://github.com/" + url.slice(1)
-        }
-        
-        if author != none {
-          name.trim()
-  
+        if name != none {
+          name = name.trim()
+          
+          // Insert author URL
           if url != none {
-            url = url.trim(regex("[<>]"))
-            footnote(link(url))
+            url = url.trim(regex("[<> ]"))
+            
+            // Insert GitHub URL when <@user> is used
+            if url.starts-with("@") {url = "https://github.com/" + url.slice(1)}
+            
+            content.push(link(url, name))
+            content.push(footnote(link(url)))
           }
-          linebreak()
+          else {content.push(name)}
+          
+          content.join()
         }
+        else {panic("Could not find author name in '" + authors + "'")}
       }
       v(3em, weak: true)
     })
@@ -358,7 +364,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
 **/
 #let extract(
   name, /// <- string
-    /// Name of the code structure to retrieve. |
+    /// Name of the code structure to retrieve (the last match is used). |
   from: auto, /// <- string | read <required>
     /// File from where the code will be retrieved (required in the first use). |
   rule: none, /// <- string | none
@@ -446,10 +452,9 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   raw(code, lang: lang, block: true)
 }
 /**
-The `#extract` command was created with Typst code in mind, but without
-excluding the support for other languages. That's why it has a handy `rule`
-option that gets the work done for Typst code, but in other languages requires
-to manually use `model` and maybe `display` options to retrieve and show code.
+When extrating Typst code, the `#extract(rule)` supply almost all use cases of
+a Typst code; otherwise, the `#extract(model, display)` options can be used to
+achieve any other desired result.
 **/
 
 

@@ -1,7 +1,7 @@
-// Utilities submodule (internal)
+// NAME: Utilities submodule (internal)
 
 
-// UTIL: utils.purl() get elements of package urls
+// FEAT: utils.purl() get elements of package urls
 #let purl(url) = {
   // REPR: pkg:type/namespace/name@version
 
@@ -14,7 +14,7 @@
 }
 
 
-// UTIL: utils.storage() manages and store configurations and other data (see USAGE)
+// FEAT: utils.storage() manages and store configurations and other data (see USAGE)
 #let storage(
   add: none,
   get: none,
@@ -144,16 +144,16 @@
   justify: true,
   margin: (top: 3cm, bottom: 2cm, x: 2cm),
   font: ("tex gyre heros", "arial"),
-  font_title: ("tex gyre adventor", "century gothic"),
-  font_raw: ("fira mono", "inconsolata"),
+  "font.title": ("tex gyre adventor", "century gothic"),
+  "font.raw": ("fira mono", "inconsolata"),
   comment-delim: ("///", "/**", "**/"),
   size: 13pt,
 )
 
 
-// UTIL: Manages min-manual/Typst defaults
+// FEAT: Manages min-manual/Typst defaults
 #let def(test, key, ..others) = {
-  let name = key.split("_").first()
+  let name = key.split(".").first()
   let stop = others.pos().at(0, default: none) 
   let option = (:)
   

@@ -71,7 +71,7 @@ out to see how it looks like in practice.
     let mark = m.captures.at(1)
     let types = m.captures.at(2)
     
-    name = name.replace(regex(":.*"), ":")
+    name = name.replace(regex(" *?( ?=|:).*"), m => m.captures.at(0))
     
     mark + name + "<-" + types
   })

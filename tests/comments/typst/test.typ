@@ -6,6 +6,6 @@
   authors: "Author <@author>",
   package: "pkg:typst/pkg-name:0.4.2",
   license: "MIT",
-  from-comments: read("assets/lib.typ"),
+  from-comments: read("assets/file.typ"),
   use-defaults: true,
 )

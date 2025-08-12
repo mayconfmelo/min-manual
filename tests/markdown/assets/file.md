@@ -7,11 +7,15 @@ Short description, no longer than two lines.
 </center>
 <!--typst-end-exclude-->
 
+<!--raw-typst
+#v(-1em)
+-->
+
 ```typst
 #feature(
   title,
   date: datetime.today(),
-  color = rgb("#FFF"),
+  color: rgb("#FFF"),
   size: 1cm
 )
 ```
@@ -46,6 +50,5 @@ Common `<dl>` are rendered as:
   <dd>Description.</dd>
 </dl>
 
-
 ## Inline code
-And inline `<code class="typ>` is rendered: <code class="typ">#feature()</code>.
+And inline `<code class="typ">` is rendered: <code class="typ">#feature()</code>.

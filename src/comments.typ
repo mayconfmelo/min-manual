@@ -86,7 +86,7 @@ out to see how it looks like in practice.
   doc.matches(regex(all)).map(
     m => m.text
       .trim(regex(opening))
-      .replace(regex("(?m)^(?: *\*+ ?)?"), "")  // removes *
+      //.replace(regex("(?m)^(?: *\*+ ?)?"), "")  // removes *
       .replace(regex("\|$"), "\n")
       .replace(regex("\n\n+"), "\n\n")
   )

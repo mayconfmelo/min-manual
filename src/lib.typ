@@ -56,8 +56,9 @@ supported when documenting any type of program or code.
     optional (fallback to `pkg:typst/`) and `name@version` can also be written
     `name:version`. |**/
   authors: none, /// <- string | array of strings <required>
-    /// Package author or authors. |
-  license: none, /// <- string | content
+    /** `"name <url>"` \
+    Package author or authors — the `<url>` are optional. |**/
+  license: none, /// <- string | content <required>
     /// Package license. |
   url: none, /// <- string | content
     /// Package URL. |
@@ -66,11 +67,12 @@ supported when documenting any type of program or code.
   use-defaults: false, /// <- boolean
     /// Use Typst defaults instead of min-manual defaults. |
   from-comments: none, /// <- string | read
-    /// Retrieve documentation from comments in file. |
+    /// Retrieve documentation from comments in source files. |
   from-markdown: none, /// <- string | read
-    /// Retrieve documentation from markdown file (not implemented yet). |
+    /// Retrieve documentation from markdown files (experimental). |
   comment-delim: auto, /// <- array of strings
-    /// Set comment delimiters. |
+    /** #raw(`("///", "/.**", "**./")`.text.replace(".", "")) \
+    Set documentation comment delimiters. |**/
   body,
 ) = context {
   // Check required arguments
@@ -112,20 +114,22 @@ supported when documenting any type of program or code.
       ..utils.def(page.margin == auto, "margin"),
       
       header: context if locate(here()).page() > 1 {
-        text(size: text.size - 2pt, align(right, data.slice(1,2).join(":")))
+        text(size: text.size - 2pt, align(right, data.at(1)))
       },
       
       footer: context if locate(here()).page() > 1 {
         set text(size: text.size - 2pt)
         
-        let final = counter(page).final().at(0)
-        let left = if locate(here()).page() != final []
-          else [Created with _min-manual_.]
+        let final-page = locate(here()).page() == counter(page).final().at(0)
+        let left = []
         let middle = counter(page).display("1/1", both: true)
         let right = []
         
+        if final-page {left = [Created with _min-manual_]}
+        if final-page {right = [Written by #by]}
+        
         grid(
-          columns: (1fr, 1fr, 1fr),
+          columns: (1.2fr, 1fr, 1.2fr),
           align: center,
           left, middle, right,
         )
@@ -238,7 +242,7 @@ supported when documenting any type of program or code.
           }
           else {content.push(name)}
           
-          content.join()
+          content.join() + "\n"
         }
         else {panic("Could not find author name in '" + authors + "'")}
       }

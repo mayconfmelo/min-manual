@@ -28,7 +28,7 @@
 #manual(
   title: "Package Name",
   description: "Short description, no longer than two lines.",
-  authors: "Author <@author>",
+  authors: ("Main Author <@author>", "Colaborator <@collaborator>"),
   package: "pkg-name",
   license: "MIT",
   []

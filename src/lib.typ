@@ -1,5 +1,4 @@
 // NAME: Minimal Manuals
-// TODO: #manual(from-markdown: string)
 // TODO: Implement web manual (HTML) when stable
 
 #import "comments.typ": parse as from-comments
@@ -272,7 +271,7 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
     arguments. |**/
   body
 ) = context {
-  assert.ne(body, [], message: "#arg(body) should not be empty")
+  assert.ne(body, [], message: "#arg(body) should not be empty: " + title)
   
   let required = title.contains("<required>")
   let output = false
@@ -401,7 +400,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     "set": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
     "str": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
     "arg": "(?s)\s*<name>\s*:\s*(\(.*?\n\)|.*?)(?:\n|$)",
-    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\(.*?\n\)|.*?)(?:\n|$)",
+    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\((?:\(.*?\)|.)*?\)|.*?\n)",
   )
   let rule = if rule == none {"call"} else {rule}
   let model = if model == auto {std-models.at(rule)} else {model}

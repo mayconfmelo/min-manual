@@ -73,5 +73,3 @@ jobs:
           tool: just
       - name: Check spelling with codespell
         run: just spell
-      #   run: codespell --skip "*.pdf,dev/*,.git/*"  -L te,meu,ser,blessure || exit 1
-      #   # run: codespell --ignore-words=codespell.txt || exit 1

@@ -56,7 +56,7 @@ supported when documenting any type of program or code.
     `name:version`. |**/
   authors: none, /// <- string | array of strings <required>
     /** `"name <url>"` \
-    Package author or authors — the `<url>` are optional. |**/
+    Package author or authors, each followed by an optional `<url>`. |**/
   license: none, /// <- string | content <required>
     /// Package license. |
   url: none, /// <- string | content
@@ -375,7 +375,8 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   lang: "typ", /// <- string
     /// Programming language of the code. |
   model: auto, /// <- string
-    /// Custom regex pattern to retrieve code. |
+    /** Custom regex pattern to retrieve code — spaces captured before the
+    code are used to normalize indentation. |**/
   display: none, /// <- string
     /** Custom way to render retrieved code. Replaces `<name>` and `<capt>`
         markers by the name and retrieved code, respectively. |**/

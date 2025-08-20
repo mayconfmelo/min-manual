@@ -504,6 +504,7 @@ text <- string | content
 #univ(name)
 #pip(name)
 #crate(name)
+#npm(name)
 #gh(slug)
 ```
 Generates paper-friendly links to packages from different sources/platforms using
@@ -555,8 +556,11 @@ slug <- string
 // Python packages (PyPi/Pip)
 #let pip(name) = pkg("https://pypi.org/project/{pkg}", name)
 
-// Rust packages (crates.io
+// Rust packages (crates.io)
 #let crate(name) = pkg("https://crates.io/crates/{pkg}", name)
+
+// Node.js packages (npm)
+#let npm(name) = pkg("https://www.npmjs.com/package/", name)
 
 // GitHub repositories
 #let gh(slug) = pkg("https://github.com/{path}/", slug)

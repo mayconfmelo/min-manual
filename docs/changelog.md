@@ -21,7 +21,7 @@
 
 ## 0.2.0
 
-- In-depth project redesign and fixes
+- Project redesign and fixes
 - Added: `#manual(from-markdown)` implementation (experimental)
 - Added: `#url` for paper-friendly links (with footnotes)
 - Added: New `#extract(rule)` options
@@ -30,8 +30,9 @@
   - `"arg"`
   - `"str"`
 - Updated: `#extract(rule: none)` &rarr; `#extract(rule: "call")`
-- Updated: `#extract(display)` set how the code extracted will be shown
+- Updated: `#extract(display)` set how the extracted code will be shown
 - Updated: Manual file content appended to the manual when using comments
 - Updated: _TeX Gyre Heros_ as text font
 - Updated: _TeX Gyre Adventor_ as heading font
 - Updated: _Fira Mono_ as monospaced font
+- Uodated: General manual formatting

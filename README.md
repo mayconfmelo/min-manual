@@ -15,7 +15,7 @@ Modern but sober manuals inspired by the manpages of old.
   title: "Package Name",
   description: "Short description, no longer than two lines.",
   package: "pkg-name:0.4.2",
-  authors: "Author <mailto:author@email.com>",
+  authors: "Author <@author>",
   license: "MIT",
   logo: image("assets/logo.png")
 )
@@ -24,17 +24,11 @@ Modern but sober manuals inspired by the manpages of old.
 
 ## Description
 
-Generate modern manuals, without loosing the simplicity and looks of old
-manuals. This package draws inspiration from the simplicity of the Linux manpages
-as they look in terminal emulators today, adapting to the contemporary formatting
-possibilities. The idea is to get a modern but sober manual, without many
-distracting colors or decoration: just a simple informative header, technical
-text in confortable fonts and well-formatted code examples.
-
-The package was created with Typst in mind, but also targetting the potential
-to universally document code from other languages: all _min-book_ features
-support documentation of any type of program or code, whether in a dedicated
-manual file or embedded in the source code itself through comments.
+Generate modern manuals without loosing the simplicity of old manpages. This
+package draws inspiration from old manuals while adopting the facilities of
+modern tools, like Markdown and documentation embedded in comments. The design
+aims to be sober: a minimal informative header, technical text in confortable
+fonts and well-formatted code examples.
 
 
 ## More Information

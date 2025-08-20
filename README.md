@@ -10,7 +10,7 @@ Modern but sober manuals inspired by the manpages of old.
 ## Quick Start
 
 ```typst
-#import "@preview/min-manual:0.1.0": manual
+#import "@preview/min-manual:0.2.0": manual
 #show: manual.with(
   title: "Package Name",
   description: "Short description, no longer than two lines.",
@@ -33,9 +33,9 @@ fonts and well-formatted code examples.
 
 ## More Information
 
-- [Official manual](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/manual.pdf)
-- [Example PDF result](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.1.1/docs/example.pdf)
-- [Example Typst code](https://github.com/mayconfmelo/min-manual/blob/0.1.1/template/manual.typ)
+- [Official manual](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.2.0/docs/manual.pdf)
+- [Example PDF result](https://raw.githubusercontent.com/mayconfmelo/min-manual/refs/tags/0.2.0/docs/example.pdf)
+- [Example Typst code](https://github.com/mayconfmelo/min-manual/blob/0.2.0/template/manual.typ)
 - [Changelog](https://github.com/mayconfmelo/min-manual/blob/main/docs/changelog.md)
 - [Development info](https://github.com/mayconfmelo/min-manual/blob/main/docs/setup.md)
 

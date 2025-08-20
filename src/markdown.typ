@@ -14,7 +14,7 @@ generate a manual from it. The conversion between Markdown and Typst code is don
 using the #univ("cmarker") package, with some little tweaks — therefore some
 _cmarker_ features are available.
 
-In adition to CommonMark Markdown, _min-manual_ also retrieves a special HTML
+In addition to CommonMark Markdown, _min-manual_ also retrieves a special HTML
 structure as `#arg` commands:
 
 ```md

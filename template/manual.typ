@@ -61,7 +61,7 @@
 #arg("color: <- luma | rgb")[
   Explanation of what is this argument, what it does, and how to properly set it.
 ]
-#arg("size: <- lenght")[
+#arg("size: <- length")[
   Explanation of what is this argument, what it does, and how to properly set it.
 ]
 #v(5pt)
@@ -72,7 +72,7 @@
 = Paper-friendly Links
 
 #url("https://typst.app")[
-  This link is acessible on screens (click) and visible on paper (footnote) at
+  This link is accessible on screens (click) and visible on paper (footnote) at
   the same time.
 ]
 

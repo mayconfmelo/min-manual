@@ -46,7 +46,7 @@ symlink:
 
 # run spell check.
 spell:
-  codespell --skip "*.pdf,dev/*,.git/*" #-L nd
+  codespell --skip "*.pdf,dev/*,.git/*" -L heros
 
 # init template in dev/
 init:

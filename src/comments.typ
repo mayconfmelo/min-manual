@@ -10,7 +10,7 @@
 The documentation can be embedded into the source code itself through special
 comments, sometimes called _doc-comments_. These comments contains Typst code
 retrieved by _min-mannual_ to generate a complete manual, while at the same time
-they are usefull as in-code documentation.
+they are useful as in-code documentation.
 
 By default, documentation comments are a extension of Typst comments, both
 one-line and block comments:

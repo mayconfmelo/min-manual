@@ -24,10 +24,10 @@ Modern but sober manuals inspired by the manpages of old.
 
 ## Description
 
-Generate modern manuals without loosing the simplicity of old manpages. This
+Generate modern manuals without losing the simplicity of old manpages. This
 package draws inspiration from old manuals while adopting the facilities of
 modern tools, like Markdown and documentation embedded in comments. The design
-aims to be sober: a minimal informative header, technical text in confortable
+aims to be sober: a minimal informative header, technical text in comfortable
 fonts and well-formatted code examples.
 
 

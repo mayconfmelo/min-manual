@@ -27,13 +27,13 @@
 
 = Description
 
-Generate modern manuals without loosing the simplicity of old manpages. This
+Generate modern manuals without losing the simplicity of old manpages. This
 package draws inspiration from old manuals while adopting the facilities of
 modern tools, like Markdown and documentation embedded in comments. The design
-aims to be sober: a minimal informative header, technical text in confortable
+aims to be sober: a minimal informative header, technical text in comfortable
 fonts and well-formatted code examples.
 
-The package was created with Typst in mind, but also targetting the potential
+The package was created with Typst in mind, but also targeting the potential
 to universally document code from other languages: all _min-book_ features are
 supported when documenting any type of program or code.
 
@@ -378,7 +378,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     /// Custom regex pattern to retrieve code. |
   display: none, /// <- string
     /** Custom way to render retrieved code. Replaces `<name>` and `<capt>`
-        markers by the name and retrieved code, respectivelly. |**/
+        markers by the name and retrieved code, respectively. |**/
 ) = context {
   import "utils.typ"
   
@@ -455,7 +455,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   raw(code, lang: lang, block: true)
 }
 /**
-When extrating Typst code, the `#extract(rule)` supply almost all use cases of
+When extracting Typst code, the `#extract(rule)` supply almost all use cases of
 a Typst code; otherwise, the `#extract(model, display)` options can be used to
 achieve any other desired result.
 **/
@@ -506,7 +506,7 @@ text <- string | content
 #gh(slug)
 ```
 Generates paper-friendly links to packages from different sources/platforms using
-only essencial data like its name (see `/tests/commands/links/`).
+only essential data like its name (see `/tests/commands/links/`).
 
 url <- string
   Package URL (used by `#pkg`). The package name is extracted if enclosed in `{}`

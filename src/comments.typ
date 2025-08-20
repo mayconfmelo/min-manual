@@ -155,7 +155,7 @@ out to see how it looks like in practice.
   doc = handle-args(doc, delims)
   doc = clean(doc, delims)
   
-  doc.insert(0, "#import \"@preview/min-manual:0.2.0\": *\n\n")
+  doc.insert(0, "#import \"lib.typ\": *\n\n")
   doc.insert(1, "#state(\"min-manual-configuration-storage\").update(curr => {
     curr.insert(\"extract-from\", doc)
     curr

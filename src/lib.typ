@@ -154,6 +154,7 @@ supported when documenting any type of program or code.
       stroke: 1pt + gray.lighten(60%),
     )
     
+    show: doc => utils.term(doc)
     show heading: it => {
       let test = ("libertinus serif", utils.defs.font).contains(text.font)
       

@@ -163,3 +163,33 @@
   
   if stop or not test {(:)} else {option}
 }
+
+
+#let term(doc) = {
+  show selector.or(
+    raw.where(lang: "term"), raw.where(lang: "terminal"),
+  ): set raw(
+    syntaxes: "assets/term.sublime-syntax",
+    theme: "assets/term.tmTheme"
+  )
+  
+  show selector.or(
+    raw.where(lang: "term"), raw.where(lang: "terminal"),
+  ): it => {
+    set text(fill: rgb("#CFCFCF"))
+    set pad(0pt)
+    
+    pad(
+      x: 1em,
+      block(
+        width: 100%,
+        fill: rgb("#1D2433"),
+        inset: 8pt,
+        radius: 2pt,
+        it
+      )
+    )
+  }
+  
+  doc
+}

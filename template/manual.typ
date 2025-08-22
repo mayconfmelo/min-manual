@@ -89,6 +89,16 @@
   [*GitHub repo:         *], gh("user/pkg"),
 )
 
+= Terminal
+
+```term
+~$ cd projects/
+projects$ sudo su
+Password:
+projects# echo "The command is red, and the output white."
+The command is red, and the output white.
+```
+
 
 = Level 1
 == Level 2

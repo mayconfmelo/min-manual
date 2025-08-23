@@ -10,10 +10,9 @@
 )
 
 
-#v(1fr)
-#outline()
-#v(1.2fr)
+#v(1fr)#outline()#v(1.2fr)
 #pagebreak()
+
 
 = Quick Start
 
@@ -76,6 +75,7 @@
   the same time.
 ]
 
+
 = Package URLs
 
 #grid(
@@ -89,7 +89,8 @@
   [*GitHub repo:         *], gh("user/pkg"),
 )
 
-= Terminal
+
+= Terminal Emulation
 
 ```term
 ~$ cd projects/
@@ -97,6 +98,13 @@ projects$ sudo su
 Password:
 projects# echo "The command is red, and the output white."
 The command is red, and the output white.
+```
+
+
+= Code Example
+
+```eg
+A #emph[Typst] code *example*
 ```
 
 

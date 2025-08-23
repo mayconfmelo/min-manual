@@ -89,6 +89,7 @@ supported when documenting any type of program or code.
   
   utils.storage(add: "use-defaults", use-defaults)
   utils.storage(add: "comment-delim", comment-delim)
+  utils.storage(add: "raw-padding", true)
   
   set text(..utils.def(text.size == 11pt, "size", use-defaults))
   
@@ -154,7 +155,6 @@ supported when documenting any type of program or code.
       stroke: 1pt + gray.lighten(60%),
     )
     
-    show: doc => utils.term(doc)
     show heading: it => {
       let test = ("libertinus serif", utils.defs.font).contains(text.font)
       
@@ -171,14 +171,16 @@ supported when documenting any type of program or code.
     show heading.where(level: 6): set text(size: text.size * 1.1)
     show table: set align(center)
     show quote.where(block: true): it => pad(x: 1em, it)
+    show raw.where(block: true): it => context {
+      if utils.storage(get: "raw-padding", false) {pad(left: 1em, it)} else {it}
+    }
     show raw: it => {
       set text(
         ..utils.def(text.lang == "dejavu sans mono", "font.raw"),
         size: text.size + 1pt
       )
-      it
+      utils.enable-example(it)
     }
-    show raw.where(block: true): it => pad(left: 1em, it)
     show footnote.entry: set text(size: text.size - 2pt)
     show selector.or(
       terms, enum, table, figure, list,
@@ -189,6 +191,7 @@ supported when documenting any type of program or code.
       else {it}
     }
     show outline: it => align(center, block(width: 80%, align(left, it)))
+    show: utils.enable-term
     
     // Main header:
     align(center, {
@@ -444,6 +447,11 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     end = indent + "doc" + nl
   }
   
+  /**
+  When extracting Typst code, the `#extract(rule)` supply almost all use cases of
+  a Typst code; otherwise, the `#extract(model, display)` options can be used to
+  achieve any other desired result.
+  **/
   if display != none {code = display.replace("<name>", name).replace("<capt>", capt)}
   else if rule == "show.with" {code = "#show: " + name + ".with(" + capt + ")"}
   else if rule == "show" {code = "#show: doc => " + name + "(" + capt + end + ")"}
@@ -456,11 +464,92 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   
   raw(code, lang: lang, block: true)
 }
-/**
-When extracting Typst code, the `#extract(rule)` supply almost all use cases of
-a Typst code; otherwise, the `#extract(model, display)` options can be used to
-achieve any other desired result.
-**/
+
+
+#let example(
+  scope: auto,
+  output-align: auto,
+  ..data
+) = {
+  import "lib.typ"
+  import "utils.typ": storage
+  
+  // Disable #raw 1em padding here
+  storage(add: "raw-padding", false)
+  
+  // #layout allows to calc 50% of content width
+  layout(page-size => {
+    let code = data.pos().at(0, default: none)
+    let code = if type(code) == str {raw(code)} else {code}
+    let lang = code.at("lang", default: "typ")
+    let out = data.pos().at(1, default: none)
+    let output-align = output-align
+    let scope = scope
+    let cols = (auto,)
+    let first
+    let last
+    
+    set raw(lang: "typ")
+    set grid.cell(inset: 1em)
+  
+    assert.ne(
+      code, none,
+      message: "No #raw code received: must have #example(raw)"
+    )
+    assert(
+      not data.pos().len() > 2,
+      message: "Received" + str(data.pos().len()) + "arguments (expected 2)"
+    )
+    
+    if not lang.contains("typ") {output-align = false}
+    if scope == auto {scope = (:)}
+    
+    // Insert min-manual in scope
+    for pair in dictionary(lib).pairs() {
+      scope.insert(..pair)
+    }
+    
+    // Evaluate output from Typst code
+    if output-align != false and out == none {
+      out = eval("[" + code.text + "]", scope: scope)
+    }
+  
+    if output-align == auto {
+      let code-width = measure(code).width
+      let page-width = page-size.width * 50%
+      
+      output-align = if code-width >= page-width {bottom} else {right}
+    }
+    
+    // Check for invalid alignments
+    assert(
+      (top, bottom, left, right).contains(output-align),
+      message: "Invalid #example(alignment): " + str(alignment)
+    )
+    
+    // Set grid data
+    if (left, top).contains(output-align) {
+      first = grid.cell(out, stroke: gray.lighten(60%))
+      last = grid.cell(code)
+    }
+    else if (right, bottom).contains(output-align) {
+      first = grid.cell(code)
+      last = grid.cell(out, stroke: gray.lighten(60%))
+    }
+    
+    // Set grid column number and width
+    if output-align == right {cols.push(1fr)}
+    else if output-align == left {cols.insert(0, 1fr)}
+    else {cols = (1fr,)}
+    
+    set grid(stroke: if cols.len() == 1 {gray.lighten(80%)} else {none})
+    
+    block(grid(columns: cols, first, last))
+  })
+  
+  // Re-enable #raw 1em padding
+  storage(add: "raw-padding", true)
+}
 
 
 /**

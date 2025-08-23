@@ -165,7 +165,8 @@
 }
 
 
-#let term(doc) = {
+// FEAT: #show: utils.enable-term() allows "term/terminal" #raw syntax
+#let enable-term(doc) = {
   show selector.or(
     raw.where(lang: "term"), raw.where(lang: "terminal"),
   ): set raw(
@@ -177,7 +178,9 @@
     raw.where(lang: "term"), raw.where(lang: "terminal"),
   ): it => {
     set text(fill: rgb("#CFCFCF"))
-    set pad(0pt)
+    
+    // Disable #raw 1em padding here
+    storage(add: "raw-padding", false)
     
     pad(
       x: 1em,
@@ -189,7 +192,21 @@
         it
       )
     )
+    
+    // Re-enable #raw 1em padding
+    storage(add: "raw-padding", true)
   }
   
   doc
+}
+
+
+// FEAT: #show: utils.enable-example() allows "eg/example" #raw lang
+#let enable-example(elem) = {
+  import "lib.typ": example
+
+  show raw: set text(size: text.size)
+  
+  if ("eg", "example").contains(elem.lang) {example(elem.text, block: true)}
+  else {elem}
 }

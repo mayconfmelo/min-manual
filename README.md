@@ -52,6 +52,11 @@ fonts and well-formatted code examples.
   - Source code in any other language
 - `#arg` document arguments/parameters
 - `#extract` retrieves code from other files or location
+- `#example` displays code-result examples
+  - Typst result
+    - `#raw(lang: "eg|example")` syntax
+  - Custom content result
+- `#raw(lang: "term|terminal")` emulates a terminal window, with prompt highlight
 - Paper-friendly links (attached to footnotes)
   - `#url` for general links 
   - `#univ` for Typst Universe packages

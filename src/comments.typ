@@ -3,8 +3,9 @@
 
 ```typ
 /// = Feature
+/// :feature:
 /// The `#feature` command does something.
-#feature(title)
+#let feature(title) = { }
 ```
 
 The documentation can be embedded into the source code itself through special
@@ -25,16 +26,8 @@ one-line and block comments:
   raw("/.** **./".replace(".", "")),
 )
 
-Custom comment delimiters can be set in manual initialization with an array of
-strings containing the one-line and opening/closing block comments used:
-
-#raw(lang: "typ", block: true, ```
-#manual(
-  comment-delim: ("///", "/.**", "**./")
-)
-```.text.replace(".", ""))
-
-In addition to Typst code, documentation comments also support all _min-book_
+Custom comment delimiters can be set by `#manual(comment-delim)` option. In
+addition to Typst code, documentation comments also support all _min-book_
 features both as commands and through special syntax:
 
 #raw(lang: "typ", block: true, ```

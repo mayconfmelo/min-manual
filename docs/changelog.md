@@ -35,4 +35,11 @@
 - Updated: _TeX Gyre Heros_ as text font
 - Updated: _TeX Gyre Adventor_ as heading font
 - Updated: _Fira Mono_ as monospaced font
-- Uodated: General manual formatting
+- Updated: General manual formatting
+
+
+### 0.2.1
+
+- Added: `#example` evaluates Typst code or custom content as code example
+- Added: `#raw(lang: "eg|example")` to invoke `#example` using ``` syntax
+- Added: `#raw(lang: "term|terminal")` to emulate a terminal window, with prompt highlight

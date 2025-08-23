@@ -3,10 +3,10 @@
 
 ````md
 # Feature
-The `#feature` command does something.
 ```typst
 #feature(title)
 ```
+The `#feature` command does something.
 ````
 
 The documentation can be written in Markdown and _min-manual_ will manage to
@@ -118,7 +118,7 @@ This code appears only in Markdown
 
 
 // MAIN: markdown.parse() converts markdown code into Typst code
-#let parse(doc) = {
+#let parse(doc, ..cmarker-args) = {
   if doc == none {return}
   
   import "lib.typ"
@@ -140,5 +140,6 @@ This code appears only in Markdown
     prefix-label-uses: true,
     scope: dictionary(lib),
     show-source: false,
+    ..cmarker-args
   )
 }

@@ -1,4 +1,4 @@
-#import "@preview/min-manual:0.2.0": manual
+#import "@preview/min-manual:0.2.1": manual
 
 #show: manual.with(
   title: "Minimal Manuals",
@@ -11,7 +11,7 @@
   from-comments:
     read("src/lib.typ") +
     read("src/comments.typ") +
-    read("src/markdown.typ")
+    read("src/markdown.typ"),
 )
 
 

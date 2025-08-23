@@ -374,7 +374,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     /// Name of the code structure to retrieve (the last match is used). |
   from: auto, /// <- string | read <required>
     /// File from where the code will be retrieved (required in the first use). |
-  rule: none, /// <- string | none
+  rule: none, /// <- "show.with" | "show" | "call" | "set" | "let" | "arg" | "str" | none
     /// Render Typst code in different ways. |
   lang: "typ", /// <- string
     /// Programming language of the code. |
@@ -466,10 +466,22 @@ Extract code from another file or location (see `/tests/commands/extract/`).
 }
 
 
+/**
+= Command Code-Result Example
+:example:
+Generates a code-result example, consisting in a `#raw` code block and an annex
+block representing the code result. If only a Typst code block is passed, the
+result is automatically evaluated. Can also be used as `#raw(lang: "example")`
+language to evaluate Typst codes; a shorter `"eg"` name can also be used as an
+alias.
+**/
 #let example(
-  scope: auto,
-  output-align: auto,
-  ..data
+  scope: auto, /// <- dictionary | yaml | toml
+    /// Define the `#eval` scope of automatic Typst results. |
+  output-align: auto, /// <- top | bottom | left | right | false
+    /// Set position of result block — `false` disables it. |
+  ..data /// <- raw | string
+    /// The code and result blocks — the optional latter can be a content block. |
 ) = {
   import "lib.typ"
   import "utils.typ": storage
@@ -654,3 +666,29 @@ slug <- string
 
 // GitHub repositories
 #let gh(slug) = pkg("https://github.com/{path}/", slug)
+
+
+/**
+= Terminal Emulation
+#grid(columns: (auto, 1fr),gutter: 1em,
+  ````typ
+    ```terminal
+    ~$ command
+    output
+    ```
+  ````,
+  ```terminal
+  ~$ command
+  output
+  ```
+)
+This `#raw(lang: "terminal")` language emulates a terminal window, with prompt
+highlight; a shorter `"term"` name can also be used as an alias. Prompts are any
+line inside the cod block that obeys a certain basic syntax (green paths are optional):
+```terminal
+~/path$ user command
+~/path# root command
+C:path> windows command
+command output
+```
+**/

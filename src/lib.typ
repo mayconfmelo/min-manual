@@ -277,12 +277,14 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
 ) = context {
   assert.ne(body, [], message: "#arg(body) should not be empty: " + title)
   
+  // TODO: Allow other "required" texts — useful for other languages
   let required = title.contains("<required>")
   let output = false
   let display = ""
   let types = ()
   let title = title
   let body = body
+  let ignored = (none, "", "nothing")
   let parts
   let name
   let width
@@ -316,7 +318,7 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
   title = (strong(name) + " ",)
   if display.contains("i") {
     for type in types.at(0) {
-      if type != none {
+      if not ignored.contains(type) {
         title.push(
           box(
             fill: luma(225),
@@ -331,10 +333,10 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
   if display.contains("o") {
     let n = if display.contains("i") {1} else {0}
     
-    if types.at(n).at(0) != none {title.push(sym.arrow.r + " ")}
+    if not ignored.contains(types.at(n).at(0)) {title.push(sym.arrow.r + " ")}
     
     for type in types.at(n) {
-      if type != none {
+      if not ignored.contains(type) {
         title.push(
           box(
             fill: luma(230),

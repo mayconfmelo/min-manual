@@ -5,43 +5,43 @@
 Short description, no longer than two lines.
 
 </center>
+<style>
+dl dt type {background: #ddd; padding: 1px 3px}
+[data-required] {}
+</style>
 <!--typst-end-exclude-->
 
 <!--raw-typst
 #v(-1em)
 -->
 
-```typst
-#feature(
-  title,
-  date: datetime.today(),
-  color: rgb("#FFF"),
-  size: 1cm
-)
-```
-
 ## Options
-Special `#arg` syntax for `<dl>` is rendered:
 
-<dl id="arg">
-  <dt><code class="typ">#feature()</code> &rarr; content</dt>
-  <dd>Does something.</dd>
+<dl data-arg>
+  <dt>
+    <code data-lang="typ">#feature.foo(value)</code>
+    <!-- zwj and larr entities are equivalent to the input arrow -->
+    &zwj; <type>string</type> <type>content</type>
+    <em>[required]</em>
+  </dt>
+  <dd>Receives a value.</dd>
   
-  <dt><code>title:</code> &larr; string | content [required]</dt>
-  <dd>Set title.</dd>
+  <!-- rarr entity is equivalent to the output arrow -->
+  <dt><code data-lang="typ">#feature()</code> &rarr; <type>content</type></dt>
+  <dd>Returns a value.</dd>
   
-  <dt><code>date:</code> &larr; datetime</dt>
-  <dd>Set date.</dd>
+  <dt><code data-lang="typ">#set feature()</code> &rarr; <type>nothing</type></dt>
+  <dd>Returns nothing.</dd>
   
-  <dt><code>color:</code> &larr; rgb | luma</dt>
-  <dd>Set color.</dd>
-  
-  <dt><code>size:</code> &larr; length</dt>
-  <dd>Set size.</dd>
+  <dt>
+    <code data-lang="typ">#feature.bar(value)</code>
+    &zwj; <type>content</type> <type>none</type>
+    &rarr; <type>content</type> <type>string</type>
+  </dt>
+  <dd>Receives a value and returns a value.</dd>
 </dl>
 
 ## Terms
-Common `<dl>` are rendered as:
 
 <dl>
   <dt>Title</dt>
@@ -51,4 +51,5 @@ Common `<dl>` are rendered as:
 </dl>
 
 ## Inline code
-And inline `<code class="typ">` is rendered: <code class="typ">#feature()</code>.
+
+<code data-lang="typ">#feature()</code>

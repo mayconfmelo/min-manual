@@ -14,68 +14,54 @@ generate a manual from it. The conversion between Markdown and Typst code is don
 using the #univ("cmarker") package, with some little tweaks — therefore some
 _cmarker_ features are available.
 
-In addition to CommonMark Markdown, _min-manual_ also retrieves a special HTML
-structure as `#arg` commands:
-
-```md
-<dl id="arg">
-    <dt>
-        <code class="typ">name</code>
-        &larr; types &rarr; types [required]
-    </dt>
-    <dd>body<dd>
-</dl>
-```
-
-This syntax is perfectly rendered in Markdown, and in _min-manual_ it is
-equivalent to:
-
-#raw(lang: "typ", block: true, ````
-#arg("```typ name``` <.- types -.> types <required>")[body]
-````.text.replace(".", ""))
-
-From _cmarker_ is inherited the support for Markdown-only and Typst-only code
-through special comments:
+Some Markdown-only and Typst-only code can be written using the
+_cmarker_-inherited features:
 
 #raw(lang: "md", block: true, ```
-<!--raw-typst [This code appears only in Typst]--.>
+<!--raw-typst
+This code appears only in Typst
+--.>
 
 <!--typst-begin-exclude--.>
 This code appears only in Markdown
 <!--typst-end-exclude--.>
 ```.text.replace(".", ""))
 
-#align(bottom, rect[
+Refer to `tests/markdown/` for the Markdown (HTML5) structure used to get `#arg`
+commands.
+
+#rect[
   As it is a recent implementation, the Markdown documentation is still experimental
   and may or may not present errors, bugs, or unexpected behaviors. Used it with
   caution for now.
-])
+]
 **/
 
 // FEAT: markdown.get-arg() parses HTMl <dl> into #arg, or fallback to #terms list
 #let get-arg(attrs, body, lib) = {
-  //import "lib.typ": arg
-  
   let args = ()
   
   for elem in body.children {
     // Handle <dt> tags inside <dl>
     if elem.at("text", default: "").starts-with("dt:") {
-      // Get code language from <code class> attribute
-      let lang = elem.text.match(regex("<code\s*class=\"(.*?)\""))
+      // Get code language from <code data-lang> attribute
+      let lang = elem.text.match(regex("<code\s+data-lang=\"(.*?)\""))
       
-      if attrs.at("id", default: "") == "arg" {
+      if attrs.at("data-arg", default: none) != none {
         lang = if lang == none {""} else {lang.captures.at(0)}
         
         // Parse <dt> content into #arg(title) option
         elem = elem.text
           .slice(3)
+          .replace("\n", "")
           .replace(regex("<code.*?>"), "```" + lang + " ")
           .replace("</code>", "```")
+          .replace(regex("<type>(.*?)</type>"), m => m.captures.at(0) + " |")
+          .replace(regex("<.*?>"), "")
           .replace("[required]", "<required>")
           .replace("&larr;", "<-")
+          .replace("&zwj;", "<-")
           .replace("&rarr;", "->")
-        
       }
       else {elem = elem.text.slice(3)}
       
@@ -94,7 +80,7 @@ This code appears only in Markdown
   let i = 0
   
   while i != args.len() {
-    if attrs.at("id", default: "") == "arg" {
+    if attrs.at("data-arg", default: none) != none {
       // Renders a #arg command
       lib.arg(args.at(i), args.at(i + 1))
     }
@@ -108,8 +94,9 @@ This code appears only in Markdown
 }
 
 
+// FEAT: markdown.set-code() parses <code> tags
 #let set-code(attrs, body) = {
-  let lang = attrs.at("class", default: "")
+  let lang = attrs.at("data-lang", default: "")
   
   set raw(lang: lang)
   
@@ -118,7 +105,7 @@ This code appears only in Markdown
 
 
 // MAIN: markdown.parse() converts markdown code into Typst code
-#let parse(doc, ..cmarker-args) = {
+#let parse(doc, cmarker-html: (:), ..cmarker-args) = {
   if doc == none {return}
   
   import "lib.typ"
@@ -135,6 +122,7 @@ This code appears only in Markdown
       dt: ("raw-text", (attrs, body) => "dt:" + body),
       dl: ("normal", (attrs, body) => get-arg(attrs, body, lib)),
       code: ("raw-text", (attrs, body) => set-code(attrs, body)),
+      ..cmarker-html,
     ),
     label-prefix: "",
     prefix-label-uses: true,

@@ -4,7 +4,7 @@
   title: "Minimal Manuals",
   description: "Modern but sober manuals inspired by the manpages of old.",
   authors: "Maycon F. Melo <@mayconfmelo>",
-  package: "min-manual:0.2.0",
+  package: "min-manual:0.2.1",
   url: "typst.app/universe/package/min-manual/",
   license: "MIT",
   logo: image("docs/assets/manual-logo.png"),

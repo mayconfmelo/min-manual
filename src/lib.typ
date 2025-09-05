@@ -14,7 +14,7 @@
 = Quick Start
 
 ```typm
-#import "@preview/min-manual:0.2.0": manual
+#import "@preview/min-manual:0.2.1": manual
 #show: manual.with(
   title: "Package Name",
   description: "Short description, no longer than two lines.",

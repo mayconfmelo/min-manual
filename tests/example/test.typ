@@ -3,14 +3,13 @@
 #set page(height: auto, margin: 1cm)
 #show raw.where(block: true): enable-example
 
-
-#show: manual.with(
+/*#show: manual.with(
   title: "Package Name",
   description: "Short description, no longer than two lines.",
   authors: "Author <@author>",
   package: "pkg-name:0.4.2",
   license: "MIT",
-)
+)*/
 
 #example(
   output-align: top,

@@ -43,3 +43,4 @@
 - Added: `#example` evaluates Typst code or custom content as code example
 - Added: `#raw(lang: "eg|example")` to invoke `#example` using ``` syntax
 - Added: `#raw(lang: "term|terminal")` to emulate a terminal window, with prompt highlight
+- Updated: `#manual(from-markdown)` new HTML5 syntax for `#arg`

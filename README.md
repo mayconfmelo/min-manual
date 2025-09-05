@@ -1,4 +1,4 @@
-# Minimal articles
+# Minimal Manuals
 
 <center align="center">
 

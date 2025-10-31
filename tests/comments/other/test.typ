@@ -7,5 +7,5 @@
   package: "npm/pkg-name@0.4.2",
   license: "MIT",
   from-comments: read("assets/file.js"),
-  use-defaults: true,
+  typst-defaults: true,
 )

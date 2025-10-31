@@ -7,7 +7,7 @@
   authors: "Author",
   package: "rpm/fedora/pkg-name@0.4.2",
   license: "MIT",
-  use-defaults: true,
+  typst-defaults: true,
   []
 )
 #manual(
@@ -16,7 +16,7 @@
   authors: "Author <https://example.com/author/>",
   package: "rpm/pkg-name@0.4.2",
   license: "MIT",
-  use-defaults: true,
+  typst-defaults: true,
   []
 )
 #manual(
@@ -25,7 +25,7 @@
   authors: "Author <mailto:author@email.com>",
   package: "pkg-name:0.4.2",
   license: "MIT",
-  use-defaults: true,
+  typst-defaults: true,
   []
 )
 #manual(
@@ -34,6 +34,6 @@
   authors: ("Main Author <@author>", "Colaborator <@collaborator>"),
   package: "pkg-name",
   license: "MIT",
-  use-defaults: true,
+  typst-defaults: true,
   []
 )

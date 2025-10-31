@@ -44,3 +44,9 @@
 - Added: `#raw(lang: "eg|example")` to invoke `#example` using ``` syntax
 - Added: `#raw(lang: "term|terminal")` to emulate a terminal window, with prompt highlight
 - Updated: `#manual(from-markdown)` new HTML5 syntax for `#arg`
+
+## 0.3.0
+
+
+- Internal re-design
+- Updated: `#manual(use-defaults)` &rarr; `#manual(typst-defaults)`

@@ -7,5 +7,5 @@
   package: "pkg-name",
   license: "MIT",
   from-markdown: read("assets/file.md"),
-  use-defaults: true,
+  typst-defaults: true,
 )

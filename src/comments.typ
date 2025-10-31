@@ -149,11 +149,13 @@ out to see how it looks like in practice.
   doc = handle-args(doc, delims)
   doc = clean(doc, delims)
   
-  doc.insert(0, "#import \"lib.typ\": *\n\n")
-  doc.insert(1, "#state(\"min-manual-configuration-storage\").update(curr => {
-    curr.insert(\"extract-from\", doc)
-    curr
-  })\n")
+  doc.insert(0,
+    ```
+    #import "lib.typ": *
+    #import "@preview/toolbox:0.1.0": storage
+    #storage.add("extract-from", doc, namespace: "min-manual")
+    ```.text
+  )
   
   doc = doc.join("\n")
   doc = get-arg(doc)

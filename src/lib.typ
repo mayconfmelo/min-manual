@@ -12,7 +12,7 @@
   title: "Package Name",
   description: "Short description, no longer than two lines.",
   package: "pkg-name:0.4.2",
-  authors: "Author <mailto:author@email.com>",
+  authors: "Author <author@email.com>",
   license: "MIT",
   logo: image("assets/logo.png")
 )
@@ -48,7 +48,7 @@ supported when documenting any type of program or code.
     optional (fallback to `pkg:typst/`) and `name@version` can also be written
     `name:version`. |**/
   authors: none, /// <- string | array of strings <required>
-    /** `"name <url>"` \
+    /** `"name <url>"`\
     Package author or authors, each followed by an optional `<url>`. |**/
   license: none, /// <- string | content <required>
     /// Package license. |
@@ -56,7 +56,7 @@ supported when documenting any type of program or code.
     /// Package URL. |
   logo: none, /// <- image | content
     /// Manual logo. |
-  use-defaults: false, /// <- boolean
+  typst-defaults: false, /// <- boolean
     /// Use Typst defaults instead of min-manual defaults. |
   from-comments: none, /// <- string | read
     /// Retrieve documentation from comments in source files. |
@@ -74,22 +74,26 @@ supported when documenting any type of program or code.
   assert.ne(authors, none)
   assert.ne(license, none)
   
-  import "utils.typ"
+  import "@preview/toolbox:0.1.0": storage, default
   import "comments.typ"
   import "markdown.typ"
+  import "utils.typ"
   
   let comment-delim = utils.defs.at("comment-delim")
   
-  utils.storage(add: "use-defaults", use-defaults)
-  utils.storage(add: "comment-delim", comment-delim)
-  utils.storage(add: "raw-padding", true)
+  storage.add("typst-defaults", typst-defaults, namespace: "min-manual")
+  storage.add("comment-delim", comment-delim, namespace: "min-manual")
+  storage.add("raw-padding", true, namespace: "min-manual")
   
-  set text(..utils.def(text.size == 11pt, "size", use-defaults))
+  set text(
+    ..default(when: text.size == 11pt, value: (size: 13pt), typst-defaults)
+  )
   
   context {
     let data = utils.purl(package)
     let authors = authors
     let by = by
+    let font = (font: ("tex gyre heros", "arial"))
     
     if type(authors) == str {authors = (authors,)}
     if by == none {by = authors.at(0).replace(regex("\s*<.*>\s*"), "")}
@@ -99,12 +103,24 @@ supported when documenting any type of program or code.
       author: by,
     )
     set text(
-      ..utils.def(text.font == "libertinus serif", "font"),
-      ..utils.def(text.size == 11pt, "size"),
+      ..default(
+        when: text.font == "libertinus serif",
+        value: font,
+        typst-defaults
+      ),
+      ..default(
+        when: text.size == 11pt,
+        value: (size: 13pt),
+        typst-defaults
+      ),
       hyphenate: true,
     )
     set page(
-      ..utils.def(page.margin == auto, "margin"),
+      ..default(
+        when: page.margin == auto,
+        value: (margin: (top: 3cm, bottom: 2cm, x: 2cm)),
+        typst-defaults
+      ),
       
       header: context if locate(here()).page() > 1 {
         text(size: text.size - 2pt, align(right, data.at(1)))
@@ -128,7 +144,13 @@ supported when documenting any type of program or code.
         )
       }
     )
-    set par(..utils.def(par.justify == false, "justify"))
+    set par(
+      ..default(
+        when: par.justify == false,
+        value: (justify: true),
+        typst-defaults
+      )
+    )
     set terms(
       separator: [: ],
       tight: true,
@@ -137,10 +159,7 @@ supported when documenting any type of program or code.
     set table(
       stroke: gray.lighten(60%),
       inset: 10pt,
-      align: (_,y) => (
-        if y == 0 { center }
-        else { left }
-      ),
+      align: (_,y) => if y == 0 { center } else { left },
     )
     set rect(
       inset: 0pt,
@@ -149,9 +168,14 @@ supported when documenting any type of program or code.
     )
     
     show heading: it => {
-      let test = ("libertinus serif", utils.defs.font).contains(text.font)
-      
-      set text(..utils.def(test, "font.title"), hyphenate: false)
+      set text(
+        ..default(
+          when: text.font == "libertinus serif",
+          value: (title: font),
+          typst-defaults
+        ),
+        hyphenate: false
+      )
       set block(above: 1.5em, below: par.leading)
       
       it
@@ -165,11 +189,17 @@ supported when documenting any type of program or code.
     show table: set align(center)
     show quote.where(block: true): it => pad(x: 1em, it)
     show raw.where(block: true): it => context {
-      if utils.storage(get: "raw-padding", false) {pad(left: 1em, it)} else {it}
+      let padding = storage.get("raw-padding", false, namespace: "min-manual")
+      
+      if padding {pad(left: 1em, it)} else {it}
     }
     show raw: it => {
       set text(
-        ..utils.def(text.lang == "dejavu sans mono", "font.raw"),
+        ..default(
+          when: text.font == "dejavu sans mono",
+          value: (font: ("fira mono", "inconsolata")),
+          typst-defaults
+        ),
         size: text.size + 1pt
       )
       utils.enable-example(it)
@@ -177,7 +207,8 @@ supported when documenting any type of program or code.
     show footnote.entry: set text(size: text.size - 2pt)
     show selector.or(
       terms, enum, table, figure, list,
-      quote.where(block: true), raw.where(block: true),
+      quote.where(block: true),
+      raw.where(block: true),
     ): set block(above: par.spacing + 0.3em, below: par.spacing + 0.3em)
     show ref: it => {
       if it.citation.supplement == none {link(locate(here()), it.element.body)}
@@ -379,6 +410,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     /** Custom regex pattern to retrieve code — spaces captured before the
     code are used to normalize indentation. |**/
 ) = context {
+  import "@preview/toolbox:0.1.0": storage
   import "utils.typ"
   
   let from = from
@@ -402,14 +434,14 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     "arg": "<name>: <capt>",
     "let": "#let <name> = <capt>",
   )
-  let comments = utils.storage(get: "comment-delim")
+  let comments = storage.get("comment-delim", namespace: "min-manual")
   let matches
   let capt
   let indent
   
   // Retrieve #extract(from) when not given (auto)
-  if from == auto {from = utils.storage(get: "extract-from", none)}
-  else {utils.storage(add: "extract-from", from)}
+  if from == auto {from = storage.get("extract-from", namespace: "min-manual")}
+  else {storage.add("extract-from", from, namespace: "min-manual")}
   
   assert.ne(from, none, message: "#extract(from) required")
   
@@ -518,11 +550,11 @@ alias.
   ..data /// <- raw | string
     /// The code and result blocks — the optional latter can be a content block. |
 ) = {
+  import "@preview/toolbox:0.1.0": storage
   import "lib.typ"
-  import "utils.typ": storage
   
   // Disable #raw 1em padding here
-  storage(add: "raw-padding", false)
+  storage.add("raw-padding", false, namespace: "min-manual")
   
   // #layout allows to calc 50% of content width
   layout(page-size => {
@@ -595,7 +627,7 @@ alias.
   })
   
   // Re-enable #raw 1em padding
-  storage(add: "raw-padding", true)
+  storage.add("raw-padding", true, namespace: "min-manual")
 }
 
 

@@ -7,5 +7,5 @@
   package: "pkg-name:0.4.2",
   license: "MIT",
   from-comments: read("assets/file.typ"),
-  use-defaults: true,
+  typst-defaults: true,
 )

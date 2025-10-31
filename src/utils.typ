@@ -15,18 +15,6 @@
 #let comment-delim = ("///", "/**", "**/")
 
 
-// FEAT: standard defaults used
-#let defs = (
-  justify: true,
-  margin: (top: 3cm, bottom: 2cm, x: 2cm),
-  font: ("tex gyre heros", "arial"),
-  "font.title": ("tex gyre adventor", "century gothic"),
-  "font.raw": ("fira mono", "inconsolata"),
-  comment-delim: ("///", "/**", "**/"),
-  size: 13pt,
-)
-
-
 // FEAT: #show: utils.enable-term() allows "term/terminal" #raw syntax
 #let enable-term(doc) = {
   show selector.or(

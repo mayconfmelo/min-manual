@@ -74,12 +74,12 @@ supported when documenting any type of program or code.
   assert.ne(authors, none)
   assert.ne(license, none)
   
-  import "@preview/toolbox:0.1.0": storage, default
+  import "@preview/toolbox:0.1.0": storage, default, get
   import "comments.typ"
   import "markdown.typ"
   import "utils.typ"
   
-  let comment-delim = utils.defs.at("comment-delim")
+  let comment-delim = get.auto-val(comment-delim, utils.comment-delim)
   
   storage.add("typst-defaults", typst-defaults, namespace: "min-manual")
   storage.add("comment-delim", comment-delim, namespace: "min-manual")
@@ -209,7 +209,10 @@ supported when documenting any type of program or code.
       terms, enum, table, figure, list,
       quote.where(block: true),
       raw.where(block: true),
-    ): set block(above: par.spacing + 0.3em, below: par.spacing + 0.3em)
+    ): set block(
+      above: par.spacing + 0.3em,
+      below: par.spacing + 0.3em
+    )
     show ref: it => {
       if it.citation.supplement == none {link(locate(here()), it.element.body)}
       else {it}
@@ -333,7 +336,7 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
     
     types.push(part)
   }
-  if types.len() > 2 {panic("There should be only one of each '<-' and '->' in " + title)}
+  if types.len() > 2 {panic(title + " has multiple '->' or '<-' arrows")}
 
   // Show name as raw
   if name.contains(regex("`.*`")) {name = eval(name, mode: "markup")}

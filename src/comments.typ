@@ -89,13 +89,14 @@ out to see how it looks like in practice.
 // FEAT: comment.extract() retrieves code from this or any other document
 #let get-extract(doc, doc-orig) = {
   // USAGE: :title: lang "model" => display
+  // USAGE: :usage name: lang "model" => display
   let re = "(?s):([^\n]+?):(?:<s>(\w+)<s>)?(?:<s>\"(.*?)\")?(?:<s>=>\s*(.*?))?"
   let s = " *\n? *"
   let pattern = re.replace("<s>", s)
   
   doc.replace(regex("(?m)^ *" + pattern + " *(?:\n|$)"), m => {
     let title = m.captures.at(0).split(" ")
-    let rule = title.slice(0, -1).join(" ")
+    let usage = title.slice(0, -1).join(" ")
     let name = title.last()
     let lang = m.captures.at(1)
     let model = m.captures.at(2)
@@ -103,12 +104,12 @@ out to see how it looks like in practice.
     let args = ()
     
     if name == "" {panic("Invalid name in " + m.text.trim())}
-    if rule != none {rule = rule.trim()}
+    if usage != none {display = usage.trim()}
     
     args.push(repr(name) + ", ")
     //args.push("from: " + repr(doc-orig) + ", ")
     
-    if rule != none {args.push("rule: " + repr(rule) + ", ")}
+    //if rule != none {args.push("rule: " + repr(rule) + ", ")}
     if lang != none {args.push("lang: " + repr(lang) + ", ")}
     if model != none {args.push("model: " + repr(model) + ", ")}
     if display != none {args.push("display: " + repr(display) + ", ")}

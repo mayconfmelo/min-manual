@@ -4,15 +4,8 @@
 #import "comments.typ": parse as from-comments
 #import "markdown.typ": parse as from-markdown
 
-
-/**
-#v(1fr)
-#outline()
-#v(1.2fr)
-#pagebreak()
-
+/**#v(1fr)#outline()#v(1.2fr)#pagebreak()
 = Quick Start
-
 ```typm
 #import "@preview/min-manual:0.2.1": manual
 #show: manual.with(
@@ -376,95 +369,135 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     /// Name of the code structure to retrieve (the last match is used). |
   from: auto, /// <- string | read <required>
     /// File from where the code will be retrieved (required in the first use). |
-  rule: none, /// <- "show.with" | "show" | "call" | "set" | "let" | "arg" | "str" | none
-    /// Render Typst code in different ways. |
+  display: auto, /// <- string | "show.with" | "show" | "call" | "set" | "let" | "arg" | "str" | none
+    /** How to render code. Set predefined Typst cases, or arbitrary cases
+        where `<name>`, `<capt>`, and `<text>` markers are replaced by the name,
+        last capture, and last retrieved text, respectively. |**/
   lang: "typ", /// <- string
     /// Programming language of the code. |
-  model: auto, /// <- string
+  model: auto, /// <- string | "func" | "arg" | "let" | "var" | "call"
     /** Custom regex pattern to retrieve code — spaces captured before the
     code are used to normalize indentation. |**/
-  display: none, /// <- string
-    /** Custom way to render retrieved code. Replaces `<name>` and `<capt>`
-        markers by the name and retrieved code, respectively. |**/
 ) = context {
   import "utils.typ"
   
   let from = from
+  let model = model
+  let display = display
+  let lang = lang
+  let std-models = (
+    "func": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
+    "call": "(?s)\s*#?<name>(?:\.with)?\((.*?)\)",
+    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\((?:\(.*?\)|.)*?\)|.*?\n)",
+    "var": "(?s)\s*#?\s+<name>\s*=\s*(\((?:\(.*?\)|.)*?\)|.*?\n)",
+    "arg": "(?s)\s*<name>\s*:\s*(\((?:\(.*\)|.)*?\)|.*?)(?:,.*)?(?:\n|$)",
+  )
+  let std-cases = (
+    "show.with": "#show: <name>.with(<capt>)",
+    "show": "#show: <doc> => <name>(<capt>)",
+    "call": "#<name>(<capt>)",
+    "set": "#set <name>(<capt>)",
+    "str": "<capt>",
+    "src": "<text>",
+    "arg": "<name>: <capt>",
+    "let": "#let <name> = <capt>",
+  )
+  let comments = utils.storage(get: "comment-delim")
+  let matches
+  let capt
+  let indent
   
-  
+  // Retrieve #extract(from) when not given (auto)
   if from == auto {from = utils.storage(get: "extract-from", none)}
   else {utils.storage(add: "extract-from", from)}
   
-  // Required named arguments
   assert.ne(from, none, message: "#extract(from) required")
   
-  import "utils.typ"
+  if display == auto {
+    if not lang.contains("typ") {panic("#extract(display) required for " + lang)}
+    
+    // Set default #extract(display) based on #extract(model) used
+    display = if ("arg", "let").contains(model) {model} else {"call"}
+  }
   
-  let std-models = (
-    "show.with": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-    "show": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-    "call": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-    "set": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-    "str": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-    "arg": "(?s)\s*<name>\s*:\s*(\(.*?\n\)|.*?)(?:\n|$)",
-    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\((?:\(.*?\)|.)*?\)|.*?\n)",
+  if model == auto {
+    if not lang.contains("typ") {panic("#extract(model) required for " + lang)}
+    
+    // Set default #extract(model) based on #extract(display) used
+    model = if ("arg", "let").contains(display) {display} else {"func"}
+  }
+  
+  // Adjust code highlight for #extract(display: "arg")
+  if lang == "typ" and display == "arg" {lang = "typc"}
+  
+  // Use default Typst cases and extraction models.
+  if std-cases.keys().contains(display) {display = std-cases.at(display)}
+  if std-models.keys().contains(model) {model = std-models.at(model)}
+  
+  model = model.replace("<name>", name)
+  matches = from.matches(regex(model))
+  
+  assert(
+    matches != () and matches.last().captures != (),
+    message: "Could not extract '" + name + "' using model '" + model + "'"
   )
-  let rule = if rule == none {"call"} else {rule}
-  let model = if model == auto {std-models.at(rule)} else {model}
-  let comments = utils.storage(get: "comment-delim")
-  let model = model.replace("<name>", name)
-  let from = from.matches(regex(model))
-  let indent
-  let code
-  let capt
   
-  if not lang.contains("typ") {rule = str}
+  // Get additional indentation (if any) from capture begin
+  indent = matches.last().text
+    .trim("\n")
+    .match(regex("^[ \t]*")).text
+    .len()
   
-  if from != () and from.last().captures != () {capt = from.last().captures.at(0)}
-  else {panic("Could not extract '" + name + "' using '" + model + "'")}
+  capt = matches.last().captures.at(0)
+    .replace(regex("(?m)^[ \t]{" + str(indent) + "}"), "")
   
+  display = display
+    .replace("<name>", name)
+    .replace("<capt>", capt)
+    .replace("<text>", matches.last().text)
+  
+  // Remove documentation comments
   if comments != none {
     import "comments.typ": esc
     
     comments = comments.map(item => {esc(item)})
     comments = comments.at(0) + ".*|(?s)" + comments.slice(1, 3).join(".*?")
-    capt = capt
-      .replace(regex(comments), "")  // remove documentation comments
-      .replace(regex("^\s*\n+"), "\n") // trim and start with just one \n
-      .replace(regex("\n\s*\n"), "\n") // remove blank lines
-      .replace(regex("\n+\s*$"), "\n") // trim and end with one \n
+    
+    capt = capt.replace(regex(comments), "")
+    display = display.replace(regex(comments), "")
   }
   
-  // Remove additional indentation
-  indent = from.last().text.trim("\n").match(regex("^[ \t]*")).text.len()
-  if indent > 0 {
-    capt = capt.replace(regex("(?m)^[ \t]{" + str(indent) + "}"), "")
+  // Normalize captured code
+  display = display
+    .replace(regex("^\s*\n+"), "\n") // trim and start with just one \n
+    .replace(regex("\n\s*\n"), "\n") // remove blank lines
+    .replace(regex("\n+\s*$"), "\n") // trim and end with one \n
+  
+  
+  if display.starts-with(regex("\s*#?show:")) {
+    let pos = capt.split(",").filter(it => it.contains(regex("^\s*[^\s:]+\s*$")))
+    
+    assert.ne(
+      pos, (),
+      message: "Could not find postional arguments in '" + name + "'"
+    )
+    
+    if display.contains(".with(") {
+      display = display.replace(regex("\s*" + pos.last().trim() + ",?.*?"), "")
+    }
+    else {
+      display = display.replace("<doc>", pos.last().trim())
+    }
+  }
+  else if display.starts-with(regex("#?set")) {
+    let pos = capt.split(",").filter(it => it.contains(regex("^\s*[^\s:]+$")))
+    let re = "\s*(?:" + pos.map(it => it.trim()).join("|") + "),?.*?"
+    
+    display = display.replace(regex(re), "")
   }
   
-  let end
-  if rule == "show" {
-    let indent = capt.trim("\n").match(regex("^[ \t]*")).text
-    let nl = if capt.contains("\n") {"\n"} else {""}
-
-    end = indent + "doc" + nl
-  }
-  
-  /**
-  When extracting Typst code, the `#extract(rule)` supply almost all use cases of
-  a Typst code; otherwise, the `#extract(model, display)` options can be used to
-  achieve any other desired result.
-  **/
-  if display != none {code = display.replace("<name>", name).replace("<capt>", capt)}
-  else if rule == "show.with" {code = "#show: " + name + ".with(" + capt + ")"}
-  else if rule == "show" {code = "#show: doc => " + name + "(" + capt + end + ")"}
-  else if rule == "call" {code = "#" + name + "(" + capt + ")"}
-  else if rule == "set" {code = "#set " + name + "(" + capt + ")"}
-  else if rule == "let" {code = "#let " + name.trim() + " = " + capt}
-  else if rule == "arg" {code = name + ": " + capt.trim(",")}
-  else if rule == "str" {code = capt}
-  else {code = capt}
-  
-  raw(code, lang: lang, block: true)
+  // Show final output
+  raw(display, lang: lang, block: true)
 }
 
 

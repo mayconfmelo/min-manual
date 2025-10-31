@@ -1,10 +1,27 @@
 class Class {
   /**
-  :feature: js "(?s)( *<name>\((?:\(.*\)|.)*?\)) \{" => Class.<capt>
-  == Options
-  Options retrieved from JavaScript source code:
+  
+  = Extractions
+  
+  #columns(2)[
+  
+    :str Class: js "(?s)class (<name> \{.*?\})\s//<name>"
+    
+    :method: js "(?s)( *<name>\((?:\(.*\)|.)*?\)) \{" => Class.<capt>
+    
+    #colbreak()
+    
+    :str variable: js "(?s)( *<name> =.*?)\s*\/\/<name>"
+    
+    :name: js "( *<name> =.*?),\n" => {<capt>}
+    
+    :str hidden: js "(?s)(\{\s*width =.*\})"
+  
+  ]
+  
+  = Options
   **/
-  feature(
+  method(
     title, /// <- string <required>
       /// Set title. |
     date = new Date(), /// <- Date
@@ -14,4 +31,15 @@ class Class {
     size = "1cm" /// <- length
       /// Set size. |
   ) { }
+  
+  variable = {
+    name = none,
+    start = 1
+  } //variable
+} //Class
+
+/*
+{
+  width = 5cm
 }
+*/

@@ -1,78 +1,74 @@
 #import "/src/lib.typ": extract
-#set page(width: auto, height: auto)
-#set grid.cell(stroke: 1pt + black, inset: 5pt)
-#state("min-manual-configuration-storage").update((comment-delim: ("///", "/**", "**/")))
-#let showcase = ()
+#set page(width: auto, height: auto, margin: 1em)
+#set par(spacing: 2em)
 
-#showcase.push(
-  align(center)[call] +
-  extract(
-    "feature",
-    from: read("assets/file.typ"), // from an example Typst file
-  )
-)
-#showcase.push(
-  align(center)[call] +
-  extract(
-    "feature",
-    rule: "call",
-  )
-)
-#showcase.push(
-  align(center)[show] +
-  extract(
-    "feature",
-    rule: "show",
-  )
-)
-#showcase.push(
-  align(center)[show.with] +
-  extract(
-    "feature",
-    rule: "show.with",
-  )
-)
-#showcase.push(
-  align(center)[set] +
-  extract(
-    "feature",
-    rule: "set",
-  )
-)
-#showcase.push(
-  align(center)[str] +
-  extract(
-    "feature",
-    rule: "str",
-  )
-)
-#showcase.push(
-  align(center)[let] +
-  extract(
-    "var",
-    rule: "let",
-  )
-)
-#showcase.push(
-  align(center)[arg] +
-  extract(
-    "title",
-    rule: "arg",
-  )
-)
-#showcase.push(
-  align(center)[JavaScript] +
-  extract(
-    "feature",
-    from: read("assets/file.js"), // from an example JavaScript file
-    lang: "js",
-    model: "(?s)\s*<name>\((.*?)\) \{",
-    display: "let feat = Class.<name>(<capt>)",
-  )
+= Defaults
+
+#extract(
+  "function",
+  from: read("assets/file.typ"),
 )
 
-#grid(
-  columns: 2,
-  gutter: 5pt,
-  ..showcase
+== Display
+
+#extract(
+  "function",
+  display: "call",
+)
+
+#extract(
+  "function",
+  display: "show"
+)
+
+#extract(
+  "function",
+  display: "show.with"
+)
+
+#extract(
+  "function",
+  display: "set"
+)
+
+#extract(
+  "function",
+  display: "str"
+)
+
+#extract(
+  "function",
+  display: "src"
+)
+
+#extract(
+  "date",
+  display: "arg",
+)
+
+#extract(
+  "variable",
+  display: "let",
+)
+
+== Model
+
+#extract(
+  "function",
+  model: "func",
+)
+
+#extract(
+  "calling",
+  model: "call",
+)
+
+#extract(
+  "variable",
+  model: "let",
+)
+
+#extract(
+  "date",
+  model: "arg",
 )

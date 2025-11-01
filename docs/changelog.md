@@ -49,4 +49,5 @@
 
 
 - Internal re-design
+- Added: `#manual(manifest)` to retrieve data from _typst.toml_ manifest
 - Updated: `#manual(use-defaults)` &rarr; `#manual(typst-defaults)`

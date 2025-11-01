@@ -2,23 +2,29 @@
 #set page(width: 15cm, height: auto)
 
 #arg("name: <- type | type | type <required>")[
-  A required argument.
+  Required argument.
 ]
 #arg("name: <- type | type | type")[
-  An optional argument.
+  Optional argument.
 ]
 #arg("name: -> type | type | type")[
-  An argument showing result values
+  Possible output types.
 ]
-#arg("name: <- type | type | type -> type")[
-  An argument showing input and result values
+#arg("name: <- type | type | type -> type | type <required>")[
+  Possible input and output types.
 ]
 #arg("```typ #feature(name)``` -> type | type | type")[
-  An argument with syntax highlight.
+  Syntax highlight.
 ]
 #arg("```typ #set feature(name)```")[
-  An argument without any type.
+  No input nor output values.
+]
+#arg("name: <- type | type | type | type | type | type | type | type | type | type | type | type | type | type | type | type <required>")[
+  Long list of input values.
 ]
 #arg("name: -> type | type | type | type | type | type | type | type | type | type | type | type | type | type | type | type <required>")[
-  An argument with so much possible types that they break line.
+  Long list of output values.
+]
+#arg("name: <- type | type | type | type | type | type | type | type -> type | type | type | type | type | type | type | type <required>")[
+  Long list of input and output values.
 ]

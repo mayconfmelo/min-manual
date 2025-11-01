@@ -321,8 +321,7 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
 ) = context {
   assert.ne(body, [], message: "#arg(body) should not be empty: " + title)
   
-  // TODO: Allow other "required" texts — useful for other languages
-  let required = title.contains("<required>")
+  let required = title.match(regex("<([^<]+?)>\s*$"))
   let output = false
   let display = ""
   let types = ()
@@ -331,39 +330,40 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
   let ignored = (none, "", "nothing")
   let parts
   let name
-  let width
-  
-  // Remove any <required> from title, if any
-  title = title.replace("<required>", "")
   
   if title.contains("<-") {display = "i"}
   if title.contains("->") {display = display + "o"}
   
+  title = title.replace(regex("<([^<]+)>\s*$"), "")  // removes any <required>
   parts = title.split(regex("<-|->"))
   name = parts.at(0).trim() + " "
-  width = if display == "o" {" " + sym.arrow.r + " "} else {""}
-  width = measure(name + width).width + 2pt
   
   if name == "" {panic("Argument name required: " + title)}
   
-  //Set types, if any
+  // Split input and output types
   for part in parts.slice(1) {
     part = part.replace(regex("\s*\|\s*"), "|").trim()
     part = if part == "nothing" {(none,)} else {part.split("|")}
     
     types.push(part)
   }
+  
   if types.len() > 2 {panic(title + " has multiple '->' or '<-' arrows")}
 
   // Show name as raw
   if name.contains(regex("`.*`")) {name = eval(name, mode: "markup")}
   else if type(name) == str {name = raw(name)}
   
-  title = (strong(name) + " ",)
+  title = ()
+  title.push(strong(name) + " ")
+  
+  // Manages input types
   if display.contains("i") {
+    let input = ()
+    
     for type in types.at(0) {
       if not ignored.contains(type) {
-        title.push(
+        input.push(
           box(
             fill: luma(225),
             inset: (x: 3pt, y: 0pt),
@@ -373,15 +373,20 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
         )
       }
     }
+    title.push(input.join())
   }
+  
+  // Manages output types
   if display.contains("o") {
+    let output = ()
     let n = if display.contains("i") {1} else {0}
     
-    if not ignored.contains(types.at(n).at(0)) {title.push(sym.arrow.r + " ")}
+    // Insert output arrow
+    if not ignored.contains(types.at(n).at(0)) { title.push(sym.arrow.r + " ") }
     
     for type in types.at(n) {
       if not ignored.contains(type) {
-        title.push(
+        output.push(
           box(
             fill: luma(230),
             inset: (x: 3pt, y: 0pt),
@@ -391,21 +396,37 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
         )
       }
     }
+    title.push(output.join())
   }
-  if required { title.push( box(width: 1fr, align(right)[(_required_)]) ) }
   
+  // Grid for name and types
+  title = (grid(columns: title.len(), ..title),)
+  
+  // Add required to current title
+  if required != none {
+    required = emph("(" + required.captures.at(0) + ")")
+    
+    title.push(align(right, required))
+  }
+  
+  // Grid for current title and required
+  title = grid(columns: (1fr, auto), ..title)
+  
+  // Left-padded body
   if body != [] {body = pad(left: 1em, body)}
+  
+  body = [
+    #title
+    #context v(-par.leading * 0.5)
+    #body
+  ]
   
   block(
     breakable: false,
     fill: luma(245),
     width: 100%,
     outset: 5pt,
-    [
-      #par(hanging-indent: width, title.join())
-      #context v(-par.leading * 0.5)
-      #body
-    ]
+    body
   )
 }
 
@@ -711,7 +732,6 @@ fill <- color
 fill-text: <- color
   Set text color.
 
-
 = Commands for Package URLs
 ```typ
 #pkg(url)
@@ -735,6 +755,7 @@ name <- string
 slug <- string
   A `user/name` path, as it appears in GitHub repository paths (used by `#gh`).
 **/
+// #pkg comes from #toolbox.comp.pkg
 
 // Typst packages (Typst Universe)
 #let univ(name) = pkg("https://typst.app/universe/package/{pkg}", name)

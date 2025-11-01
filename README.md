@@ -14,14 +14,10 @@ Modern but sober manuals inspired by the manpages of old.
 ## Quick Start
 
 ```typst
-#import "@preview/min-manual:0.2.1": manual
+#import "@preview/min-manual:0.3.0": manual
 #show: manual.with(
   title: "Package Name",
-  description: "Short description, no longer than two lines.",
-  package: "pkg-name:0.4.2",
-  authors: "Author <@author>",
-  license: "MIT",
-  logo: image("assets/logo.png")
+  manifest: toml("typst.toml"),
 )
 ```
 

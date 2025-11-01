@@ -1,0 +1,16 @@
+[package]
+name = "pkg-name"
+version = "0.4.2"
+entrypoint = "src/lib.typ"
+authors = ["Author <author@email.com>"]
+license = "MIT"
+description = "Short description, no longer than two lines."
+categories = [ "category", "category" ]
+keywords = [ "keyword", "keyword", "keyword", "keyword"]
+repository = "https://github.com/author/pkg-name"
+exclude = [".git", ".gitignore", "justfile", "tests/", "/manual.typ"]
+
+[template]
+path = "template"
+entrypoint = "main.typ"
+thumbnail = "thumbnail.png"

@@ -6,15 +6,11 @@
 
 /**#v(1fr)#outline()#v(1.2fr)#pagebreak()
 = Quick Start
-```typm
-#import "@preview/min-manual:0.2.1": manual
+```typ
+#import "@preview/min-manual:0.3.0": manual
 #show: manual.with(
   title: "Package Name",
-  description: "Short description, no longer than two lines.",
-  package: "pkg-name:0.4.2",
-  authors: "Author <author@email.com>",
-  license: "MIT",
-  logo: image("assets/logo.png")
+  manifest: toml("typst.toml"),
 )
 ```
 
@@ -56,6 +52,8 @@ supported when documenting any type of program or code.
     /// Package URL. |
   logo: none, /// <- image | content
     /// Manual logo. |
+  manifest: none, /// <- toml | dictionary
+    /// Retrieve essential data from _typst.toml_ package manifest. |
   typst-defaults: false, /// <- boolean
     /// Use Typst defaults instead of min-manual defaults. |
   from-comments: none, /// <- string | read
@@ -67,19 +65,37 @@ supported when documenting any type of program or code.
     Set documentation comment delimiters. |**/
   body,
 ) = context {
-  // Check required arguments
-  assert.ne(package, none)
-  assert.ne(package, "")
-  assert.ne(title, none)
-  assert.ne(authors, none)
-  assert.ne(license, none)
-  
   import "@preview/toolbox:0.1.0": storage, default, get
   import "comments.typ"
   import "markdown.typ"
   import "utils.typ"
   
   let comment-delim = get.auto-val(comment-delim, utils.comment-delim)
+  let description = description
+  let package = package
+  let authors = authors
+  let license = license
+  let url = url
+  
+  // Retrieve data from typst.toml manifest, if any
+  if manifest != none {
+    assert.eq(
+      type(manifest), dictionary,
+      message: "#manual(manifest) must be dictionary"
+    )
+    description = manifest.package.description
+    package = manifest.package.name + ":" + manifest.package.version
+    authors = manifest.package.authors
+    license = manifest.package.license
+    url = manifest.package.at("repository", default: none)
+  }
+  
+  // Check required arguments
+  assert.ne(package, none)
+  assert.ne(title, none)
+  assert.ne(authors, none)
+  assert.ne(license, none)
+  
   
   storage.add("typst-defaults", typst-defaults, namespace: "min-manual")
   storage.add("comment-delim", comment-delim, namespace: "min-manual")

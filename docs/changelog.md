@@ -45,9 +45,10 @@
 - Added: `#raw(lang: "term|terminal")` to emulate a terminal window, with prompt highlight
 - Updated: `#manual(from-markdown)` new HTML5 syntax for `#arg`
 
-## 0.3.0
 
+## 0.3.0
 
 - Internal re-design
 - Added: `#manual(manifest)` to retrieve data from _typst.toml_ manifest
+- Added: `#callout` to create customizable callout boxes
 - Updated: `#manual(use-defaults)` &rarr; `#manual(typst-defaults)`

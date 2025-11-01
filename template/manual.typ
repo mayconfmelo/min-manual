@@ -120,6 +120,18 @@ A #emph[Typst] code *example*
 
 You can reference headings even if they are unnumbered, like this @ref section.
 
+
+= Callout
+
+#callout[Simple default callout.]
+
+#callout(title: "Title")[Callout with title]
+
+// More icon names in https://heroicons.com/
+#callout(fill: blue, fill-text: white, icon: "exclamation-triangle")[
+  Blue callout with white text and custom icon.]
+
+
 #pagebreak()
 
 

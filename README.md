@@ -57,10 +57,11 @@ fonts and well-formatted code examples.
   - Typst templates
   - Any other language
 - Retrieval of data from _typst.toml_ package manifest
-- Document arguments/options
+- Documentation for arguments/options
 - Extract code from files
 - Showcase code examples and its result
 - Terminal simulation
+- Customizable callout boxes
 - Paper-friendly links (attached to footnotes)
 - Quick repository reference
   - Typst Universe packages

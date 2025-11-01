@@ -3,6 +3,7 @@
 
 #import "comments.typ": parse as from-comments
 #import "markdown.typ": parse as from-markdown
+#import "@preview/toolbox:0.1.0": comp.pkg, comp.callout
 
 /**#v(1fr)#outline()#v(1.2fr)#pagebreak()
 = Quick Start
@@ -655,7 +656,6 @@ alias.
 ```typ
 #url(url, id, text)
 ```
-
 Creates a paper-friendly link, attached to a footnote containing the URL itself
 for readability when printed.
 
@@ -686,7 +686,33 @@ text <- string | content
 
 
 /**
-== Commands for Package URLs
+= Command Callout
+```typ
+#callout(
+  icon: "information-circle",
+  title: none,
+  fill: gray.lighten(85%),
+  fill-text: auto,
+  body,
+)
+```
+Create a simple customizable callout box, used to highlight a text or showcase
+important content.
+
+icon <- string
+  Icon name, as set by #url("https://heroicons.com/")[Heroicons].
+
+title <- string | content | none
+  Set title, if any.
+
+fill <- color
+  Set background color.
+
+fill-text: <- color
+  Set text color.
+
+
+= Commands for Package URLs
 ```typ
 #pkg(url)
 #univ(name)
@@ -709,34 +735,6 @@ name <- string
 slug <- string
   A `user/name` path, as it appears in GitHub repository paths (used by `#gh`).
 **/
-// TODO: Enable labels in #univ, #pip, #crate, #gh
-#let pkg(..data) = context {
-  let data = data.pos()
-  let out = ()
-  let target = data.remove(0)
-  let text = target
-  
-  // #pkg
-  if data == () {
-    if type(target) == label {panic("#pkg(text, label) required")}
-    
-    text = target.match(regex("\{.*?\}|/[^/]*?$")).text.trim(regex("[/{}]"))
-    target = target.replace( regex("\{(.*?)\}"), m => {m.captures.at(0)} )
-  }
-  else {
-    text = data.last().trim(regex(".*?/"))
-    
-    for m in target.matches(regex("\{.*?\}")) {
-      target = target.replace(m.text, data.remove(0))
-    }
-  }
-  
-  out.push(target)
-  out.push(text)
-  
-  //[#out]
-  url(..out)
-}
 
 // Typst packages (Typst Universe)
 #let univ(name) = pkg("https://typst.app/universe/package/{pkg}", name)

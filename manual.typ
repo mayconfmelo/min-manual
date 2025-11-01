@@ -1,10 +1,10 @@
-#import "@preview/min-manual:0.2.1": manual
+#import "@preview/min-manual:0.3.0": manual
 
 #show: manual.with(
   title: "Minimal Manuals",
   description: "Modern but sober manuals inspired by the manpages of old.",
   authors: "Maycon F. Melo <@mayconfmelo>",
-  package: "min-manual:0.2.1",
+  package: "min-manual:0.3.0",
   url: "typst.app/universe/package/min-manual/",
   license: "MIT",
   logo: image("docs/assets/manual-logo.png"),

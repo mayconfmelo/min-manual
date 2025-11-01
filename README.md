@@ -1,6 +1,6 @@
 # Minimal Manuals
 
-<center align="center">
+<div align="center">
 
 <p class="hidden">
 Modern but sober manuals inspired by the manpages of old.
@@ -27,7 +27,7 @@ Modern but sober manuals inspired by the manpages of old.
 [![Spellcheck](https://github.com/mayconfmelo/min-manual/actions/workflows/spellcheck.yml/badge.svg)](https://github.com/mayconfmelo/min-manual/actions/workflows/spellcheck.yml)
 
 </p>
-</center>
+</div>
 
 
 ## Quick Start
@@ -55,33 +55,27 @@ fonts and well-formatted code examples.
 - Universal documentation
   - Typst packages
   - Typst templates
-  - Source code in any other language
+  - Any other language
 - Retrieval of data from _typst.toml_ package manifest
-- `#arg` document arguments/parameters
-- `#extract` retrieves code from other files or location
-- `#example` displays code-result examples
-  - Typst result
-    - `#raw(lang: "eg|example")` syntax
-  - Custom content result
-- `#raw(lang: "term|terminal")` emulates a terminal window, with prompt highlight
+- Document arguments/options
+- Extract code from files
+- Showcase code examples and its result
+- Terminal simulation
 - Paper-friendly links (attached to footnotes)
-  - `#url` for general links 
-  - `#univ` for Typst Universe packages
-  - `#pip` for Python PyPi packages
-  - `#crate` for Rust crates
-  - `#gh` for GitHub repos
-  - `#pkg` for packages of any source
-- Documentation in standalone Typst files
-- Documentation in standalone Markdown files (experimental)
+- Quick repository reference
+  - Typst Universe packages
+  - PyPi packages
+  - Rust crates
+  - GitHub repositories
+  - Any other URL
+- Documentation retrieval from Markdown files
   - CommonMark Markdown
   - Typst code support
-  - All _min-manual_ features (Typst-only)
-  - Special HTML syntax for `#arg`
-- Documentation embedded in source code (comments)
+  - Access to _min-manual_ features (Typst mode)
+- Documentation retrieval from source code comments
   - Typst code support
   - All _min-manual_ features
-  - Special syntax for `#extract`
-  - Special syntax for `#arg`
+  - Short-hand syntax for some _min-manual_ features
 
 
 ## Default Fonts

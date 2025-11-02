@@ -1,11 +1,7 @@
-// Parses package URLs
+// Parses package URLs (pkg:type/namespace/name@version)
 #let purl(url) = {
-  // REPR: pkg:type/namespace/name@version
-
-  // Remove optional pkg: scheme
-  if url.starts-with("pkg:") {url = url.slice(4)}
-  // Fallback type/ to typst
-  if not url.contains("/") {url = "typst/" + url}
+  if url.starts-with("pkg:") {url = url.slice(4)} // remove optional pkg scheme
+  if not url.contains("/") {url = "typst/" + url} // fallback namespace to typst
 
   url.match(regex("^(.*)/(.*?)(?:[@:](.*))?$")).captures
 }
@@ -15,7 +11,7 @@
 #let comment-delim = ("///", "/**", "**/")
 
 
-// Enables a #raw(lang) to simulate terminal windows (used in #show rules)
+// Enables a #raw(lang) to simulate terminal windows (used in #show)
 #let enable-terminal(doc) = {
   show selector.or(
     raw.where(lang: "term"),
@@ -48,7 +44,7 @@
 }
 
 
-// FEAT: #show: utils.enable-example() allows "eg/example" #raw lang
+// Enables a #raw(lang) to generate source-result boards (used in #show raw)
 #let enable-example(elem) = {
   import "lib.typ": example
 

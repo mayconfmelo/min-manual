@@ -15,8 +15,8 @@
 #let comment-delim = ("///", "/**", "**/")
 
 
-// FEAT: #show: utils.enable-term() allows "term/terminal" #raw syntax
-#let enable-term(doc) = {
+// Enables a #raw(lang) to simulate terminal windows (used in #show rules)
+#let enable-terminal(doc) = {
   show selector.or(
     raw.where(lang: "term"),
     raw.where(lang: "terminal"),
@@ -32,9 +32,6 @@
     import "@preview/toolbox:0.1.0": storage
     set text(fill: rgb("#CFCFCF"))
     
-    // Disable #raw 1em padding here
-    storage.add("raw-padding", false)
-    
     pad(
       x: 1em,
       block(
@@ -45,9 +42,6 @@
         it
       )
     )
-    
-    // Re-enable #raw 1em padding
-    storage.add("raw-padding", true)
   }
   
   doc

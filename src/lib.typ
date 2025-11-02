@@ -203,7 +203,10 @@ supported when documenting any type of program or code.
     show heading.where(level: 6): set text(size: text.size * 1.1)
     show table: set align(center)
     show quote.where(block: true): it => pad(x: 1em, it)
-    show raw.where(block: true): it => pad(left: 1em, it)
+    show raw.where(block: true): it => {
+      if not it.lang.contains("term") {it = pad(left: 1em, it)}
+      it
+    }
     show raw: it => {
       set text(
         ..default(
@@ -229,7 +232,7 @@ supported when documenting any type of program or code.
       else {it}
     }
     show outline: it => align(center, block(width: 80%, align(left, it)))
-    show: utils.enable-term
+    show: utils.enable-terminal
     
     // Main header:
     align(center, {
@@ -762,26 +765,22 @@ slug <- string
 
 
 /**
-= Terminal Emulation
-#grid(columns: (auto, 1fr),gutter: 1em,
-  ````typ
-    ```terminal
-    ~$ command
-    output
-    ```
-  ````,
-  ```terminal
-  ~$ command
-  output
-  ```
-)
-This `#raw(lang: "terminal")` language emulates a terminal window, with prompt
-highlight; a shorter `"term"` name can also be used as an alias. Prompts are any
-line inside the cod block that obeys a certain basic syntax (green paths are optional):
+= Terminal Simulation
+````markdown
 ```terminal
-~/path$ user command
-~/path# root command
-C:path> windows command
-command output
+prompt$ command
+output
+```
+````
+The `#raw(lang: "terminal")` language, also available as `#raw(lang: "term")`,
+emulates a terminal window with prompt highlight. If a line contains one of the
+key characters (yellow), everything to its left will be the prompt (green) and
+to its right the command (red); otherwise the line will be command output (white).
+```terminal
+usr@host ~ % mac command
+usr@host:~$ linux command
+usr@host:~# root command
+C:\> windows command
+output
 ```
 **/

@@ -3,7 +3,7 @@ file_extensions: [term, terminal]
 scope: source.terminal
 contexts:
   main:
-    - match: '^([^\s]*)(\$|#|>)(.*)'
+    - match: '^(.*?)(\$|#|>|%)(.*)'
       captures:
         1: term.prompt.data
         2: term.prompt.sign

@@ -1,6 +1,6 @@
-#import "/src/utils.typ": enable-term
+#import "/src/utils.typ": enable-terminal
 #set page(width: 10cm, height: auto, margin: 1em)
-#show: enable-term
+#show: enable-terminal
 
 ```terminal
 usr@host ~ % mac command

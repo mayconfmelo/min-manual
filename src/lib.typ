@@ -316,6 +316,7 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
     arguments. |**/
   body
 ) = context {
+  assert.eq(type(title), str, message: "#arg(title) must be string")
   assert.ne(body, [], message: "#arg(body) should not be empty: " + title)
   
   let required = title.match(regex("<([^<]+?)>\s*$"))

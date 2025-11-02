@@ -78,7 +78,7 @@ supported when documenting any type of program or code.
   let license = license
   let url = url
   
-  // Retrieve data from typst.toml manifest, if any
+  // Retrieve data from typst.toml manifest
   if manifest != none {
     assert.eq(
       type(manifest), dictionary,
@@ -97,10 +97,8 @@ supported when documenting any type of program or code.
   assert.ne(authors, none)
   assert.ne(license, none)
   
-  
   storage.add("typst-defaults", typst-defaults, namespace: "min-manual")
   storage.add("comment-delim", comment-delim, namespace: "min-manual")
-  storage.add("raw-padding", true, namespace: "min-manual")
   
   set text(
     ..default(when: text.size == 11pt, value: (size: 13pt), typst-defaults)
@@ -205,11 +203,7 @@ supported when documenting any type of program or code.
     show heading.where(level: 6): set text(size: text.size * 1.1)
     show table: set align(center)
     show quote.where(block: true): it => pad(x: 1em, it)
-    show raw.where(block: true): it => context {
-      let padding = storage.get("raw-padding", false, namespace: "min-manual")
-      
-      if padding {pad(left: 1em, it)} else {it}
-    }
+    show raw.where(block: true): it => pad(left: 1em, it)
     show raw: it => {
       set text(
         ..default(
@@ -594,9 +588,6 @@ alias.
   import "@preview/toolbox:0.1.0": storage
   import "lib.typ"
   
-  // Disable #raw 1em padding here
-  storage.add("raw-padding", false, namespace: "min-manual")
-  
   // #layout allows to calc 50% of content width
   layout(page-size => {
     let code = data.pos().at(0, default: none)
@@ -666,9 +657,6 @@ alias.
     
     block(grid(columns: cols, first, last))
   })
-  
-  // Re-enable #raw 1em padding
-  storage.add("raw-padding", true, namespace: "min-manual")
 }
 
 

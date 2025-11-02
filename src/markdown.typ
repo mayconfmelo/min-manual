@@ -37,7 +37,8 @@ commands.
 ]
 **/
 
-// FEAT: markdown.get-arg() parses HTMl <dl> into #arg, or fallback to #terms list
+
+// Parses special <dl> tags for #arg
 #let get-arg(attrs, body, lib) = {
   let args = ()
   
@@ -81,7 +82,7 @@ commands.
   
   while i != args.len() {
     if attrs.at("data-arg", default: none) != none {
-      // Renders a #arg command
+      // Renders an #arg command
       lib.arg(args.at(i), args.at(i + 1))
     }
     else {
@@ -94,7 +95,7 @@ commands.
 }
 
 
-// FEAT: markdown.set-code() parses <code> tags
+// Parses <code> tags
 #let set-code(attrs, body) = {
   let lang = attrs.at("data-lang", default: "")
   
@@ -104,7 +105,7 @@ commands.
 }
 
 
-// MAIN: markdown.parse() converts markdown code into Typst code
+// Parses Markdown into Typst code using cmarker
 #let parse(doc, cmarker-html: (:), ..cmarker-args) = {
   if doc == none {return}
   

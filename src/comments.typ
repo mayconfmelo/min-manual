@@ -43,7 +43,7 @@ The _min-manual_ itself is documented through comments in source code, check it
 out to see how it looks like in practice.
 **/
 
-// FEAT: comment.esc() escapes all non alphanumerical characters and apply regex
+// Escapes all non-alphanumerical characters
 #let esc(text) = {
   let pattern = ""
   
@@ -55,7 +55,8 @@ out to see how it looks like in practice.
   pattern
 }
 
-// FEAT: comment.arg-handle() enables option/arg documentation
+
+// Insert prior option/key into the special #arg syntax
 #let handle-args(doc, delims) = {
   let delim = delims.slice(0,2).join("|")
   
@@ -71,7 +72,7 @@ out to see how it looks like in practice.
 }
 
 
-// FEAT: comment.get() retrieves documentation from the text content
+// Retrieve comment documentation in the midst of source code
 #let clean(doc, delims) = {
   let all = delims.at(0) + ".*|(?s)" + delims.slice(1, 3).join(".*?")
   let opening = delims.at(0) + "|" + delims.slice(1).join("|")
@@ -86,7 +87,7 @@ out to see how it looks like in practice.
 }
 
 
-// FEAT: comment.extract() retrieves code from this or any other document
+// Parses special syntax for #extract
 #let get-extract(doc, doc-orig) = {
   // USAGE: :title: lang "model" => display
   // USAGE: :usage name: lang "model" => display
@@ -119,7 +120,7 @@ out to see how it looks like in practice.
 }
 
 
-// FEAT: comment.args() parses argument notation syntax
+// Parses special syntax for #arg
 #let get-arg(doc) = {
   doc.replace(regex("\s*(.*\s*(?:<-|->)\s*.*)\n?(?s)(.*?)(?:\n\n|$)"), m => {
     let title = m.captures.at(0)
@@ -138,7 +139,8 @@ out to see how it looks like in practice.
 }
 
 
-// MAIN: comment.parse() handles doc-comments inside content
+
+// Parses comment documentation (exported as #from-comment)
 #let parse(doc, delims) = {
   if doc == none {return}
   
@@ -149,6 +151,7 @@ out to see how it looks like in practice.
   doc = handle-args(doc, delims)
   doc = clean(doc, delims)
   
+  // Insert data at the begining
   doc.insert(0,
     ```
     #import "lib.typ": *
@@ -161,5 +164,6 @@ out to see how it looks like in practice.
   doc = get-arg(doc)
   doc = get-extract(doc, doc-orig)
   
+  // #doc exposes the original file content to the comment documentation
   eval( doc, mode: "markup", scope: (doc: doc-orig) )
 }

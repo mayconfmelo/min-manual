@@ -1,9 +1,21 @@
 // Parses package URLs (pkg:type/namespace/name@version)
 #let purl(url) = {
-  if url.starts-with("pkg:") {url = url.slice(4)} // remove optional pkg scheme
-  if not url.contains("/") {url = "typst/" + url} // fallback namespace to typst
-
-  url.match(regex("^(.*)/(.*?)(?:[@:](.*))?$")).captures
+  if url.starts-with("pkg:") {
+    url = url.match(regex("^(?:pkg:)?([^/]*)/(.*?)(?:[@:](.*))?$"))
+    
+    if url == none {none} else {url.captures}
+  }
+  else {
+    url = url.replace("@", "")
+    url = ("typst", ..url.split(":"))
+  
+    if url.len() >= 3 and not url.at(2).ends-with(regex("\d+\.\d+\.\d+")) {
+      panic("Typst version must be semantic (got " + url.at(-1) + ")")
+    }
+    else if url.len() < 3 {url.push(none)}
+    
+    return url
+  }
 }
 
 

@@ -122,9 +122,10 @@ out to see how it looks like in practice.
 
 // Parses special syntax for #arg
 #let get-arg(doc) = {
-  doc.replace(regex("\s*(.*\s*(?:<-|->)\s*.*)\n?(?s)(.*?)(?:\n\n|$)"), m => {
+  doc.replace(regex("\s*(.*\s*(?:<-|->)\s*.*)\n?(?s)(.*?)(?:\n[ \t]*\n|$)"), m => {
     let title = m.captures.at(0)
     let body = m.captures.at(1)
+    
     
     // Insert raw in title, if not already
     if not title.starts-with(regex("`.*`")) {

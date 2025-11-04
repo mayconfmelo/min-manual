@@ -1,4 +1,5 @@
 #import "/src/lib.typ": manual
+#set page(height: auto)
 
 #show: manual.with(
   title: "Package Name",

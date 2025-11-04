@@ -38,15 +38,10 @@ supported when documenting any type of program or code.
   by: none, /// <- string | content
     /// Manual author (fallback to `authors.at(0)` if not set). |
   package: none, /// <- string <required>
-    /** `"pkg:type/namespace/name@version"` \ 
-    Package identification,#footnote[Inspired by
-    _#link("https://github.com/package-url/purl-spec/blob/main/README.rst#purl",
-    "https://github.com/package-url/purl-spec/")_] where `pkg:type/namespace/` is
-    optional (fallback to `pkg:typst/`) and `name@version` can also be written
-    `name:version`. |**/
+    /// `"@namespace/name:version"`\ `"pkg:type/namespace/name@version"` \
+    ///  Package identification (check section @id). |
   authors: none, /// <- string | array of strings <required>
-    /** `"name <url>"`\
-    Package author or authors, each followed by an optional `<url>`. |**/
+    /// `"name <url>"`\ Package authors, each followed by an optional `<url>`. |
   license: none, /// <- string | content <required>
     /// Package license. |
   url: none, /// <- string | content
@@ -62,8 +57,8 @@ supported when documenting any type of program or code.
   from-markdown: none, /// <- string | read
     /// Retrieve documentation from markdown files (experimental). |
   comment-delim: auto, /// <- array of strings
-    /** #raw(`("///", "/.**", "**./")`.text.replace(".", "")) \
-    Set documentation comment delimiters. |**/
+    /// #raw(`("///", "/.**", "**./")`.text.replace(".", "")) \
+    /// Set documentation comment delimiters. |**/
   body,
 ) = context {
   import "@preview/toolbox:0.1.0": storage, default, get
@@ -105,10 +100,55 @@ supported when documenting any type of program or code.
   )
   
   context {
+    /** #pagebreak()
+    == Package Identification <id>
+    ```
+    @namespace/name:version
+    ```
+    ```
+    pkg:type/namespace/name@version
+    ```
+    The package identification can be done through an Typst import or a packag
+    URL#url("https://github.com/package-url/purl-spec/blob/main/README.rst#purl");
+    both are ways to reliably identify and locate packages, but the package URL
+    works in a mostly universal and uniform way across programming languages,
+    package managers, packaging conventions, tools, APIs and databases.
+    
+    The Typst import consists of the following components:
+    
+    @namespace/ <- nothing
+      Typst namespace; can be omitted if it's `@preview/`.
+      
+    name: <- nothing <required>
+      Typst package name.
+      
+    version <- nothing
+      Typst package version.
+    
+    The package URL used is a custom implementation that consists of the
+    following components:
+    
+    pkg: -> nothing <required>
+      Package URL scheme
+    
+    type/ <- nothing
+      Package protocol, platform, manager, etc.
+    
+    namespace/ <- nothing
+      Additional prefix to the name, generally used for desambiguity.
+    
+    name@ <- nothing <required>
+      Package name.
+    
+    version <- nothing
+      Package version.
+    **/
     let data = utils.purl(package)
     let authors = authors
     let by = by
     let font = (font: ("tex gyre heros", "arial"))
+    
+    assert.ne(data, none, message: "Invalid #manual(package): " + package)
     
     if type(authors) == str {authors = (authors,)}
     if by == none {by = authors.at(0).replace(regex("\s*<.*>\s*"), "")}
@@ -203,21 +243,40 @@ supported when documenting any type of program or code.
     show heading.where(level: 6): set text(size: text.size * 1.1)
     show table: set align(center)
     show quote.where(block: true): it => pad(x: 1em, it)
-    show raw.where(block: true): it => {
-      if not it.lang.contains("term") {it = pad(left: 1em, it)}
-      it
+    show selector.or(
+      raw.where(lang: "eg"),
+      raw.where(lang: "example"),
+    ): it => {
+      import "lib.typ": example
+      
+      pad(left: -1em, example(it.text, block: true))
     }
-    show raw: it => {
-      set text(
-        ..default(
-          when: text.font == "dejavu sans mono",
-          value: (font: ("fira mono", "inconsolata")),
-          typst-defaults
-        ),
-        size: text.size + 1pt
+    show selector.or(
+      raw.where(lang: "term"),
+      raw.where(lang: "terminal"),
+    ): set raw(
+      syntaxes: "assets/term.sublime-syntax",
+      theme: "assets/term.tmTheme"
+    )
+    show selector.or(
+      raw.where(lang: "term", block: true),
+      raw.where(lang: "terminal", block: true),
+    ): it => {
+      set text(fill: rgb("#CFCFCF"))
+      
+      pad(
+        right: 1em,
+        block(
+          width: 100%,
+          fill: rgb("#1D2433"),
+          inset: 8pt,
+          radius: 2pt,
+          it
+        )
       )
-      utils.enable-example(it)
     }
+    show raw.where(block: true): it => pad(left: 1em, it)
+    show raw: set text(size: text.size)
     show footnote.entry: set text(size: text.size - 2pt)
     show selector.or(
       terms, enum, table, figure, list,
@@ -232,7 +291,6 @@ supported when documenting any type of program or code.
       else {it}
     }
     show outline: it => align(center, block(width: 80%, align(left, it)))
-    show: utils.enable-terminal
     
     // Main header:
     align(center, {
@@ -256,14 +314,9 @@ supported when documenting any type of program or code.
       if url != none {data.at(1) = link(url)[#data.at(1)#footnote(url)]}
       
       data.push(license)
+      data = data.map(item => {if item != none {h(1fr) + item + h(1fr)}})
       
-      block(width: 90%, data.map(item => {
-        if item != none {
-          h(1fr)
-          item
-          h(1fr)
-        }
-      }).join())
+      block(width: 90%, data.join())
       v(1em)
       
       for author in authors {
@@ -301,9 +354,10 @@ supported when documenting any type of program or code.
     body
   }
 }
+}
 
 
-/** #pagebreak()
+/**
 = Command Arguments
 :arg:
 Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
@@ -589,44 +643,39 @@ alias.
   ..data /// <- raw | string
     /// The code and result blocks — the optional latter can be a content block. |
 ) = {
-  import "@preview/toolbox:0.1.0": storage
+  import "@preview/toolbox:0.1.0": storage, get
   import "lib.typ"
   
   // #layout allows to calc 50% of content width
   layout(page-size => {
-    let code = data.pos().at(0, default: none)
-    let code = if type(code) == str {raw(code)} else {code}
-    let lang = code.at("lang", default: "typ")
-    let out = data.pos().at(1, default: none)
+    let data = data.pos()
+    let code = data.at(0, default: none)
+    let out = data.at(1, default: none)
     let output-align = output-align
     let scope = scope
     let cols = (auto,)
+    let lang
     let first
     let last
     
-    set raw(lang: "typ")
+    if type(code) == str {code = raw(code)}
+    
+    assert.ne(type(code), raw, message: "#example(code) must be #raw or string")
+    assert(data.len() <= 2, message: "#example expects only 2 arguments")
+    
+    lang = code.at("lang", default: "typ")
+    scope = get.auto-val(scope, (:)) + dictionary(lib)
+    
+    set raw(lang: lang)
     set grid.cell(inset: 1em)
-  
-    assert.ne(
-      code, none,
-      message: "No #raw code received: must have #example(raw)"
-    )
-    assert(
-      not data.pos().len() > 2,
-      message: "Received" + str(data.pos().len()) + "arguments (expected 2)"
-    )
     
-    if not lang.contains("typ") {output-align = false}
-    if scope == auto {scope = (:)}
-    
-    // Insert min-manual in scope
-    for pair in dictionary(lib).pairs() {
-      scope.insert(..pair)
+    if not lang.contains("typ") and out == none {
+      panic("Provide both #example(code, output) options, or Typst code")
     }
     
     // Evaluate output from Typst code
     if output-align != false and out == none {
-      out = eval("[" + code.text + "]", scope: scope)
+      out = eval(code.text, mode: "markup", scope: scope)
     }
   
     if output-align == auto {
@@ -636,12 +685,6 @@ alias.
       output-align = if code-width >= page-width {bottom} else {right}
     }
     
-    // Check for invalid alignments
-    assert(
-      (top, bottom, left, right).contains(output-align),
-      message: "Invalid #example(alignment): " + str(alignment)
-    )
-    
     // Set grid data
     if (left, top).contains(output-align) {
       first = grid.cell(out, stroke: gray.lighten(60%))
@@ -650,6 +693,9 @@ alias.
     else if (right, bottom).contains(output-align) {
       first = grid.cell(code)
       last = grid.cell(out, stroke: gray.lighten(60%))
+    }
+    else {
+      panic("Invalid #example(alignment: " + str(alignment) + ")")
     }
     
     // Set grid column number and width

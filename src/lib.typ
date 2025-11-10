@@ -1,11 +1,11 @@
 // NAME: Minimal Manuals
-// TODO: Implement web manual (HTML) when stable
+// TODO: Implement web manual when HTML is stable
 
 #import "comments.typ": parse as from-comments
 #import "markdown.typ": parse as from-markdown
 #import "@preview/toolbox:0.1.0": comp.pkg, comp.callout
 
-/**#v(1fr)#outline()#v(1.2fr)#pagebreak()
+/**#v(1fr)#outline()#v(1.2fr)#pagebreak()#import "utils.typ": syntax
 = Quick Start
 ```typ
 #import "@preview/min-manual:0.3.0": manual
@@ -57,8 +57,8 @@ supported when documenting any type of program or code.
   from-markdown: none, /// <- string | read
     /// Retrieve documentation from markdown files (experimental). |
   comment-delim: auto, /// <- array of strings
-    /// #raw(`("///", "/.**", "**./")`.text.replace(".", "")) \
-    /// Set documentation comment delimiters. |**/
+    /// #syntax.doc-comment\ Set documentation comment delimiters. |
+    /// <comment-delim>
   body,
 ) = context {
   import "@preview/toolbox:0.1.0": storage, default, get
@@ -215,6 +215,7 @@ supported when documenting any type of program or code.
       stroke: gray.lighten(60%),
       inset: 10pt,
       align: (_,y) => if y == 0 { center } else { left },
+      fill: (_,y) => if y == 0 {gray.lighten(85%)} else {none},
     )
     set rect(
       inset: 0pt,
@@ -274,6 +275,10 @@ supported when documenting any type of program or code.
           it
         )
       )
+    }
+    show <min-manual:example-cmd>: it => {
+      if type(it) == content and it.func() == raw {it = pad(left: -1em, it)}
+      it
     }
     show raw.where(block: true): it => pad(left: 1em, it)
     show raw: set text(size: text.size)
@@ -353,7 +358,6 @@ supported when documenting any type of program or code.
     
     body
   }
-}
 }
 
 
@@ -652,19 +656,19 @@ alias.
     let code = data.at(0, default: none)
     let out = data.at(1, default: none)
     let output-align = output-align
-    let scope = scope
+    let scope = dictionary(lib) + get.auto-val(scope, (:))
     let cols = (auto,)
     let lang
     let first
     let last
     
-    if type(code) == str {code = raw(code)}
+    if type(code) == str {code = raw(code, block: true)}
+    if type(code) != content {panic("#example(code) must be #raw or string")}
     
-    assert.ne(type(code), raw, message: "#example(code) must be #raw or string")
     assert(data.len() <= 2, message: "#example expects only 2 arguments")
+    assert(code.func() == raw, message: "#example(code) must be #raw or string")
     
     lang = code.at("lang", default: "typ")
-    scope = get.auto-val(scope, (:)) + dictionary(lib)
     
     set raw(lang: lang)
     set grid.cell(inset: 1em)
@@ -685,14 +689,19 @@ alias.
       output-align = if code-width >= page-width {bottom} else {right}
     }
     
+    code = [#code <min-manual:example-cmd>]
+    out = [#out <min-manual:example-cmd>]
+    code = grid.cell(code)
+    out = grid.cell(out, stroke: gray.lighten(60%))
+    
     // Set grid data
     if (left, top).contains(output-align) {
-      first = grid.cell(out, stroke: gray.lighten(60%))
-      last = grid.cell(code)
+      first = out
+      last = code
     }
     else if (right, bottom).contains(output-align) {
-      first = grid.cell(code)
-      last = grid.cell(out, stroke: gray.lighten(60%))
+      first = code
+      last = out
     }
     else {
       panic("Invalid #example(alignment: " + str(alignment) + ")")
@@ -824,10 +833,10 @@ emulates a terminal window with prompt highlight. If a line contains one of the
 key characters (yellow), everything to its left will be the prompt (green) and
 to its right the command (red); otherwise the line will be command output (white).
 ```terminal
-usr@host ~ % mac command
-usr@host:~$ linux command
-usr@host:~# root command
-C:\> windows command
+usr@host ~ % command (zsh)
+usr@host:~$ command (bash)
+usr@host:~# command (root)
+C:\> command (windows)
 output
 ```
 **/

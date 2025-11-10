@@ -23,6 +23,15 @@
 #let comment-delim = ("///", "/**", "**/")
 
 
+// Provide syntax-related data
+#let syntax = (
+  doc-comment: ("///", "/**", "**/"),
+  comment: ( "//", "/* */" ),
+  arg: "name <- types -> types <required>\n  body",
+  extract: ":display name: lang \"model\" => display-custom",
+)
+
+
 // Enables a #raw(lang) to simulate terminal windows (used in #show)
 #let enable-terminal(doc) = {
   show selector.or(

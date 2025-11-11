@@ -1,21 +1,17 @@
 /**
-= Markdown Documentation
-
+== Documentation from Markdown
 ````md
 # Feature
 ```typst
-#feature(title)
+#show: feature.with(title)
 ```
 The `#feature` command does something.
 ````
 
 The documentation can be written in Markdown and _min-manual_ will manage to
 generate a manual from it. The conversion between Markdown and Typst code is done
-using the #univ("cmarker") package, with some little tweaks — therefore some
-_cmarker_ features are available.
-
-Some Markdown-only and Typst-only code can be written using the
-_cmarker_-inherited features:
+using the #univ("cmarker") package; therefore some _cmarker_ features are
+supported, like the _raw-typst_ and _typst-exclude_ special comments:
 
 #raw(lang: "md", block: true, ```
 <!--raw-typst
@@ -27,14 +23,13 @@ This code appears only in Markdown
 <!--typst-end-exclude--.>
 ```.text.replace(".", ""))
 
-Refer to `tests/markdown/` for the Markdown (HTML5) structure used to get `#arg`
-commands.
+There is also a special syntax structure for `#arg` using Markdown/HTML5 (see
+the `tests/markdown/assets/file.md` file).
 
-#rect[
-  As it is a recent implementation, the Markdown documentation is still experimental
-  and may or may not present errors, bugs, or unexpected behaviors. Used it with
-  caution for now.
-]
+#callout(title: "Experimental", icon: "exclamation-triangle")[
+  As it is a recent implementation, the Markdown documentation is still
+  experimental and may or may not present errors, bugs, or unexpected behaviors.
+  Used it with caution for now.]
 **/
 
 

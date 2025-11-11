@@ -1,47 +1,39 @@
 /**
-= Comment Documentation
-
+== Documentation from Comments
 ```typ
 /// = Feature
-/// :feature:
+/// :show.with feature:
 /// The `#feature` command does something.
 #let feature(title) = { }
 ```
 
 The documentation can be embedded into the source code itself through special
-comments, sometimes called _doc-comments_. These comments contains Typst code
-retrieved by _min-mannual_ to generate a complete manual, while at the same time
-they are useful as in-code documentation.
+comments, sometimes called _doc-comments_. These comments contain Typst code
+that is retrieved by _min-manual_ to generate the manual document — while also
+serving as documentation within the source code, like standard comments.
 
-By default, documentation comments are a extension of Typst comments, both
-one-line and block comments:
+To use it with languages that have a different syntax for comments, check the
+#link(<comment-delim>, `comment-delim`) option.
 
-#table(
-  columns: 2,
-  align: center,
-  fill: (_,y) => if y == 0 {gray.lighten(85%)} else {none},
-  table.header[*Normal*][*Documentation*],
-  `//`, `///`,
-  raw("/.* *./".replace(".", "")),
-  raw("/.** **./".replace(".", "")),
+#heading([Special syntax for argument command], outlined: false, level: 3)
+#example(
+  raw(syntax.arg, block: true, lang: ""),
+  raw("#arg(\"" + syntax.arg.replace("\n  ", "\", ") + ")", block: true, lang: "typ")
 )
+Each argument must be between empty lines, or end with a `|` to separate them.
 
-Custom comment delimiters can be set by `#manual(comment-delim)` option. In
-addition to Typst code, documentation comments also support all _min-book_
-features both as commands and through special syntax:
-
-#raw(lang: "typ", block: true, ```
-// #extract (from documentation files itself)
-.:rule name: lang "model" => display
-
-// #arg (optional arrows)
-name <.- type | type -.> type <required>
-  body |
-```.text.replace(".", ""))
-
-The _min-manual_ itself is documented through comments in source code, check it
-out to see how it looks like in practice.
+#heading([Special syntax for extract command], outlined: false, level: 3)
+#example(
+  raw(syntax.extract, block: true, lang: ""),
+  ```typ
+  #extract(
+    name,
+    display: display, lang: lang, model: model,
+  )
+  ```
+)
 **/
+
 
 // Escapes all non-alphanumerical characters
 #let esc(text) = {

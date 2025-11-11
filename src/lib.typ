@@ -38,8 +38,8 @@ supported when documenting any type of program or code.
   by: none, /// <- string | content
     /// Manual author (fallback to `authors.at(0)` if not set). |
   package: none, /// <- string <required>
-    /// `"@namespace/name:version"`\ `"pkg:type/namespace/name@version"` \
-    ///  Package identification (check section @id). |
+    /// `"@namespace/name:version"  "pkg:type/namespace/name@version"`\
+    ///  Package identification (see @id section). |
   authors: none, /// <- string | array of strings <required>
     /// `"name <url>"`\ Package authors, each followed by an optional `<url>`. |
   license: none, /// <- string | content <required>
@@ -53,11 +53,11 @@ supported when documenting any type of program or code.
   typst-defaults: false, /// <- boolean
     /// Use Typst defaults instead of min-manual defaults. |
   from-comments: none, /// <- string | read
-    /// Retrieve documentation from comments in source files. |
+    /// Retrieve documentation from comments in source code files. |
   from-markdown: none, /// <- string | read
     /// Retrieve documentation from markdown files (experimental). |
   comment-delim: auto, /// <- array of strings
-    /// #syntax.doc-comment\ Set documentation comment delimiters. |
+    /// #raw(repr(syntax.doc-comment))\ Set documentation comment delimiters. |
     /// <comment-delim>
   body,
 ) = context {
@@ -108,11 +108,12 @@ supported when documenting any type of program or code.
     ```
     pkg:type/namespace/name@version
     ```
-    The package identification can be done through an Typst import or a packag
-    URL#url("https://github.com/package-url/purl-spec/blob/main/README.rst#purl");
-    both are ways to reliably identify and locate packages, but the package URL
-    works in a mostly universal and uniform way across programming languages,
-    package managers, packaging conventions, tools, APIs and databases.
+    The package identification can be done through an Typst import or a #url(
+    "https://github.com/package-url/purl-spec/blob/main/README.rst#purl")[
+    package URL]; both are ways to reliably identify and locate packages, but
+    the latter works in a mostly universal and uniform way across dofferent
+    programming languages, package managers, packaging conventions, tools, APIs
+    and databases.
     
     The Typst import consists of the following components:
     
@@ -252,6 +253,27 @@ supported when documenting any type of program or code.
       
       pad(left: -1em, example(it.text, block: true))
     }
+    /** = Syntax
+    == Terminal Simulation
+    ````markdown
+    ```terminal
+    prompt$ command
+    output
+    ```
+    ````
+    Generates a generic terminal simulation, with syntax highlight for prompt,
+    command, and output. It is implemented as `#raw(lang: "terminal")`, and also
+    available under the shorter `"term"` name. The syntax detects key characters
+    (yellow) and sets everything at its left as prompt (green) and at its right
+    as command (red); lines without key characters are considered output (white).
+    ```terminal
+    usr@host ~ % command (zsh)
+    usr@host:~$ command (bash)
+    usr@host:~# command (root)
+    C:\> command (windows)
+    output
+    ```
+    **/
     show selector.or(
       raw.where(lang: "term"),
       raw.where(lang: "terminal"),
@@ -361,8 +383,11 @@ supported when documenting any type of program or code.
 }
 
 
+/// = Commands
+
+
 /**
-= Command Arguments
+== Arguments
 :arg:
 Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
 **/
@@ -456,7 +481,7 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
   }
   
   // Grid for name and types
-  title = (grid(columns: title.len(), ..title),)
+  title = ( grid(columns: title.len(), ..title) ,)
   
   // Add required to current title
   if required != none {
@@ -466,13 +491,16 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
   }
   
   // Grid for current title and required
-  title = grid(columns: (1fr, auto), ..title)
+  title = grid(columns: (1fr, auto), align: left, ..title)
   
   // Left-padded body
   if body != [] {body = pad(left: 1em, body)}
   
   body = [
-    #title
+    #{
+      set par(justify: false)
+      title
+    }
     #context v(-par.leading * 0.5)
     #body
   ]
@@ -488,24 +516,26 @@ Defines and explains possible arguments/parameters (see `/tests/commands/arg/`).
 
 
 /**
-= Command Extract
+== Extract
 :extract:
 Extract code from another file or location (see `/tests/commands/extract/`).
 **/
 #let extract(
   name, /// <- string
-    /// Name of the code structure to retrieve (the last match is used). |
+    /// Name of the code structure to retrieve (uses last match). |
   from: auto, /// <- string | read <required>
     /// File from where the code will be retrieved (required in the first use). |
-  display: auto, /// <- string | "show.with" | "show" | "call" | "set" | "let" | "arg" | "str" | none
-    /** How to render code. Set predefined Typst cases, or arbitrary cases
-        where `<name>`, `<capt>`, and `<text>` markers are replaced by the name,
-        last capture, and last retrieved text, respectively. |**/
+  display: auto, /// <- string
+    /** `"show.with"  "show"  "call"  "set"  "str"  "src"  "arg"  "let"`\
+        How to render the code retrieved: as one of the predefined Typst cases
+        above, or an arbitrary template that interpolates `<name>`, `<capt>`,
+        and `<text>` as the name, last capture, and last retrieved text, respectively. |**/
   lang: "typ", /// <- string
     /// Programming language of the code. |
-  model: auto, /// <- string | "func" | "arg" | "let" | "var" | "call"
-    /** Custom regex pattern to retrieve code — spaces captured before the
-    code are used to normalize indentation. |**/
+  model: auto, /// <- string
+    /** `"func"  "arg"  "let"  "var"  "call"`\
+        Regex pattern to retrieve code: one of the predefined names above, or
+        a custom pattern (spaces before code normalizes indentation). |**/
 ) = context {
   import "@preview/toolbox:0.1.0": storage
   import "utils.typ"
@@ -536,7 +566,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   let capt
   let indent
   
-  // Retrieve #extract(from) when not given (auto)
+  // Retrieve #extract(from) when not given
   if from == auto {from = storage.get("extract-from", namespace: "min-manual")}
   else {storage.add("extract-from", from, namespace: "min-manual")}
   
@@ -580,11 +610,6 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   capt = matches.last().captures.at(0)
     .replace(regex("(?m)^[ \t]{" + str(indent) + "}"), "")
   
-  display = display
-    .replace("<name>", name)
-    .replace("<capt>", capt)
-    .replace("<text>", matches.last().text)
-  
   // Remove documentation comments
   if comments != none {
     import "comments.typ": esc
@@ -595,6 +620,11 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     capt = capt.replace(regex(comments), "")
     display = display.replace(regex(comments), "")
   }
+  
+  display = display
+    .replace("<name>", name)
+    .replace("<capt>", capt)
+    .replace("<text>", matches.last().text)
   
   // Normalize captured code
   display = display
@@ -631,21 +661,20 @@ Extract code from another file or location (see `/tests/commands/extract/`).
 
 
 /**
-= Command Code-Result Example
+== Code Example
 :example:
-Generates a code-result example, consisting in a `#raw` code block and an annex
-block representing the code result. If only a Typst code block is passed, the
-result is automatically evaluated. Can also be used as `#raw(lang: "example")`
-language to evaluate Typst codes; a shorter `"eg"` name can also be used as an
-alias.
+Generates a code example that showcases its result. If only a Typst code is
+passed, the result is automatically generated. Can also be used as
+`#raw(lang: "example")` syntax for Typst codes; a shorter `"eg"` is also available.
 **/
 #let example(
   scope: auto, /// <- dictionary | yaml | toml
-    /// Define the `#eval` scope of automatic Typst results. |
+    /// Additional scope available when generating Typst results. |
   output-align: auto, /// <- top | bottom | left | right | false
-    /// Set position of result block — `false` disables it. |
+    /// Position of result block. |
   ..data /// <- raw | string
-    /// The code and result blocks — the optional latter can be a content block. |
+    /// `(code, result)`\
+    /// Positional arguments for code and optional result. |
 ) = {
   import "@preview/toolbox:0.1.0": storage, get
   import "lib.typ"
@@ -720,12 +749,12 @@ alias.
 
 
 /**
-= Command URL
+== Paper-friendly URL
 ```typ
 #url(url, id, text)
 ```
 Creates a paper-friendly link, attached to a footnote containing the URL itself
-for readability when printed.
+for readability in paper.
 
 url <- string | label <required>
   URL set to link and shown in footnote.
@@ -754,7 +783,7 @@ text <- string | content
 
 
 /**
-= Command Callout
+== Callout
 ```typ
 #callout(
   icon: "information-circle",
@@ -768,7 +797,7 @@ Create a simple customizable callout box, used to highlight a text or showcase
 important content.
 
 icon <- string
-  Icon name, as set by #url("https://heroicons.com/")[Heroicons].
+  Icon name, as set by #url("https://heroicons.com/")[Heroicons.]
 
 title <- string | content | none
   Set title, if any.
@@ -779,7 +808,7 @@ fill <- color
 fill-text: <- color
   Set text color.
 
-= Commands for Package URLs
+== Package URL
 ```typ
 #pkg(url)
 #univ(name)
@@ -788,21 +817,21 @@ fill-text: <- color
 #npm(name)
 #gh(slug)
 ```
-Generates paper-friendly links to packages from different sources/platforms using
-only essential data like its name (see `/tests/commands/links/`).
+Generates paper-friendly links to packages from different sources/platforms
+requiring only essential data. Supports generic packages, Typst Universe, Python
+Pypi, Rust crates, Node.js npm, GitHub repositories.
 
 url <- string
-  Package URL (used by `#pkg`). The package name is extracted if enclosed in `{}`
-  or fallback to the last `/slug` of the URL.
+  `"https://repo.com/{name}/download"  "https://repo.com/name"`\
+  Package URL. Extracts the package name between `{}` or as the last `/slug`.
 
 name <- string
-  Package name as it is in the source repository/platform (used by `#pip`, 
-  `#univ`, and `#crate`).
+  Package name as it appears in the package source/platform.
 
 slug <- string
-  A `user/name` path, as it appears in GitHub repository paths (used by `#gh`).
+  The `user/repo` slug of the GitHub repository URL.
 **/
-// #pkg comes from #toolbox.comp.pkg
+
 
 // Typst packages (Typst Universe)
 #let univ(name) = pkg("https://typst.app/universe/package/{pkg}", name)
@@ -819,24 +848,6 @@ slug <- string
 // GitHub repositories
 #let gh(slug) = pkg("https://github.com/{path}/", slug)
 
-
 /**
-= Terminal Simulation
-````markdown
-```terminal
-prompt$ command
-output
-```
-````
-The `#raw(lang: "terminal")` language, also available as `#raw(lang: "term")`,
-emulates a terminal window with prompt highlight. If a line contains one of the
-key characters (yellow), everything to its left will be the prompt (green) and
-to its right the command (red); otherwise the line will be command output (white).
-```terminal
-usr@host ~ % command (zsh)
-usr@host:~$ command (bash)
-usr@host:~# command (root)
-C:\> command (windows)
-output
-```
+= Alternative Sources
 **/

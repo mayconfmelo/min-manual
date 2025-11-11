@@ -50,9 +50,9 @@ Each argument must be between empty lines, or end with a `|` to separate them.
 
 // Insert prior option/key into the special #arg syntax
 #let handle-args(doc, delims) = {
-  let delim = delims.slice(0,2).join("|")
+  delims = delims.at(0) + if delims.len() == 3 {"|" + delims.at(1)}
   
-  doc.replace(regex("(.*?),?\s*(" + delim + ")\s*<-(.*)"), m => {
+  doc.replace(regex("(.*?),?\s*(" + delims + ")\s*<-(.*)"), m => {
     let name = m.captures.at(0).trim(regex("[\s,;]"))
     let mark = m.captures.at(1)
     let types = m.captures.at(2)
@@ -66,13 +66,17 @@ Each argument must be between empty lines, or end with a `|` to separate them.
 
 // Retrieve comment documentation in the midst of source code
 #let clean(doc, delims) = {
-  let all = delims.at(0) + ".*|(?s)" + delims.slice(1, 3).join(".*?")
-  let opening = delims.at(0) + "|" + delims.slice(1).join("|")
+  let all = delims.at(0) + ".*"
+  let opening = delims.at(0)
+  
+  if delims.len() == 3 {
+    all += "|(?s)" + delims.slice(1, 3).join(".*?")
+    opening += "|" + delims.slice(1).join("|")
+  }
   
   doc.matches(regex(all)).map(
     m => m.text
       .trim(regex(opening))
-      //.replace(regex("(?m)^(?: *\*+ ?)?"), "")  // removes *
       .replace(regex("\|$"), "\n")
       .replace(regex("\n\n+"), "\n\n")
   )
@@ -136,6 +140,12 @@ Each argument must be between empty lines, or end with a `|` to separate them.
 // Parses comment documentation (exported as #from-comment)
 #let parse(doc, delims) = {
   if doc == none {return}
+  if type(delims) == str {delims = (delims,)}
+  
+  assert(
+    delims.len() in (1, 3),
+    message: "#manual(comment-delim) must have 1 or 3 items"
+  )
   
   delims = delims.map(item => {esc(item)})
 

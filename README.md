@@ -21,11 +21,12 @@ Modern but sober manuals inspired by the manpages of old.
 [![Contribute](https://img.shields.io/badge/Contribute-%23353c44)](https://github.com/mayconfmelo/transl/blob/main/docs/contributing.md)
 
 <p class="hidden">
-
-[![Tests](https://github.com/mayconfmelo/min-manual/actions/workflows/tests.yml/badge.svg)](https://github.com/mayconfmelo/min-manual/actions/workflows/tests.yml)
-[![Build](https://github.com/mayconfmelo/min-manual/actions/workflows/build.yml/badge.svg)](https://github.com/mayconfmelo/min-manual/actions/workflows/build.yml)
-[![Spellcheck](https://github.com/mayconfmelo/min-manual/actions/workflows/spellcheck.yml/badge.svg)](https://github.com/mayconfmelo/min-manual/actions/workflows/spellcheck.yml)
-
+  <a href="https://github.com/mayconfmelo/min-manual/actions/workflows/tests.yml">
+    <img alt="Tests" src="https://github.com/mayconfmelo/min-manual/actions/workflows/tests.yml/badge.svg" /></a>
+  <a href="https://github.com/mayconfmelo/min-manual/actions/workflows/build.yml">
+    <img alt="Build" src="https://github.com/mayconfmelo/min-manual/actions/workflows/build.yml/badge.svg" /></a>
+  <a href="https://github.com/mayconfmelo/min-manual/actions/workflows/spellcheck.yml">
+    <img alt="Spellcheck" src="https://github.com/mayconfmelo/min-manual/actions/workflows/spellcheck.yml/badge.svg" /></a>
 </p>
 </div>
 
@@ -43,22 +44,25 @@ Modern but sober manuals inspired by the manpages of old.
 
 ## Description
 
-Generate modern manuals without losing the simplicity of old manpages. This
-package draws inspiration from old manuals while adopting the facilities of
-modern tools, like Markdown and documentation embedded in comments. The design
-aims to be sober: a minimal informative header, technical text in comfortable
-fonts and well-formatted code examples.
+Create modern and elegant manuals with a clean visual style and a focus on
+maintaining attention on the document's content. This package seeks a balance
+between new visual trends and the traditional simplicity of older manuals:
+there are no abstract designs, colorful sections, diverse themes, or anything
+that steals the focus; however, it adopts modern fonts, pleasant spacing, text
+layout inspired by web pages, as well as automation tools and practical features.
 
+This was created with Typst in mind, but also aiming for the potential to
+universally document code from other languages: all the features of _min-book_
+are supported when documenting any type of program or code.
 
 ## Feature List
 
 - Universal documentation
-  - Typst packages
-  - Typst templates
+  - Typst packages/templates
   - Any other language
 - Retrieval of data from _typst.toml_ package manifest
 - Documentation for arguments/options
-- Extract code from files
+- Extract code snippets from files
 - Showcase code examples and its result
 - Terminal simulation
 - Customizable callout boxes
@@ -68,15 +72,15 @@ fonts and well-formatted code examples.
   - PyPi packages
   - Rust crates
   - GitHub repositories
-  - Any other URL
+  - Any package URL
 - Documentation retrieval from Markdown files
   - CommonMark Markdown
   - Typst code support
   - Access to _min-manual_ features (Typst mode)
 - Documentation retrieval from source code comments
   - Typst code support
-  - All _min-manual_ features
-  - Short-hand syntax for some _min-manual_ features
+  - Access to _min-manual_ features
+  - Special syntax for some _min-manual_ features
 
 
 ## Default Fonts

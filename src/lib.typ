@@ -17,15 +17,16 @@
 
 = Description
 
-Generate modern manuals without losing the simplicity of old manpages. This
-package draws inspiration from old manuals while adopting the facilities of
-modern tools, like Markdown and documentation embedded in comments. The design
-aims to be sober: a minimal informative header, technical text in comfortable
-fonts and well-formatted code examples.
+Create modern and elegant manuals with a clean visual style and a focus on
+maintaining attention on the document's content. This package seeks a balance
+between new visual trends and the traditional simplicity of older manuals:
+there are no abstract designs, colorful sections, diverse themes, or anything
+that steals the focus; however, it adopts modern fonts, pleasant spacing, text
+layout inspired by web pages, as well as automation tools and practical features.
 
-The package was created with Typst in mind, but also targeting the potential
-to universally document code from other languages: all _min-book_ features are
-supported when documenting any type of program or code.
+This was created with Typst in mind, but also aiming for the potential to
+universally document code from other languages: all the features of _min-book_
+are supported when documenting any type of program or code.
 
 = Options
 :show.with manual:
@@ -79,11 +80,11 @@ supported when documenting any type of program or code.
       type(manifest), dictionary,
       message: "#manual(manifest) must be dictionary"
     )
-    description = manifest.package.description
+    description = manifest.package.at("description", default: description)
     package = manifest.package.name + ":" + manifest.package.version
-    authors = manifest.package.authors
-    license = manifest.package.license
-    url = manifest.package.at("repository", default: none)
+    authors = manifest.package.at("authors", default: authors)
+    license = manifest.package.at("license", default: license)
+    url = manifest.package.at("repository", default: url)
   }
   
   // Check required arguments

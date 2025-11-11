@@ -7,7 +7,6 @@ Short description, no longer than two lines.
 </center>
 <style>
 dl dt type {background: #ddd; padding: 1px 3px}
-[data-required] {}
 </style>
 <!--typst-end-exclude-->
 
@@ -17,6 +16,7 @@ dl dt type {background: #ddd; padding: 1px 3px}
 
 ## Options
 
+<!-- Special syntax structure equivalent to the #arg command: -->
 <dl data-arg>
   <dt>
     <code data-lang="typ">#feature.foo(value)</code>

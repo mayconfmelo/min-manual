@@ -789,25 +789,25 @@ text <- string | content
 #callout(
   icon: "information-circle",
   title: none,
-  fill: gray.lighten(85%),
-  fill-text: auto,
+  text: (:),
+  background: (:),
   body,
 )
 ```
-Create a simple customizable callout box, used to highlight a text or showcase
-important content.
+Create a simple yet highly customizable callout box, used to highlight a text or
+showcase important content.
 
-icon <- string
-  Icon name, as set by #url("https://heroicons.com/")[Heroicons.]
+icon: <- string
+  Icon name, as set by #url("https://heroicons.com/")[Heroicons].
 
-title <- string | content | none
+title: <- string | content | none
   Set title, if any.
 
-fill <- color
-  Set background color.
+text: <- color | dictionary
+  Text (`#text`) options; the special `text.title` set title options.
 
-fill-text: <- color
-  Set text color.
+background: <- color | dictionary
+  Background style (`#block`) options.
 
 == Package URL
 ```typ

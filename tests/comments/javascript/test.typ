@@ -6,6 +6,6 @@
   authors: "Author",
   package: "pkg:type/name@version",
   license: "MIT",
-  from-comments: read("assets/file.js"),
+  from-comments: read("file.js"),
   typst-defaults: true,
 )

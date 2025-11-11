@@ -6,7 +6,7 @@
   authors: "Author",
   package: "pkg:type/name@version",
   license: "MIT",
-  from-comments: read("assets/file.lua"),
+  from-comments: read("file.lua"),
   comment-delim: ("---", "--[[-", "-]]--"),
   typst-defaults: true,
 )

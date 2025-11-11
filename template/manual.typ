@@ -10,23 +10,13 @@
 )
 
 
-#v(1fr)#outline()#v(1.2fr)
+#v(1fr)
+#outline()
+#v(1.2fr)
 #pagebreak()
 
 
-= Quick Start
-
-```typm
-#import "@preview/pkg-name:0.4.2": feature
-#show: feature.with(
-  title: "Title",
-  date: datetime.today(),
-  color: luma(000),
-)
-```
-
-
-= Code Extraction and Arguments
+= Code Extraction
 
 /* Example simulating a snippet in another file or location.
 #let feature(
@@ -41,39 +31,44 @@
   from: read("manual.typ")
 )
 
-#v(5pt)
-#arg("```typm #show: feature.with()``` -> content")[
-  Explanation of what is this structure, what it does, and how to properly set it.
+
+= Arguments
+
+#arg("name: <- type | type | type <required>")[
+  Required argument.
 ]
-#arg("```typm #set feature()``` -> nothing")[
-  Explanation of what is this structure, what it does, and how to properly set it.
+#arg("name: <- type | type | type")[
+  Optional argument.
 ]
-#arg("```typm #feature()``` -> content")[
-  Explanation of what is this structure, what it does, and how to properly set it.
+#arg("name: -> type | type | type")[
+  Possible output types.
 ]
-#arg("title: <- string | content <required>")[
-  Explanation of what is this argument, what it does, and how to properly set it.
+#arg("name: <- type | type | type -> type | type <required>")[
+  Possible input and output types.
 ]
-#arg("date: <- string | content <required>")[
-  Explanation of what is this argument, what it does, and how to properly set it.
+#arg("```typ #feature(name)``` -> type | type | type")[
+  Syntax highlight.
 ]
-#arg("color: <- luma | rgb")[
-  Explanation of what is this argument, what it does, and how to properly set it.
+#arg("```typ #set feature(name)```")[
+  No input nor output types.
 ]
-#arg("size: <- length")[
-  Explanation of what is this argument, what it does, and how to properly set it.
+#arg("name: <- type | type | type | type | type | type | type | type | type | type | type | type | type | type | type | type <required>")[
+  Long list of input types.
 ]
-#v(5pt)
+#arg("name: -> type | type | type | type | type | type | type | type | type | type | type | type | type | type | type | type <required>")[
+  Long list of output types.
+]
+#arg("name: <- type | type | type | type | type | type | type | type -> type | type | type | type | type | type | type | type <required>")[
+  Long list of input and output types.
+]
 
 #pagebreak()
 
 
 = Paper-friendly Links
 
-#url("https://typst.app")[
-  This link is accessible on screens (click) and visible on paper (footnote) at
-  the same time.
-]
+#url("https://typst.app")[This link is clickable on screens and generates a
+footnote for print visibility.]
 
 
 = Package URLs
@@ -81,23 +76,22 @@
 #grid(
   columns: (auto, auto),
   gutter: 1em,
-  [*Typst Universe:      *], univ("pkg-typ"),
-  [*Python PyPi:         *], pip("pkg-py"),
-  [*Rust crate:          *], crate("pkg-rs"),
-  [*Package (LaTeX CTAN):*], pkg("https://ctan.org/pkg/pkg-tex"),
-  [*Package (Perl CPAN): *], pkg("https://metacpan.org/pod/PKG::PackagePL"),
-  [*GitHub repo:         *], gh("user/pkg"),
+  [*LuaRocks:      *], pkg("https://luarocks.org/modules/alerque/decasify"),
+  [*Typst Universe:*], univ("decasify"),
+  [*Python PyPi:   *], pip("decasify"),
+  [*Rust crate:    *], crate("decasify"),
+  [*GitHub repo:   *], gh("alerque/decasify"),
 )
 
 
-= Terminal Emulation
+= Terminal Simulation
 
 ```term
-~$ cd projects/
-projects$ sudo su
+user@host:~$ cd projects/
+user@host:~/projects$ sudo su
 Password:
-projects# echo "The command is red, and the output white."
-The command is red, and the output white.
+root@host:~/projects# rm foo
+rm: cannot remove 'foo': No such file or directory
 ```
 
 

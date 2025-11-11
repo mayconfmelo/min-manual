@@ -112,10 +112,10 @@ A #emph[Typst] code *example*
 
 = Heading References <ref>
 
-You can reference headings even if they are unnumbered, like this @ref section.
+This is tye @ref section, and the next one is the @callout section.
 
 
-= Callout
+= Callout <callout>
 
 #callout[Simple default callout.]
 

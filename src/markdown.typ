@@ -35,6 +35,7 @@ the `tests/markdown/assets/file.md` file).
 
 // Parses special <dl> tags for #arg
 #let get-arg(attrs, body, lib) = {
+  import "@preview/toolbox:0.1.0": its
   let args = ()
   
   for elem in body.children {
@@ -63,8 +64,8 @@ the `tests/markdown/assets/file.md` file).
       
       args.push(elem)
     }
-    // Handle <dd> tags inside <dl>
-    else if type(elem) == content and elem.func() == [**__].func() {
+    else if type(elem) == content and its.sequence(elem) {
+      // Handle <dd> tags inside <dl>
       if repr(elem.children.at(0)) == "[dd:]" {
         elem = elem.children.slice(1).join()
         

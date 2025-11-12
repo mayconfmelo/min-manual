@@ -122,9 +122,20 @@ This is tye @ref section, and the next one is the @callout section.
 #callout(title: "Title")[Callout with title]
 
 // More icon names in https://heroicons.com/
-#callout(fill: blue, fill-text: white, icon: "exclamation-triangle")[
+#callout(background: blue, text: white, icon: "exclamation-triangle")[
   Blue callout with white text and custom icon.]
 
+#callout(
+  title: "Note",
+  text: ( title: (fill: blue) ),
+  background: (
+    fill: none,
+    stroke: (left: 3pt + blue),
+    outset: (left: 1em, bottom: 0.45em),
+    inset: (left: 0pt),
+  ),
+  [GitHub-ish customized callout.]
+)
 
 #pagebreak()
 

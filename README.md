@@ -3,7 +3,7 @@
 <div align="center">
 
 <p class="hidden">
-Modern but sober manuals inspired by the manpages of old.
+  Modern yet sober manuals using Typst, Markdown, and documentation comments.
 </p>
 
 

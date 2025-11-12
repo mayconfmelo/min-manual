@@ -3,7 +3,7 @@
 
 #import "comments.typ": parse as from-comments
 #import "markdown.typ": parse as from-markdown
-#import "@preview/toolbox:0.1.0": comp.pkg, comp.callout
+#import "@preview/toolbox:0.1.0": comp.url, comp.pkg, comp.callout
 
 /**#v(1fr)#outline()#v(1.2fr)#pagebreak()#import "utils.typ": syntax
 = Quick Start
@@ -752,38 +752,20 @@ passed, the result is automatically generated. Can also be used as
 /**
 == Paper-friendly URL
 ```typ
-#url(url, id, text)
+#url(target, id, text)
 ```
 Creates a paper-friendly link, attached to a footnote containing the URL itself
-for readability in paper.
+to ensure readability in paper.
 
-url <- string | label <required>
-  URL set to link and shown in footnote.
+target <- string | label <required>
+  URL used as link and footnote, or  or label referencing a previous `#url` command.
 
 id <- label
-  Label set to the footnote for future reference.
-
+  Optional label for further reference.
+  
 text <- string | content
-  Text to be shown in-place as the link itself.
-**/
-#let url(url, ..data) = {
-  h(0pt)
-  
-  assert(
-    data.pos().len() <= 2,
-    message: "Received " + str(data.pos().len() + 1) + " arguments (expected 3)"
-  )
-  
-  let note = if type(url) == str {link(url)} else {url}
-  let text = data.pos().at(-1, default: url)
-  let id = data.pos().at(-2, default: [])
+  Text shown as link (fallback to the URL).
 
-  link(url, emph(text))
-  [#footnote(note)#id]
-}
-
-
-/**
 == Callout
 ```typ
 #callout(
@@ -809,7 +791,7 @@ text: <- color | dictionary
 background: <- color | dictionary
   Background style (`#block`) options.
 
-== Package URL
+== Package URLs
 ```typ
 #pkg(url)
 #univ(name)
@@ -835,19 +817,34 @@ slug <- string
 
 
 // Typst packages (Typst Universe)
-#let univ(name) = pkg("https://typst.app/universe/package/{pkg}", name)
+#let univ(name, ..args) = {
+  if type(name) == str {name = "https://typst.app/universe/package/" + name}
+  pkg(name, ..args)
+}
 
 // Python packages (PyPi/Pip)
-#let pip(name) = pkg("https://pypi.org/project/{pkg}", name)
+#let pip(name, ..args) = {
+  if type(name) == str {name = "https://pypi.org/project/" + name}
+  pkg(name, ..args)
+}
 
 // Rust packages (crates.io)
-#let crate(name) = pkg("https://crates.io/crates/{pkg}", name)
+#let crate(name, ..args) = {
+  if type(name) == str {name = "https://crates.io/crates/" +name}
+  pkg(name, ..args)
+}
 
 // Node.js packages (npm)
-#let npm(name) = pkg("https://www.npmjs.com/package/", name)
+#let npm(name, args) = {
+  if type(name) == str {name = "https://www.npmjs.com/package/" + name}
+  pkg(name, ..args)
+}
 
 // GitHub repositories
-#let gh(slug) = pkg("https://github.com/{path}/", slug)
+#let gh(slug, ..args) = {
+  if type(slug) == str {slug = "https://github.com/" + slug}
+  pkg(slug, ..args)
+}
 
 /**
 = Alternative Sources

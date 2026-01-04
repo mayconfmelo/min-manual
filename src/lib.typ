@@ -1,11 +1,11 @@
 // NAME: Minimal Manuals
-// TODO: Implement web manual when HTML is stable
+// TODO: Implement web manual when HTML become stable
 
 #import "comments.typ": parse as from-comments
 #import "markdown.typ": parse as from-markdown
 #import "@preview/toolbox:0.1.0": comp.url, comp.pkg, comp.callout
 
-/**#v(1fr)#outline()#v(1.2fr)#pagebreak()#import "utils.typ": syntax
+/** #v(1fr) #outline() #v(1.2fr) #pagebreak() #import "utils.typ": syntax
 = Quick Start
 ```typ
 #import "@preview/min-manual:0.3.0": manual
@@ -546,11 +546,11 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   let display = display
   let lang = lang
   let std-models = (
-    "func": "(?s)\s*#?let\s+<name>\((.*?)\)\s*=",
-    "call": "(?s)\s*#?<name>(?:\.with)?\((.*?)\)",
-    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\((?:\(.*?\)|.)*?\)|.*?\n)",
-    "var": "(?s)\s*#?\s+<name>\s*=\s*(\((?:\(.*?\)|.)*?\)|.*?\n)",
-    "arg": "(?s)\s*<name>\s*:\s*(\((?:\(.*\)|.)*?\)|.*?)(?:,.*)?(?:\n|$)",
+    "func": "(?s)\s*#?let\s+<name>(\(<matching>\))\s*=",
+    "call": "(?s)\s*#?<name>(?:\.with)?\((<matching>)\)",
+    "let": "(?s)\s*#?let\s+<name>\s*=\s*(\(<matching>\)|.*?\n)",
+    "var": "(?s)\s*#?\s+<name>\s*=\s*(\((?:\(<matching>\)|.)*?\)|.*?\n)",
+    "arg": "(?s)\s*<name>\s*:\s*(\((?:\(<matching>\)|.)*?\)|.*?)(?:,.*)?(?:\n|$)",
   )
   let std-cases = (
     "show.with": "#show: <name>.with(<capt>)",
@@ -563,6 +563,8 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     "let": "#let <name> = <capt>",
   )
   let comments = storage.get("comment-delim", namespace: "min-manual")
+  let capt-delim = true
+  let matching = ()
   let matches
   let capt
   let indent
@@ -590,9 +592,20 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   // Adjust code highlight for #extract(display: "arg")
   if lang == "typ" and display == "arg" {lang = "typc"}
   
+  if model == "func" {capt-delim = false}
+  
   // Use default Typst cases and extraction models.
   if std-cases.keys().contains(display) {display = std-cases.at(display)}
   if std-models.keys().contains(model) {model = std-models.at(model)}
+  
+  // Set matching characters
+  if model.contains("<matching>") {
+    matching = model
+      .match(regex("\\\\?.<matching>\\\\?.")).text
+      .replace("\\", "")
+      .split("<matching>")
+    model = model.replace("<matching>", ".*")
+  }
   
   model = model.replace("<name>", name)
   matches = from.matches(regex(model))
@@ -611,6 +624,32 @@ Extract code from another file or location (see `/tests/commands/extract/`).
   capt = matches.last().captures.at(0)
     .replace(regex("(?m)^[ \t]{" + str(indent) + "}"), "")
   
+  // Get matching characters
+  if matching != () and capt.contains(matching.at(0)) {
+    let clusters = capt.clusters()
+    let count = 0
+    let end = 0
+    
+    for (i, char) in clusters.enumerate() {
+      if char == matching.at(0) {
+        // Opening character
+        count += 1
+      }
+      else if char == matching.at(1) {
+        // Closing character
+        count -= 1
+        if count == 0 {
+          end = i + 1
+          break
+        }
+      }
+    }
+    
+    assert.ne(end, 0)
+    
+    capt = clusters.slice(0, end).join()
+  }
+  
   // Remove documentation comments
   if comments != none {
     import "comments.typ": esc
@@ -621,6 +660,8 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     capt = capt.replace(regex(comments), "")
     display = display.replace(regex(comments), "")
   }
+  
+  if not capt-delim {capt = capt.trim(regex("[()]"))}
   
   display = display
     .replace("<name>", name)

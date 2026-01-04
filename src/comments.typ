@@ -85,8 +85,7 @@ Each argument must be between empty lines, or end with a `|` to separate them.
 
 // Parses special syntax for #extract
 #let get-extract(doc, doc-orig) = {
-  // USAGE: :title: lang "model" => display
-  // USAGE: :usage name: lang "model" => display
+  // :display name: lang "model" => display
   let re = "(?s):([^\n]+?):(?:<s>(\w+)<s>)?(?:<s>\"(.*?)\")?(?:<s>=>\s*(.*?))?"
   let s = " *\n? *"
   let pattern = re.replace("<s>", s)

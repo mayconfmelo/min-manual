@@ -1,4 +1,4 @@
-// NAME: Minimal Manuals
+// Minimal Manuals
 // TODO: Implement web manual when HTML become stable
 
 #import "comments.typ": parse as from-comments

@@ -157,7 +157,7 @@ Each argument must be between empty lines, or end with a `|` to separate them.
   doc.insert(0,
     ```
     #import "lib.typ": *
-    #import "@preview/toolbox:0.1.0": storage
+    #import "@preview/nexus-tools:0.1.0": storage
     #storage.add("extract-from", doc, namespace: "min-manual")
     ```.text
   )

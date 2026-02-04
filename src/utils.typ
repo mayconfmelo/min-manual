@@ -46,7 +46,7 @@
     raw.where(lang: "term"),
     raw.where(lang: "terminal"),
   ): it => {
-    import "@preview/toolbox:0.1.0": storage
+    import "@preview/nexus-tools:0.1.0": storage
     set text(fill: rgb("#CFCFCF"))
     
     pad(

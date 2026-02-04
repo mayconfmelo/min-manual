@@ -35,7 +35,7 @@ the `tests/markdown/assets/file.md` file).
 
 // Parses special <dl> tags for #arg
 #let get-arg(attrs, body, lib) = {
-  import "@preview/toolbox:0.1.0": its
+  import "@preview/nexus-tools:0.1.0": its
   let args = ()
   
   for elem in body.children {

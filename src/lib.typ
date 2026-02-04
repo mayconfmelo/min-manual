@@ -3,7 +3,7 @@
 
 #import "comments.typ": parse as from-comments
 #import "markdown.typ": parse as from-markdown
-#import "@preview/toolbox:0.1.0": comp.url, comp.pkg, comp.callout
+#import "@preview/nexus-tools:0.1.0": comp.url, comp.pkg, comp.callout
 
 /** #v(1fr) #outline() #v(1.2fr) #pagebreak() #import "utils.typ": syntax
 = Quick Start
@@ -62,7 +62,7 @@ are supported when documenting any type of program or code.
     /// <comment-delim>
   body,
 ) = context {
-  import "@preview/toolbox:0.1.0": storage, default, get
+  import "@preview/nexus-tools:0.1.0": storage, default, get
   import "comments.typ"
   import "markdown.typ"
   import "utils.typ"
@@ -538,7 +538,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
         Regex pattern to retrieve code: one of the predefined names above, or
         a custom pattern (spaces before code normalizes indentation). |**/
 ) = context {
-  import "@preview/toolbox:0.1.0": storage
+  import "@preview/nexus-tools:0.1.0": storage
   import "utils.typ"
   
   let from = from
@@ -718,7 +718,7 @@ passed, the result is automatically generated. Can also be used as
     /// `(code, result)`\
     /// Positional arguments for code and optional result. |
 ) = {
-  import "@preview/toolbox:0.1.0": storage, get
+  import "@preview/nexus-tools:0.1.0": storage, get
   import "lib.typ"
   
   // #layout allows to calc 50% of content width

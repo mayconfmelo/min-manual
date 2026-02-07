@@ -2,5 +2,6 @@
 
 #show: manual.with(
   title: "Package Name",
-  manifest: toml("typst.toml")
+  manifest: toml("typst.toml"),
+  typst-defaults: true,
 )

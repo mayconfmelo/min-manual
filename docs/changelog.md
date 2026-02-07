@@ -51,5 +51,5 @@
 - Internal re-design
 - Added: `#manual(manifest)` to retrieve data from _typst.toml_ manifest
 - Added: `#callout` to create customizable callout boxes
-- Added: Support for macOS `%` prompts in `#raw(lang: "term|terminal`)
+- Added: Support for `%` root prompts in `#raw(lang: "term|terminal`)
 - Updated: `#manual(use-defaults)` &rarr; `#manual(typst-defaults)`

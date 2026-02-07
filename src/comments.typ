@@ -153,7 +153,7 @@ Each argument must be between empty lines, or end with a `|` to separate them.
   doc = handle-args(doc, delims)
   doc = clean(doc, delims)
   
-  // Insert data at the begining
+  // Insert data at the beginning
   doc.insert(0,
     ```
     #import "lib.typ": *

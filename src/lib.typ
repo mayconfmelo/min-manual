@@ -680,7 +680,7 @@ Extract code from another file or location (see `/tests/commands/extract/`).
     
     assert.ne(
       pos, (),
-      message: "Could not find postional arguments in '" + name + "'"
+      message: "Could not find positional arguments in '" + name + "'"
     )
     
     if display.contains(".with(") {

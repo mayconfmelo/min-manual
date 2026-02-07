@@ -92,6 +92,8 @@ case "${ACTION}" in
       cd "${LIB_DIR}/${VERSION}"
 
       for EXCLUDE in ${EXCLUDES[@]}; do
+        [[ "${EXCLUDE}" == "/"* ]] && EXCLUDE=".${EXCLUDE}"
+        
         if [[ -e "${EXCLUDE}" ]]; then
           rm -r "${EXCLUDE}"
           echo " - Removed: ${EXCLUDE}"
